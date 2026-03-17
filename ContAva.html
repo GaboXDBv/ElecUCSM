@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Control Avanzado II</title>
+  <style>
+    :root{
+      --bg:#f4f7fb;
+      --bg2:#eaf0f8;
+      --surface:#ffffff;
+      --surface-2:#f8fbff;
+      --text:#162033;
+      --muted:#66758b;
+      --line:#dbe4ef;
+      --shadow:0 16px 38px rgba(15,23,42,.10);
+      --accent:#2563eb;
+      --accent-2:#1d4ed8;
+      --accent-soft:#dbeafe;
+      --danger:#dc2626;
+      --success:#15803d;
+
+      --dark-bg:#08111d;
+      --dark-bg2:#0d1726;
+      --dark-surface:#101827;
+      --dark-surface-2:#111c2d;
+      --dark-text:#e8eef8;
+      --dark-muted:#93a3bb;
+      --dark-line:#243245;
+      --dark-shadow:0 18px 42px rgba(0,0,0,.35);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color:var(--text);
+      background:linear-gradient(180deg,var(--bg) 0%, var(--bg2) 100%);
+      min-height:100vh;
+      transition:background .25s ease, color .25s ease;
+    }
+
+    body.dark{
+      color:var(--dark-text);
+      background:linear-gradient(180deg,var(--dark-bg) 0%, var(--dark-bg2) 100%);
+    }
+
+    .container{
+      width:min(1180px, calc(100% - 32px));
+      margin:auto;
+      padding:30px 0 40px;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom:24px;
+    }
+
+    .title h1{
+      margin:0;
+      font-size:clamp(2rem, 3.4vw, 3.4rem);
+      line-height:1.02;
+      letter-spacing:-0.05em;
+    }
+
+    .title p{
+      margin:8px 0 0;
+      color:var(--muted);
+      font-size:1rem;
+    }
+
+    body.dark .title p{color:var(--dark-muted)}
+
+    .actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .btn{
+      border:none;
+      border-radius:16px;
+      padding:12px 16px;
+      font-weight:800;
+      cursor:pointer;
+      transition:transform .16s ease, opacity .16s ease;
+    }
+
+    .btn:hover{transform:translateY(-2px)}
+
+    .btn-primary{
+      background:var(--accent);
+      color:#fff;
+      box-shadow:0 12px 24px rgba(37,99,235,.20);
+    }
+
+    .btn-secondary{
+      background:var(--surface);
+      color:var(--text);
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+    }
+
+    body.dark .btn-secondary{
+      background:var(--dark-surface);
+      color:var(--dark-text);
+      border-color:var(--dark-line);
+      box-shadow:var(--dark-shadow);
+    }
+
+    .hero{
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      padding:24px;
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:18px;
+      margin-bottom:24px;
+    }
+
+    body.dark .hero{
+      background:var(--dark-surface);
+      border-color:var(--dark-line);
+      box-shadow:var(--dark-shadow);
+    }
+
+    .hero-card{
+      background:linear-gradient(135deg,#eff6ff 0%, #ffffff 100%);
+      border:1px solid #dbeafe;
+      border-radius:22px;
+      padding:18px;
+    }
+
+    .hero-card h2{
+      margin:0 0 8px;
+      font-size:1.25rem;
+    }
+
+    .hero-card p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.65;
+    }
+
+    body.dark .hero-card{
+      background:linear-gradient(135deg,#132033 0%, #101827 100%);
+      border-color:#243245;
+    }
+
+    body.dark .hero-card p{color:var(--dark-muted)}
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+    }
+
+    .stat{
+      background:var(--surface-2);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+    }
+
+    .stat strong{
+      display:block;
+      font-size:1.3rem;
+      margin-bottom:4px;
+    }
+
+    .stat span{
+      color:var(--muted);
+      font-size:.95rem;
+    }
+
+    body.dark .stat{
+      background:var(--dark-surface-2);
+      border-color:var(--dark-line);
+    }
+
+    body.dark .stat span{color:var(--dark-muted)}
+
+    .section-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:16px;
+      flex-wrap:wrap;
+    }
+
+    .section-head h3{
+      margin:0;
+      font-size:1.35rem;
+      letter-spacing:-0.03em;
+    }
+
+    .topics-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:18px;
+    }
+
+    .topic-card{
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      min-height:210px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .topic-card::before{
+      content:"";
+      position:absolute;
+      inset:0 0 auto 0;
+      height:6px;
+      background:linear-gradient(90deg,var(--accent),#60a5fa);
+    }
+
+    body.dark .topic-card{
+      background:var(--dark-surface);
+      border-color:var(--dark-line);
+      box-shadow:var(--dark-shadow);
+    }
+
+    .topic-card h4{
+      margin:14px 0 8px;
+      font-size:1.35rem;
+      line-height:1.1;
+      letter-spacing:-0.03em;
+    }
+
+    .topic-card p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.55;
+      font-size:.97rem;
+    }
+
+    body.dark .topic-card p{color:var(--dark-muted)}
+
+    .topic-meta{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-top:20px;
+      flex-wrap:wrap;
+    }
+
+    .topic-tag{
+      background:var(--accent-soft);
+      color:var(--accent-2);
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:.88rem;
+      font-weight:700;
+    }
+
+    body.dark .topic-tag{
+      background:rgba(37,99,235,.16);
+      color:#93c5fd;
+    }
+
+    .topic-link{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      text-decoration:none;
+      background:var(--accent);
+      color:#fff;
+      font-weight:800;
+      padding:10px 14px;
+      border-radius:14px;
+    }
+
+    .empty-box{
+      background:var(--surface);
+      border:1px dashed var(--line);
+      border-radius:24px;
+      padding:28px;
+      text-align:center;
+      color:var(--muted);
+      box-shadow:var(--shadow);
+    }
+
+    body.dark .empty-box{
+      background:var(--dark-surface);
+      border-color:var(--dark-line);
+      color:var(--dark-muted);
+      box-shadow:var(--dark-shadow);
+    }
+
+    .modal-backdrop{
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,.50);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      z-index:999;
+    }
+
+    .modal-backdrop.show{display:flex}
+
+    .modal{
+      width:min(520px, 100%);
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:24px;
+      box-shadow:0 24px 60px rgba(15,23,42,.22);
+      padding:22px;
+    }
+
+    body.dark .modal{
+      background:var(--dark-surface);
+      border-color:var(--dark-line);
+      box-shadow:0 24px 60px rgba(0,0,0,.42);
+    }
+
+    .modal h3{
+      margin:0 0 8px;
+      font-size:1.35rem;
+    }
+
+    .modal p{
+      margin:0 0 16px;
+      color:var(--muted);
+    }
+
+    body.dark .modal p{color:var(--dark-muted)}
+
+    .field{
+      margin-bottom:14px;
+    }
+
+    .field label{
+      display:block;
+      margin-bottom:7px;
+      font-weight:700;
+      font-size:.95rem;
+    }
+
+    .field input, .field textarea{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:var(--surface-2);
+      padding:12px 14px;
+      font-size:1rem;
+      color:inherit;
+      outline:none;
+    }
+
+    .field textarea{
+      min-height:100px;
+      resize:vertical;
+      font-family:inherit;
+    }
+
+    body.dark .field input,
+    body.dark .field textarea{
+      background:var(--dark-surface-2);
+      border-color:var(--dark-line);
+      color:var(--dark-text);
+    }
+
+    .modal-actions{
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+
+    .admin-panel{
+      display:none;
+      margin-bottom:18px;
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      padding:20px;
+    }
+
+    .admin-panel.show{display:block}
+
+    body.dark .admin-panel{
+      background:var(--dark-surface);
+      border-color:var(--dark-line);
+      box-shadow:var(--dark-shadow);
+    }
+
+    .admin-panel h3{margin-top:0}
+    .admin-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+
+    .admin-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+
+    .topic-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    .mini-btn{
+      border:none;
+      border-radius:12px;
+      padding:9px 12px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .mini-edit{background:#fef3c7; color:#92400e;}
+    .mini-delete{background:#fee2e2; color:#b91c1c;}
+
+    .hidden{display:none !important}
+
+    @media (max-width:1000px){
+      .topics-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+      .hero{grid-template-columns:1fr;}
+    }
+
+    @media (max-width:680px){
+      .container{width:min(100% - 18px, 1180px)}
+      .topics-grid{grid-template-columns:1fr}
+      .stats{grid-template-columns:1fr}
+      .admin-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="topbar">
+      <div class="title">
+        <h1 id="courseTitle">Control Avanzado II</h1>
+        <p>Índice interno del curso</p>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" onclick="requestAccess('add')">Añadir tema</button>
+        <button class="btn btn-secondary" onclick="requestAccess('admin')">Editar</button>
+        <button class="btn btn-secondary" id="themeBtn" onclick="toggleTheme()">Modo oscuro</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-card">
+        <h2>Organización del curso</h2>
+        <p>
+          Aquí puedes crear accesos internos para cada tema, unidad o práctica. Los cambios se guardan en tu navegador
+          para que mantengas tu índice ordenado y editable cuando necesites agregar o modificar apartados.
+        </p>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <strong id="topicsCount">0</strong>
+          <span>Temas registrados</span>
+        </div>
+        <div class="stat">
+          <strong id="adminState">No</strong>
+          <span>Modo edición</span>
+        </div>
+        <div class="stat">
+          <strong>Local</strong>
+          <span>Guardado</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="admin-panel" id="adminPanel">
+      <h3>Panel de edición</h3>
+      <div class="admin-grid">
+        <div class="field">
+          <label for="topicName">Nombre del tema</label>
+          <input id="topicName" type="text" placeholder="Ejemplo: Unidad 1 - Modelado" />
+        </div>
+        <div class="field">
+          <label for="topicFile">Nombre del HTML</label>
+          <input id="topicFile" type="text" placeholder="Ejemplo: unidad1.html" />
+        </div>
+      </div>
+      <div class="field">
+        <label for="topicDesc">Descripción breve</label>
+        <textarea id="topicDesc" placeholder="Describe el contenido o propósito del tema"></textarea>
+      </div>
+      <div class="admin-actions">
+        <button class="btn btn-primary" onclick="saveTopic()">Guardar tema</button>
+        <button class="btn btn-secondary" onclick="cancelEdit()">Cancelar</button>
+      </div>
+    </section>
+
+    <div class="section-head">
+      <h3>Temas del curso</h3>
+    </div>
+
+    <section class="topics-grid" id="topicsGrid"></section>
+
+    <div class="empty-box hidden" id="emptyBox">
+      Aún no hay temas registrados. Usa el botón <strong>“Añadir tema”</strong> para comenzar.
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="passwordModal">
+    <div class="modal">
+      <h3>Ingrese clave</h3>
+      <p>Se requiere clave para añadir, editar o borrar temas del índice.</p>
+      <div class="field">
+        <label for="passwordInput">Clave</label>
+        <input id="passwordInput" type="password" placeholder="Ingrese clave" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closePasswordModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="validatePassword()">Ingresar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const COURSE_TITLE = 'Control Avanzado II';
+    const STORAGE_KEY = 'indice_interno_' + COURSE_TITLE.toLowerCase().replace(/\s+/g, '_');
+    const ADMIN_PASSWORD = '1234';
+
+    let topics = [];
+    let pendingAction = null;
+    let editIndex = null;
+    let isAdminMode = false;
+
+    document.getElementById('courseTitle').textContent = COURSE_TITLE;
+    document.title = COURSE_TITLE;
+
+    function loadTopics(){
+      const saved = localStorage.getItem(STORAGE_KEY);
+      topics = saved ? JSON.parse(saved) : [];
+      renderTopics();
+    }
+
+    function persistTopics(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(topics));
+      updateStats();
+    }
+
+    function updateStats(){
+      document.getElementById('topicsCount').textContent = topics.length;
+      document.getElementById('adminState').textContent = isAdminMode ? 'Sí' : 'No';
+    }
+
+    function renderTopics(){
+      const grid = document.getElementById('topicsGrid');
+      const empty = document.getElementById('emptyBox');
+      grid.innerHTML = '';
+
+      if(topics.length === 0){
+        empty.classList.remove('hidden');
+      } else {
+        empty.classList.add('hidden');
+      }
+
+      topics.forEach((topic, index) => {
+        const card = document.createElement('article');
+        card.className = 'topic-card';
+        card.innerHTML = `
+          <div>
+            <h4>${escapeHtml(topic.name)}</h4>
+            <p>${escapeHtml(topic.description || 'Sin descripción')}</p>
+          </div>
+          <div>
+            <div class="topic-meta">
+              <span class="topic-tag">Tema</span>
+              <a class="topic-link" href="${escapeAttr(topic.file)}">Abrir →</a>
+            </div>
+            ${isAdminMode ? `
+              <div class="topic-actions">
+                <button class="mini-btn mini-edit" onclick="startEdit(${index})">Editar</button>
+                <button class="mini-btn mini-delete" onclick="deleteTopic(${index})">Borrar</button>
+              </div>
+            ` : ''}
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+
+      updateStats();
+    }
+
+    function requestAccess(action){
+      pendingAction = action;
+      document.getElementById('passwordInput').value = '';
+      document.getElementById('passwordModal').classList.add('show');
+      setTimeout(() => document.getElementById('passwordInput').focus(), 50);
+    }
+
+    function closePasswordModal(){
+      document.getElementById('passwordModal').classList.remove('show');
+      pendingAction = null;
+    }
+
+    function validatePassword(){
+      const pass = document.getElementById('passwordInput').value;
+      if(pass !== ADMIN_PASSWORD){
+        alert('Clave incorrecta');
+        return;
+      }
+
+      closePasswordModal();
+      isAdminMode = true;
+      document.getElementById('adminPanel').classList.add('show');
+      updateStats();
+      renderTopics();
+
+      if(pendingAction === 'add'){
+        resetForm();
+        document.getElementById('topicName').focus();
+      }
+      if(pendingAction === 'admin'){
+        document.getElementById('topicName').focus();
+      }
+    }
+
+    function saveTopic(){
+      const name = document.getElementById('topicName').value.trim();
+      const file = document.getElementById('topicFile').value.trim();
+      const description = document.getElementById('topicDesc').value.trim();
+
+      if(!name || !file){
+        alert('Debes ingresar el nombre del tema y el nombre del html.');
+        return;
+      }
+
+      const payload = { name, file, description };
+
+      if(editIndex !== null){
+        topics[editIndex] = payload;
+      } else {
+        topics.push(payload);
+      }
+
+      persistTopics();
+      renderTopics();
+      resetForm();
+      alert('Tema guardado correctamente.');
+    }
+
+    function startEdit(index){
+      const topic = topics[index];
+      editIndex = index;
+      document.getElementById('adminPanel').classList.add('show');
+      document.getElementById('topicName').value = topic.name;
+      document.getElementById('topicFile').value = topic.file;
+      document.getElementById('topicDesc').value = topic.description || '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function deleteTopic(index){
+      const ok = confirm('¿Deseas borrar este tema?');
+      if(!ok) return;
+      topics.splice(index, 1);
+      persistTopics();
+      renderTopics();
+    }
+
+    function cancelEdit(){
+      resetForm();
+      document.getElementById('adminPanel').classList.remove('show');
+      isAdminMode = false;
+      renderTopics();
+      updateStats();
+    }
+
+    function resetForm(){
+      editIndex = null;
+      document.getElementById('topicName').value = '';
+      document.getElementById('topicFile').value = '';
+      document.getElementById('topicDesc').value = '';
+    }
+
+    function toggleTheme(){
+      document.body.classList.toggle('dark');
+      const dark = document.body.classList.contains('dark');
+      document.getElementById('themeBtn').textContent = dark ? 'Modo claro' : 'Modo oscuro';
+      localStorage.setItem('theme_indice_interno', dark ? 'dark' : 'light');
+    }
+
+    function initTheme(){
+      const saved = localStorage.getItem('theme_indice_interno');
+      if(saved === 'dark'){
+        document.body.classList.add('dark');
+        document.getElementById('themeBtn').textContent = 'Modo claro';
+      }
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function escapeAttr(str){
+      return escapeHtml(str);
+    }
+
+    initTheme();
+    loadTopics();
+  </script>
+</body>
+</html>
