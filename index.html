@@ -3,113 +3,139 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Índice de Cursos Teóricos</title>
+  <title>Cursos - Ingeniería Electrónica</title>
   <style>
     :root{
-      --bg:#f6f9ff;
-      --panel:#ffffff;
-      --text:#1f2937;
-      --muted:#6b7280;
-      --border:#d9e3f0;
-      --shadow:0 16px 40px rgba(15,23,42,.10);
-      --blue:#1d4ed8;
-      --indigo:#4338ca;
-      --cyan:#0369a1;
-      --rose:#be185d;
-      --slate:#475569;
-      --purple:#7c3aed;
-      --amber:#b45309;
+      --bg:#eef2f7;
+      --surface:#ffffff;
+      --surface-2:#f8fafc;
+      --text:#0f172a;
+      --muted:#64748b;
+      --line:#dbe2ea;
+      --shadow:0 14px 34px rgba(15,23,42,.08);
+      --accent:#2563eb;
+      --accent-soft:#dbeafe;
+
+      --card-1:#f4ede1;
+      --card-2:#ece9fb;
+      --card-3:#e4f1f9;
+      --card-4:#f7e6ee;
+      --card-5:#ebeff3;
+      --card-6:#efe7f8;
+
+      --dark-bg:#0b1220;
+      --dark-surface:#111827;
+      --dark-surface-2:#0f172a;
+      --dark-text:#e5eefc;
+      --dark-muted:#94a3b8;
+      --dark-line:#243041;
+      --dark-shadow:0 18px 40px rgba(0,0,0,.35);
     }
 
     *{box-sizing:border-box}
     body{
       margin:0;
       font-family:"Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background:linear-gradient(180deg,#f8fbff 0%, #edf4ff 100%);
+      background:linear-gradient(180deg,#f4f7fb 0%, #edf2f8 100%);
       color:var(--text);
+      transition:background .25s ease, color .25s ease;
+    }
+
+    body.dark{
+      background:linear-gradient(180deg,#08111d 0%, #0b1220 100%);
+      color:var(--dark-text);
     }
 
     .container{
-      width:min(1200px, calc(100% - 32px));
+      width:min(1180px, calc(100% - 32px));
       margin:auto;
-      padding:28px 0 40px;
-    }
-
-    .hero{
-      background:linear-gradient(135deg,#ffffff 0%, #eaf2ff 100%);
-      border:1px solid var(--border);
-      border-radius:30px;
-      box-shadow:var(--shadow);
-      padding:34px;
-      margin-bottom:24px;
-    }
-
-    .hero h1{
-      margin:0 0 10px;
-      font-size:clamp(2rem,3vw,3.1rem);
-      line-height:1.1;
-      color:#0f172a;
-    }
-
-    .hero p{
-      margin:0;
-      max-width:920px;
-      color:var(--muted);
-      font-size:1.05rem;
-    }
-
-    .tags{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top:18px;
-    }
-
-    .tag{
-      background:#dbeafe;
-      color:#1d4ed8;
-      padding:8px 14px;
-      border-radius:999px;
-      font-weight:700;
-      font-size:.92rem;
+      padding:32px 0 42px;
     }
 
     .topbar{
       display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      margin-bottom:24px;
       flex-wrap:wrap;
+    }
+
+    .brand h1{
+      margin:0;
+      font-size:clamp(2rem,3vw,3.2rem);
+      line-height:1.05;
+      letter-spacing:-.03em;
+    }
+
+    .brand p{
+      margin:8px 0 0;
+      color:var(--muted);
+      font-size:1rem;
+    }
+
+    body.dark .brand p{color:var(--dark-muted)}
+
+    .actions{
+      display:flex;
       gap:12px;
       align-items:center;
-      justify-content:space-between;
-      margin-bottom:20px;
+      flex-wrap:wrap;
     }
 
-    .searchbox{
-      flex:1 1 320px;
-      background:var(--panel);
-      border:1px solid var(--border);
-      border-radius:18px;
+    .search{
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px 14px;
+      min-width:260px;
       box-shadow:var(--shadow);
-      padding:14px 16px;
     }
 
-    .searchbox input{
+    .search input{
       width:100%;
       border:none;
       outline:none;
       background:transparent;
+      color:inherit;
       font-size:1rem;
-      color:var(--text);
     }
 
-    .info{
-      background:var(--panel);
-      border:1px solid var(--border);
-      border-radius:18px;
-      box-shadow:var(--shadow);
-      padding:14px 16px;
-      color:var(--muted);
-      font-weight:600;
+    body.dark .search{
+      background:var(--dark-surface);
+      border-color:var(--dark-line);
+      box-shadow:var(--dark-shadow);
     }
+
+    .theme-toggle{
+      border:none;
+      background:var(--surface);
+      color:var(--text);
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+      border-radius:16px;
+      padding:12px 16px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    body.dark .theme-toggle{
+      background:var(--dark-surface);
+      color:var(--dark-text);
+      border-color:var(--dark-line);
+      box-shadow:var(--dark-shadow);
+    }
+
+    .section-title{
+      margin:0 0 16px;
+      font-size:1rem;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+
+    body.dark .section-title{color:var(--dark-muted)}
 
     .grid{
       display:grid;
@@ -118,236 +144,304 @@
     }
 
     .card{
+      text-decoration:none;
+      color:inherit;
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:28px;
+      padding:22px;
+      box-shadow:var(--shadow);
+      min-height:250px;
       display:flex;
       flex-direction:column;
       justify-content:space-between;
-      min-height:245px;
-      padding:24px;
-      border-radius:28px;
-      color:#fff;
-      text-decoration:none;
+      transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
       position:relative;
       overflow:hidden;
-      box-shadow:0 18px 40px rgba(15,23,42,.16);
-      transition:transform .18s ease, box-shadow .18s ease;
     }
 
     .card:hover{
       transform:translateY(-4px);
-      box-shadow:0 24px 50px rgba(15,23,42,.22);
+      box-shadow:0 22px 46px rgba(15,23,42,.12);
+      border-color:#bfdbfe;
+    }
+
+    body.dark .card{
+      background:var(--dark-surface);
+      border-color:var(--dark-line);
+      box-shadow:var(--dark-shadow);
+    }
+
+    body.dark .card:hover{
+      box-shadow:0 22px 46px rgba(0,0,0,.42);
+      border-color:#334155;
     }
 
     .card::before{
       content:"";
       position:absolute;
-      inset:0;
-      background:radial-gradient(circle at top right, rgba(255,255,255,.18), transparent 30%), radial-gradient(circle at bottom left, rgba(255,255,255,.12), transparent 34%);
-      pointer-events:none;
+      inset:auto -40px -40px auto;
+      width:140px;
+      height:140px;
+      border-radius:50%;
+      opacity:.55;
+      filter:blur(2px);
     }
 
-    .card > *{position:relative; z-index:1;}
+    .c1{background:linear-gradient(180deg,var(--surface),var(--card-1));}
+    .c1::before{background:#d7b981;}
+    .c2{background:linear-gradient(180deg,var(--surface),var(--card-2));}
+    .c2::before{background:#a79cf3;}
+    .c3{background:linear-gradient(180deg,var(--surface),var(--card-3));}
+    .c3::before{background:#84c5ee;}
+    .c4{background:linear-gradient(180deg,var(--surface),var(--card-4));}
+    .c4::before{background:#e7a6c1;}
+    .c5{background:linear-gradient(180deg,var(--surface),var(--card-5));}
+    .c5::before{background:#bec9d4;}
+    .c6{background:linear-gradient(180deg,var(--surface),var(--card-6));}
+    .c6::before{background:#c6a8ec;}
+
+    body.dark .c1, body.dark .c2, body.dark .c3, body.dark .c4, body.dark .c5, body.dark .c6{
+      background:linear-gradient(180deg,var(--dark-surface),var(--dark-surface-2));
+    }
 
     .card-top{
       display:flex;
       justify-content:space-between;
       align-items:flex-start;
       gap:12px;
+      position:relative;
+      z-index:1;
     }
 
-    .course-type{
-      font-size:.84rem;
-      font-weight:700;
+    .card-code{
+      font-size:.8rem;
+      font-weight:800;
+      letter-spacing:.08em;
       text-transform:uppercase;
-      letter-spacing:.04em;
-      opacity:.95;
+      color:var(--muted);
     }
 
-    .menu-dot{
-      width:34px;
-      height:34px;
-      border-radius:12px;
-      background:rgba(255,255,255,.18);
+    body.dark .card-code{color:var(--dark-muted)}
+
+    .icon{
+      width:42px;
+      height:42px;
+      border-radius:14px;
       display:grid;
       place-items:center;
-      font-size:1.1rem;
+      font-size:1.05rem;
       font-weight:900;
+      background:rgba(255,255,255,.55);
+      backdrop-filter:blur(6px);
     }
 
+    body.dark .icon{background:rgba(255,255,255,.08)}
+
     .card h2{
-      margin:18px 0 10px;
-      font-size:2rem;
-      line-height:1.05;
+      margin:22px 0 10px;
+      font-size:1.85rem;
+      line-height:1.04;
+      letter-spacing:-.03em;
+      position:relative;
+      z-index:1;
     }
 
     .card p{
       margin:0;
-      font-weight:700;
-      opacity:.95;
-    }
-
-    .card small{
-      display:block;
-      margin-top:12px;
-      opacity:.92;
-      font-size:.95rem;
-      line-height:1.5;
-    }
-
-    .filename{
-      margin-top:14px;
-      display:inline-block;
-      background:rgba(255,255,255,.18);
-      padding:8px 12px;
-      border-radius:12px;
-      font-size:.92rem;
-      font-weight:700;
-    }
-
-    .amber{background:linear-gradient(135deg,#8b5e1a,#b38728)}
-    .indigo{background:linear-gradient(135deg,#2e2a84,#4b43c5)}
-    .cyan{background:linear-gradient(135deg,#0b4d78,#0d74b2)}
-    .rose{background:linear-gradient(135deg,#84204d,#b13d70)}
-    .slate{background:linear-gradient(135deg,#4b5563,#7b8794)}
-    .purple{background:linear-gradient(135deg,#6a2eb8,#8a4be0)}
-
-    .footer{
-      margin-top:26px;
-      text-align:center;
       color:var(--muted);
-      font-size:.95rem;
+      font-size:.98rem;
+      position:relative;
+      z-index:1;
+      max-width:90%;
     }
 
-    @media (max-width: 980px){
+    body.dark .card p{color:var(--dark-muted)}
+
+    .card-bottom{
+      margin-top:18px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      position:relative;
+      z-index:1;
+    }
+
+    .file{
+      font-size:.9rem;
+      font-weight:700;
+      color:var(--muted);
+    }
+
+    body.dark .file{color:var(--dark-muted)}
+
+    .enter{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 14px;
+      border-radius:14px;
+      background:rgba(255,255,255,.65);
+      font-weight:800;
+      color:#0f172a;
+    }
+
+    body.dark .enter{
+      background:rgba(255,255,255,.08);
+      color:var(--dark-text);
+    }
+
+    @media (max-width:980px){
       .grid{grid-template-columns:repeat(2,minmax(0,1fr));}
     }
 
-    @media (max-width: 640px){
-      .container{width:min(100% - 20px, 1200px);}
-      .grid{grid-template-columns:1fr;}
-      .hero,.card{padding:18px;}
-      .card h2{font-size:1.65rem;}
+    @media (max-width:640px){
+      .container{width:min(100% - 20px, 1180px)}
+      .grid{grid-template-columns:1fr}
+      .topbar{align-items:stretch}
+      .actions{width:100%}
+      .search{min-width:unset; flex:1}
+      .card h2{font-size:1.55rem}
+      .card p{max-width:100%}
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <section class="hero">
-      <h1>Índice principal de cursos teóricos</h1>
-      <p>
-        Esta página funciona como entrada principal a tus cursos. Se han ignorado los laboratorios que tienen números en la imagen,
-        y solo se muestran los cursos teóricos. Cada tarjeta te lleva a una página interna distinta, donde luego puedes meter temas,
-        resúmenes, prácticas, tareas, PDFs, enlaces y subpáginas por unidad.
-      </p>
-      <div class="tags">
-        <span class="tag">Cursos teóricos</span>
-        <span class="tag">Páginas internas</span>
-        <span class="tag">Base para tu índice</span>
-        <span class="tag">Diseño claro</span>
+    <header class="topbar">
+      <div class="brand">
+        <h1>Cursos</h1>
+        <p>Ingeniería Electrónica</p>
       </div>
-    </section>
 
-    <div class="topbar">
-      <div class="searchbox">
-        <input type="text" id="searchInput" placeholder="Buscar curso..." oninput="filterCourses()">
+      <div class="actions">
+        <label class="search">
+          <input type="text" id="searchInput" placeholder="Buscar curso" oninput="filterCourses()">
+        </label>
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">Modo oscuro</button>
       </div>
-      <div class="info">Archivos vinculados: ContAva, EI, PDS, PE, SDT y SPDC</div>
-    </div>
+    </header>
+
+    <h2 class="section-title">Índice principal</h2>
 
     <section class="grid" id="courseGrid">
-      <a class="card amber" data-name="control avanzado ii" href="ContAva.html">
+      <a class="card c1" data-name="control avanzado ii" href="ContAva.html">
         <div class="card-top">
-          <div class="course-type">Ingeniería Electrónica</div>
-          <div class="menu-dot">≡</div>
+          <span class="card-code">ContAva</span>
+          <span class="icon">01</span>
         </div>
         <div>
-          <h2>CONTROL AVANZADO II - A</h2>
-          <p>Curso teórico</p>
-          <small>Modelado dinámico, estabilidad, controladores, respuesta temporal y análisis de sistemas.</small>
-          <span class="filename">ContAva.html</span>
+          <h2>Control Avanzado II</h2>
+          <p>Modelado, estabilidad, controladores y análisis de sistemas dinámicos.</p>
+        </div>
+        <div class="card-bottom">
+          <span class="file">ContAva.html</span>
+          <span class="enter">Entrar →</span>
         </div>
       </a>
 
-      <a class="card indigo" data-name="electrónica industrial" href="EI.html">
+      <a class="card c2" data-name="electrónica industrial" href="EI.html">
         <div class="card-top">
-          <div class="course-type">Ingeniería Electrónica</div>
-          <div class="menu-dot">≡</div>
+          <span class="card-code">EI</span>
+          <span class="icon">02</span>
         </div>
         <div>
-          <h2>ELECTRÓNICA INDUSTRIAL - A</h2>
-          <p>Curso teórico</p>
-          <small>Dispositivos de potencia, rectificadores, convertidores, inversores y aplicaciones industriales.</small>
-          <span class="filename">EI.html</span>
+          <h2>Electrónica Industrial</h2>
+          <p>Dispositivos de potencia, convertidores, rectificadores e inversores.</p>
+        </div>
+        <div class="card-bottom">
+          <span class="file">EI.html</span>
+          <span class="enter">Entrar →</span>
         </div>
       </a>
 
-      <a class="card cyan" data-name="procesamiento digital de señales" href="PDS.html">
+      <a class="card c3" data-name="procesamiento digital de señales" href="PDS.html">
         <div class="card-top">
-          <div class="course-type">Ingeniería Electrónica</div>
-          <div class="menu-dot">≡</div>
+          <span class="card-code">PDS</span>
+          <span class="icon">03</span>
         </div>
         <div>
-          <h2>PROCESAMIENTO DIGITAL DE SEÑALES - A</h2>
-          <p>Curso teórico</p>
-          <small>Muestreo, cuantización, transformadas, convolución, análisis espectral y filtros digitales.</small>
-          <span class="filename">PDS.html</span>
+          <h2>Procesamiento Digital de Señales</h2>
+          <p>Muestreo, transformadas, convolución, análisis espectral y filtros.</p>
+        </div>
+        <div class="card-bottom">
+          <span class="file">PDS.html</span>
+          <span class="enter">Entrar →</span>
         </div>
       </a>
 
-      <a class="card rose" data-name="proyecto electrónico i" href="PE.html">
+      <a class="card c4" data-name="proyecto electrónico i" href="PE.html">
         <div class="card-top">
-          <div class="course-type">Ingeniería Electrónica</div>
-          <div class="menu-dot">≡</div>
+          <span class="card-code">PE</span>
+          <span class="icon">04</span>
         </div>
         <div>
-          <h2>PROYECTO ELECTRÓNICO I - A</h2>
-          <p>Curso teórico</p>
-          <small>Planeamiento, formulación del problema, objetivos, metodología, cronograma y documentación técnica.</small>
-          <span class="filename">PE.html</span>
+          <h2>Proyecto Electrónico I</h2>
+          <p>Formulación, planificación, documentación y desarrollo de proyectos.</p>
+        </div>
+        <div class="card-bottom">
+          <span class="file">PE.html</span>
+          <span class="enter">Entrar →</span>
         </div>
       </a>
 
-      <a class="card slate" data-name="sistemas de telefonía" href="SDT.html">
+      <a class="card c5" data-name="sistemas de telefonía" href="SDT.html">
         <div class="card-top">
-          <div class="course-type">Ingeniería Electrónica</div>
-          <div class="menu-dot">≡</div>
+          <span class="card-code">SDT</span>
+          <span class="icon">05</span>
         </div>
         <div>
-          <h2>SISTEMAS DE TELEFONÍA - A</h2>
-          <p>Curso teórico</p>
-          <small>Redes de abonado, conmutación, transmisión, telefonía fija, telefonía digital e interconexión.</small>
-          <span class="filename">SDT.html</span>
+          <h2>Sistemas de Telefonía</h2>
+          <p>Redes de abonado, conmutación, transmisión e interconexión telefónica.</p>
+        </div>
+        <div class="card-bottom">
+          <span class="file">SDT.html</span>
+          <span class="enter">Entrar →</span>
         </div>
       </a>
 
-      <a class="card purple" data-name="sistemas programables de control" href="SPDC.html">
+      <a class="card c6" data-name="sistemas programables de control" href="SPDC.html">
         <div class="card-top">
-          <div class="course-type">Ingeniería Electrónica</div>
-          <div class="menu-dot">≡</div>
+          <span class="card-code">SPDC</span>
+          <span class="icon">06</span>
         </div>
         <div>
-          <h2>SISTEMAS PROGRAMABLES DE CONTROL (E) - A</h2>
-          <p>Curso teórico</p>
-          <small>PLC, lógica ladder, automatización, sensores, actuadores e integración de sistemas de control.</small>
-          <span class="filename">SPDC.html</span>
+          <h2>Sistemas Programables de Control</h2>
+          <p>PLC, automatización, lógica ladder, sensores y actuadores.</p>
+        </div>
+        <div class="card-bottom">
+          <span class="file">SPDC.html</span>
+          <span class="enter">Entrar →</span>
         </div>
       </a>
     </section>
-
-    <p class="footer">Base lista para que luego llenemos cada curso con sus páginas internas y temas.</p>
   </div>
 
   <script>
     function filterCourses(){
       const value = document.getElementById('searchInput').value.toLowerCase().trim();
       const cards = document.querySelectorAll('.card');
-
       cards.forEach(card => {
-        const name = card.dataset.name.toLowerCase();
-        const text = card.textContent.toLowerCase();
-        const visible = name.includes(value) || text.includes(value);
-        card.style.display = visible ? 'flex' : 'none';
+        const text = card.dataset.name + ' ' + card.textContent.toLowerCase();
+        card.style.display = text.includes(value) ? 'flex' : 'none';
       });
     }
+
+    function toggleTheme(){
+      document.body.classList.toggle('dark');
+      const btn = document.getElementById('themeToggle');
+      btn.textContent = document.body.classList.contains('dark') ? 'Modo claro' : 'Modo oscuro';
+      localStorage.setItem('themeCursosElectronica', document.body.classList.contains('dark') ? 'dark' : 'light');
+    }
+
+    (function initTheme(){
+      const saved = localStorage.getItem('themeCursosElectronica');
+      if(saved === 'dark'){
+        document.body.classList.add('dark');
+        document.getElementById('themeToggle').textContent = 'Modo claro';
+      }
+    })();
   </script>
 </body>
 </html>
