@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unidad 1 - Control Difuso | Control Avanzado II</title>
+  <style>
+    :root{
+      --bg:#f5f7fb;
+      --panel:#ffffff;
+      --panel-2:#eef3ff;
+      --text:#172033;
+      --muted:#56627a;
+      --line:#d8e0f0;
+      --primary:#2952cc;
+      --primary-2:#4f7cff;
+      --accent:#7b2cbf;
+      --ok:#1f9d68;
+      --warn:#c98b00;
+      --bad:#cc3344;
+      --shadow:0 18px 40px rgba(24, 42, 88, 0.10);
+      --grad:linear-gradient(135deg,#2952cc 0%,#4f7cff 55%,#7b2cbf 100%);
+    }
+
+    body.dark{
+      --bg:#0b1220;
+      --panel:#121a2b;
+      --panel-2:#18233b;
+      --text:#eef4ff;
+      --muted:#b8c3d9;
+      --line:#24324d;
+      --primary:#7ea3ff;
+      --primary-2:#9eb8ff;
+      --accent:#c38bff;
+      --ok:#39c98c;
+      --warn:#ffc95c;
+      --bad:#ff6b7c;
+      --shadow:0 18px 40px rgba(0,0,0,.35);
+      --grad:linear-gradient(135deg,#2847a6 0%,#4c6fff 55%,#7b2cbf 100%);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(79,124,255,.12), transparent 26%),
+        radial-gradient(circle at top left, rgba(123,44,191,.10), transparent 24%),
+        var(--bg);
+      color:var(--text);
+      line-height:1.6;
+    }
+
+    .container{
+      width:min(1200px, 92%);
+      margin:0 auto;
+    }
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter: blur(12px);
+      background:color-mix(in srgb, var(--bg) 84%, transparent);
+      border-bottom:1px solid var(--line);
+    }
+
+    .topbar-inner{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+      padding:14px 0;
+      flex-wrap:wrap;
+    }
+
+    .left-actions,.right-actions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      border:none;
+      cursor:pointer;
+      text-decoration:none;
+      color:white;
+      background:var(--grad);
+      padding:11px 16px;
+      border-radius:14px;
+      font-weight:700;
+      box-shadow:var(--shadow);
+      transition:.25s ease;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .btn:hover{transform:translateY(-2px)}
+    .btn.secondary{
+      background:var(--panel);
+      color:var(--text);
+      border:1px solid var(--line);
+      box-shadow:none;
+    }
+
+    .hero{
+      padding:34px 0 24px;
+    }
+
+    .hero-card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .hero-top{
+      background:var(--grad);
+      color:white;
+      padding:28px;
+    }
+
+    .eyebrow{
+      opacity:.88;
+      letter-spacing:.12em;
+      font-size:.82rem;
+      text-transform:uppercase;
+      font-weight:700;
+    }
+
+    h1,h2,h3,h4{
+      margin:0 0 12px;
+      line-height:1.2;
+    }
+
+    h1{font-size:clamp(2rem, 4vw, 3rem)}
+    h2{font-size:clamp(1.4rem, 2.4vw, 2rem)}
+    h3{font-size:1.15rem}
+    p{margin:0 0 14px}
+    .hero-body{
+      display:grid;
+      grid-template-columns:1.4fr .9fr;
+      gap:22px;
+      padding:28px;
+    }
+
+    .mini-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:14px;
+    }
+
+    .mini-card{
+      background:var(--panel-2);
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:16px;
+    }
+
+    .tag-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .tag{
+      background:var(--panel-2);
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:.92rem;
+      color:var(--text);
+    }
+
+    .toc{
+      margin:24px 0 8px;
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:12px;
+    }
+
+    .toc a{
+      text-decoration:none;
+      background:var(--panel);
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+      font-weight:700;
+      text-align:center;
+      transition:.25s ease;
+    }
+
+    .toc a:hover{
+      transform:translateY(-2px);
+      border-color:var(--primary);
+    }
+
+    .section{
+      margin:24px 0;
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .section-head{
+      padding:24px 24px 8px;
+    }
+
+    .section-body{
+      padding:0 24px 24px;
+    }
+
+    .accent-line{
+      width:88px;
+      height:6px;
+      border-radius:999px;
+      background:var(--grad);
+      margin:10px 0 16px;
+    }
+
+    .two-col{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:20px;
+      align-items:start;
+    }
+
+    .three-col{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:16px;
+    }
+
+    .card{
+      background:var(--panel-2);
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:18px;
+    }
+
+    .card h3,.card h4{margin-bottom:10px}
+
+    .list{
+      margin:0;
+      padding-left:18px;
+    }
+
+    .list li{margin-bottom:8px}
+
+    .formula{
+      background:color-mix(in srgb, var(--panel-2) 85%, transparent);
+      border-left:5px solid var(--primary);
+      padding:14px 16px;
+      border-radius:14px;
+      overflow:auto;
+      font-family:Consolas, monospace;
+      font-size:.95rem;
+      margin:14px 0;
+    }
+
+    .note{
+      background:rgba(255,201,92,.12);
+      border:1px solid color-mix(in srgb, var(--warn) 40%, var(--line));
+      border-radius:18px;
+      padding:14px 16px;
+    }
+
+    .diagram{
+      background:linear-gradient(180deg, color-mix(in srgb, var(--panel-2) 88%, transparent), color-mix(in srgb, var(--panel) 86%, transparent));
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:16px;
+    }
+
+    svg{
+      width:100%;
+      height:auto;
+      display:block;
+    }
+
+    .subtopic{
+      margin-top:18px;
+      padding:18px;
+      border:1px dashed var(--line);
+      border-radius:20px;
+      background:color-mix(in srgb, var(--panel-2) 70%, transparent);
+    }
+
+    .quiz{
+      margin-top:20px;
+      background:var(--panel-2);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:18px;
+    }
+
+    .quiz-title{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:14px;
+      font-weight:800;
+      color:var(--primary);
+    }
+
+    .q-item{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      margin-bottom:14px;
+    }
+
+    .q-item p{
+      margin-bottom:12px;
+      font-weight:700;
+    }
+
+    .options{
+      display:grid;
+      gap:10px;
+    }
+
+    .option{
+      border:1px solid var(--line);
+      background:transparent;
+      color:var(--text);
+      padding:12px 14px;
+      border-radius:14px;
+      cursor:pointer;
+      text-align:left;
+      font-weight:600;
+      transition:.2s;
+    }
+
+    .option:hover{
+      border-color:var(--primary);
+      transform:translateY(-1px);
+    }
+
+    .option.correct{
+      border-color:var(--ok);
+      background:rgba(57,201,140,.13);
+    }
+
+    .option.wrong{
+      border-color:var(--bad);
+      background:rgba(255,107,124,.10);
+    }
+
+    .feedback{
+      margin-top:10px;
+      font-weight:700;
+      font-size:.96rem;
+    }
+
+    .feedback.ok{color:var(--ok)}
+    .feedback.bad{color:var(--bad)}
+
+    .summary-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:16px;
+    }
+
+    .keywords{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .keyword{
+      padding:10px 14px;
+      border-radius:999px;
+      background:var(--panel-2);
+      border:1px solid var(--line);
+      font-weight:700;
+    }
+
+    .footer{
+      padding:8px 0 40px;
+      text-align:center;
+      color:var(--muted);
+    }
+
+    @media (max-width: 980px){
+      .hero-body,.two-col,.three-col,.summary-grid,.toc{
+        grid-template-columns:1fr;
+      }
+      .mini-grid{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <div class="left-actions">
+        <a href="ContAva.html" class="btn secondary">← Volver al índice</a>
+        <a href="#resumen-final" class="btn secondary">Ir al resumen final</a>
+      </div>
+      <div class="right-actions">
+        <button class="btn secondary" id="themeToggle">🌙 Modo oscuro</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-card">
+        <div class="hero-top">
+          <div class="eyebrow">Control Avanzado II</div>
+          <h1>Unidad 1 · El Control Difuso</h1>
+          <p>Una unidad diseñada para estudiar de forma guiada: teoría por bloques, gráficos embebidos, preguntas interactivas y repaso final.</p>
+        </div>
+        <div class="hero-body">
+          <div>
+            <h2>Objetivo de la unidad</h2>
+            <div class="accent-line"></div>
+            <p>Comprender los fundamentos del control difuso, las funciones de pertenencia, las variables lingüísticas, las reglas de inferencia, los modelos Mamdani y TSK, y los métodos de defuzificación para poder interpretar y construir sistemas difusos básicos.</p>
+            <div class="tag-row">
+              <span class="tag">Lógica difusa</span>
+              <span class="tag">Funciones de pertenencia</span>
+              <span class="tag">Reglas IF-THEN</span>
+              <span class="tag">Mamdani</span>
+              <span class="tag">TSK</span>
+              <span class="tag">Defuzificación</span>
+            </div>
+          </div>
+
+          <div class="mini-grid">
+            <div class="mini-card">
+              <h3>Qué vas a ver</h3>
+              <p>Fundamentos, operaciones, modificadores, funciones de membresía, inferencia difusa y taller de aplicación.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Cómo estudiar aquí</h3>
+              <p>Lee cada bloque, mira el esquema, responde las preguntas y al final repasa el resumen general.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Idea central</h3>
+              <p>La lógica difusa permite modelar razonamientos con grados de pertenencia entre 0 y 1, no solo verdadero o falso.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Aplicación</h3>
+              <p>Muy útil cuando el proceso real es impreciso, no lineal o se describe mejor con lenguaje humano.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="toc">
+        <a href="#sub1">1. Fundamentos</a>
+        <a href="#sub2">2. Pertenencia</a>
+        <a href="#sub3">3. Variables lingüísticas</a>
+        <a href="#sub4">4. Mamdani y TSK</a>
+        <a href="#sub5">5. Defuzificación y taller</a>
+      </nav>
+    </section>
+
+    <section class="section" id="sub1">
+      <div class="section-head">
+        <h2>1. Fundamentos de lógica difusa</h2>
+        <div class="accent-line"></div>
+      </div>
+      <div class="section-body">
+        <div class="two-col">
+          <div>
+            <p>La lógica difusa fue introducida por <strong>Lotfy A. Zadeh</strong> en 1965 para modelar la incertidumbre del razonamiento humano. Sus ventajas principales son la <strong>flexibilidad</strong>, la <strong>tolerancia a la imprecisión</strong>, la capacidad para modelar <strong>sistemas no lineales</strong> y el uso de expresiones cercanas al <strong>lenguaje natural</strong>.</p>
+
+            <div class="subtopic">
+              <h3>1.1 Antecedentes</h3>
+              <ul class="list">
+                <li><strong>Aristóteles</strong> aceptaba grados de veracidad y falsedad.</li>
+                <li><strong>Platón</strong> ya hablaba de grados de pertenencia.</li>
+                <li><strong>Charles Sanders Peirce</strong> acercó el concepto de vaguedad al razonamiento humano.</li>
+                <li><strong>Bertrand Russell</strong> relacionó la vaguedad con el concepto de grado.</li>
+                <li><strong>Lukasiewicz</strong> desarrolló una lógica con infinitos valores entre 0 y 1.</li>
+                <li><strong>Zadeh</strong> formalizó la lógica difusa moderna.</li>
+                <li><strong>Mamdani</strong> la aplicó al control de procesos en 1974.</li>
+                <li>En 1987 el subterráneo de <strong>Sendai, Japón</strong>, fue manejado por control difuso.</li>
+              </ul>
+            </div>
+
+            <div class="subtopic">
+              <h3>1.2 Qué es la lógica difusa</h3>
+              <p>Extiende la teoría clásica de conjuntos usando <strong>pertenencia no binaria</strong>. En vez de decir solamente “pertenece” o “no pertenece”, permite grados intermedios como 0.2, 0.65 o 0.9.</p>
+              <p>Ejemplo: la frase <em>“este hombre es muy alto”</em> no se representa con un único salto brusco, sino con un grado de pertenencia progresivo.</p>
+            </div>
+
+            <div class="subtopic">
+              <h3>1.3 Definiciones fundamentales</h3>
+              <ul class="list">
+                <li><strong>Conjunto difuso A:</strong> clase de objetos con grado de pertenencia continuo entre 0 y 1.</li>
+                <li><strong>Igualdad:</strong> dos conjuntos son iguales si sus grados de pertenencia coinciden.</li>
+                <li><strong>Complemento:</strong> A′ = 1 − μA.</li>
+                <li><strong>Inclusión:</strong> A ⊂ B si μA ≤ μB.</li>
+                <li><strong>Unión:</strong> μ(A∪B) = max(μA, μB).</li>
+                <li><strong>Intersección:</strong> μ(A∩B) = min(μA, μB).</li>
+              </ul>
+              <div class="formula">
+Complemento: μA'(x) = 1 - μA(x)
+
+Unión: μA∪B(x) = max[ μA(x), μB(x) ]
+
+Intersección: μA∩B(x) = min[ μA(x), μB(x) ]
+              </div>
+            </div>
+
+            <div class="subtopic">
+              <h3>1.4 Leyes y operaciones adicionales</h3>
+              <ul class="list">
+                <li><strong>Leyes de Morgan</strong>.</li>
+                <li><strong>Leyes distributivas</strong>.</li>
+                <li><strong>Suma algebraica</strong>: requiere que μA(x)+μB(x) ≤ 1.</li>
+                <li><strong>Diferencia absoluta</strong>.</li>
+                <li><strong>Convexidad</strong>: en control los conjuntos deben ser convexos para garantizar estabilidad y respuesta finita.</li>
+                <li><strong>Modificadores</strong>: cambian la función de pertenencia y pueden ser de concentración, dilatación o intensificación.</li>
+              </ul>
+              <div class="note">
+                <strong>Dato importante:</strong> al seleccionar conjuntos difusos para control, conviene que sean convexos.
+              </div>
+            </div>
+          </div>
+
+          <div class="diagram">
+            <h3>Comparación visual: lógica convencional vs lógica difusa</h3>
+            <svg viewBox="0 0 560 420" xmlns="http://www.w3.org/2000/svg" aria-label="Comparación entre lógica convencional y lógica difusa">
+              <defs>
+                <style>
+                  .ax{stroke:currentColor;stroke-width:2}
+                  .txt{fill:currentColor;font: 15px Segoe UI, Arial}
+                  .small{fill:currentColor;font: 13px Segoe UI, Arial}
+                  .curve1{fill:none;stroke:#4f7cff;stroke-width:4}
+                  .curve2{fill:none;stroke:#7b2cbf;stroke-width:4}
+                  .area1{fill:rgba(79,124,255,.22)}
+                  .area2{fill:rgba(123,44,191,.20)}
+                </style>
+              </defs>
+
+              <text x="40" y="28" class="txt">a) Convencional</text>
+              <line x1="40" y1="170" x2="240" y2="170" class="ax"/>
+              <line x1="40" y1="170" x2="40" y2="55" class="ax"/>
+              <polyline points="70,170 140,170 140,70 220,70" class="curve1"/>
+              <text x="155" y="195" class="small">altura</text>
+              <text x="12" y="78" class="small">μ</text>
+
+              <text x="300" y="28" class="txt">b) Difusa</text>
+              <line x1="300" y1="170" x2="520" y2="170" class="ax"/>
+              <line x1="300" y1="170" x2="300" y2="55" class="ax"/>
+              <path d="M320 170 C350 170, 365 160, 385 130 C400 108, 415 70, 470 70" class="curve2"/>
+              <text x="410" y="195" class="small">altura</text>
+              <text x="272" y="78" class="small">μ</text>
+
+              <text x="35" y="245" class="txt">Ejemplo lingüístico: bajo, medio, alto</text>
+
+              <line x1="40" y1="375" x2="520" y2="375" class="ax"/>
+              <line x1="40" y1="375" x2="40" y2="250" class="ax"/>
+
+              <polygon points="70,375 70,290 170,290 170,375" class="area1"/>
+              <polygon points="130,375 230,270 320,375" class="area2"/>
+              <polygon points="280,375 380,275 500,275 500,375" class="area1"/>
+
+              <text x="95" y="285" class="small">Bajo</text>
+              <text x="205" y="262" class="small">Medio</text>
+              <text x="415" y="268" class="small">Alto</text>
+            </svg>
+          </div>
+        </div>
+
+        <div class="quiz" data-quiz>
+          <div class="quiz-title">🧠 Preguntas de repaso del subtema 1</div>
+
+          <div class="q-item" data-answer="b">
+            <p>1. ¿Qué característica diferencia más claramente a la lógica difusa de la lógica binaria?</p>
+            <div class="options">
+              <button class="option" data-option="a">Solo trabaja con circuitos digitales.</button>
+              <button class="option" data-option="b">Permite grados de pertenencia entre 0 y 1.</button>
+              <button class="option" data-option="c">Elimina completamente la incertidumbre.</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="q-item" data-answer="c">
+            <p>2. En conjuntos difusos, la unión A∪B se calcula normalmente con:</p>
+            <div class="options">
+              <button class="option" data-option="a">La suma algebraica directa.</button>
+              <button class="option" data-option="b">El promedio de μA y μB.</button>
+              <button class="option" data-option="c">El operador máximo.</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="q-item" data-answer="a">
+            <p>3. ¿Por qué se recomienda que los conjuntos usados en control sean convexos?</p>
+            <div class="options">
+              <button class="option" data-option="a">Para favorecer estabilidad y respuesta finita.</button>
+              <button class="option" data-option="b">Para que la salida siempre sea cero.</button>
+              <button class="option" data-option="c">Para evitar usar reglas difusas.</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="sub2">
+      <div class="section-head">
+        <h2>2. Función de pertenencia y clases de membresía</h2>
+        <div class="accent-line"></div>
+      </div>
+      <div class="section-body">
+        <div class="two-col">
+          <div>
+            <p>La <strong>función de pertenencia</strong> es la curva que indica el grado con el que cada elemento de entrada pertenece a un conjunto difuso. Sus valores van de <strong>0</strong> a <strong>1</strong>.</p>
+
+            <div class="card">
+              <h3>Parámetros principales</h3>
+              <ul class="list">
+                <li><strong>Soporte:</strong> intervalo del dominio donde μA(x) &gt; 0.</li>
+                <li><strong>Altura:</strong> valor máximo que alcanza la función de pertenencia.</li>
+                <li><strong>Universo del discurso:</strong> unión de los soportes de las funciones de pertenencia.</li>
+              </ul>
+            </div>
+
+            <div class="subtopic">
+              <h3>2.1 Modificadores de conjuntos difusos</h3>
+              <p>Los modificadores cambian la forma de la función de pertenencia. Sirven para representar expresiones como <em>ligeramente</em>, <em>bastante</em>, <em>muy</em>, <em>extremadamente</em>, <em>muchísimo</em>, <em>más o menos</em> o procesos de intensificación.</p>
+            </div>
+
+            <div class="subtopic">
+              <h3>2.2 Clases más usadas de funciones de pertenencia</h3>
+              <div class="three-col">
+                <div class="card">
+                  <h4>Triangular</h4>
+                  <p>Usa parámetros <strong>a</strong>, <strong>m</strong> y <strong>b</strong>. Muy usada por su simplicidad.</p>
+                </div>
+                <div class="card">
+                  <h4>Gamma</h4>
+                  <p>Usa un límite inferior <strong>a</strong> y un parámetro positivo <strong>k</strong>.</p>
+                </div>
+                <div class="card">
+                  <h4>Función S</h4>
+                  <p>Tiene forma suave creciente con <strong>a</strong>, <strong>b</strong> y punto de inflexión <strong>m</strong>.</p>
+                </div>
+                <div class="card">
+                  <h4>Gaussiana</h4>
+                  <p>Usa valor medio <strong>m</strong> y parámetro <strong>k</strong>. Muy suave.</p>
+                </div>
+                <div class="card">
+                  <h4>Trapezoidal</h4>
+                  <p>Usa <strong>a</strong>, <strong>b</strong>, <strong>c</strong>, <strong>d</strong>. Muy útil cuando se desea una zona plenamente activada.</p>
+                </div>
+                <div class="card">
+                  <h4>Seudo-exponencial</h4>
+                  <p>Usa <strong>m</strong> y <strong>k &gt; 1</strong>. Da una respuesta progresiva diferente a la gaussiana.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="formula">
+Triangular:
+μA(x)=0 si x≤a
+μA(x)=(x-a)/(m-a) si a&lt;x≤m
+μA(x)=(b-x)/(b-m) si m&lt;x&lt;b
+μA(x)=0 si x≥b
+            </div>
+
+            <div class="formula">
+Gaussiana:
+μA(x)=e^(-k(x-m)^2)
+            </div>
+
+            <div class="formula">
+Seudo-exponencial:
+μA(x)=1 / (1 + (k(x-m))^2)
+            </div>
+          </div>
+
+          <div class="diagram">
+            <h3>Gráficas didácticas de membresía</h3>
+            <svg viewBox="0 0 560 620" xmlns="http://www.w3.org/2000/svg" aria-label="Funciones de pertenencia">
+              <defs>
+                <style>
+                  .axis{stroke:currentColor;stroke-width:2}
+                  .label{fill:currentColor;font: 13px Segoe UI, Arial}
+                  .title{fill:currentColor;font: 16px Segoe UI, Arial;font-weight:700}
+                  .f1{fill:none;stroke:#4f7cff;stroke-width:4}
+                  .f2{fill:none;stroke:#7b2cbf;stroke-width:4}
+                  .f3{fill:none;stroke:#14a06f;stroke-width:4}
+                  .f4{fill:none;stroke:#cc7a00;stroke-width:4}
+                </style>
+              </defs>
+
+              <text x="25" y="28" class="title">Triangular</text>
+              <line x1="30" y1="150" x2="250" y2="150" class="axis"/>
+              <line x1="30" y1="150" x2="30" y2="50" class="axis"/>
+              <polyline points="55,150 145,65 225,150" class="f1"/>
+
+              <text x="300" y="28" class="title">Trapezoidal</text>
+              <line x1="300" y1="150" x2="530" y2="150" class="axis"/>
+              <line x1="300" y1="150" x2="300" y2="50" class="axis"/>
+              <polyline points="325,150 385,70 455,70 515,150" class="f2"/>
+
+              <text x="25" y="228" class="title">Gaussiana</text>
+              <line x1="30" y1="350" x2="250" y2="350" class="axis"/>
+              <line x1="30" y1="350" x2="30" y2="250" class="axis"/>
+              <path d="M45 350 C95 350, 105 275, 145 265 C185 275, 195 350, 240 350" class="f3"/>
+
+              <text x="300" y="228" class="title">Función S</text>
+              <line x1="300" y1="350" x2="530" y2="350" class="axis"/>
+              <line x1="300" y1="350" x2="300" y2="250" class="axis"/>
+              <path d="M325 350 C350 350, 365 350, 390 320 C420 285, 430 270, 515 265" class="f4"/>
+
+              <text x="25" y="428" class="title">Gamma</text>
+              <line x1="30" y1="550" x2="250" y2="550" class="axis"/>
+              <line x1="30" y1="550" x2="30" y2="450" class="axis"/>
+              <path d="M65 550 C110 550, 120 495, 160 470 C195 455, 215 452, 240 450" class="f1"/>
+
+              <text x="300" y="428" class="title">Seudo-exponencial</text>
+              <line x1="300" y1="550" x2="530" y2="550" class="axis"/>
+              <line x1="300" y1="550" x2="300" y2="450" class="axis"/>
+              <path d="M325 545 C380 520, 405 455, 420 455 C435 455, 460 520, 515 545" class="f2"/>
+
+              <text x="14" y="63" class="label">μ</text>
+              <text x="284" y="63" class="label">μ</text>
+              <text x="14" y="263" class="label">μ</text>
+              <text x="284" y="263" class="label">μ</text>
+              <text x="14" y="463" class="label">μ</text>
+              <text x="284" y="463" class="label">μ</text>
+            </svg>
+          </div>
+        </div>
+
+        <div class="quiz" data-quiz>
+          <div class="quiz-title">🧠 Preguntas de repaso del subtema 2</div>
+
+          <div class="q-item" data-answer="a">
+            <p>1. ¿Qué describe el soporte de una función de pertenencia?</p>
+            <div class="options">
+              <button class="option" data-option="a">El intervalo donde μA(x) es mayor que cero.</button>
+              <button class="option" data-option="b">El valor promedio del conjunto.</button>
+              <button class="option" data-option="c">La suma de todas las reglas activas.</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="q-item" data-answer="c">
+            <p>2. ¿Qué función de pertenencia es muy útil cuando se desea una meseta o zona totalmente activada?</p>
+            <div class="options">
+              <button class="option" data-option="a">Gaussiana</button>
+              <button class="option" data-option="b">Gamma</button>
+              <button class="option" data-option="c">Trapezoidal</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="q-item" data-answer="b">
+            <p>3. En una función triangular, el parámetro m representa:</p>
+            <div class="options">
+              <button class="option" data-option="a">El límite inferior absoluto.</button>
+              <button class="option" data-option="b">El valor modal o punto máximo.</button>
+              <button class="option" data-option="c">La salida defuzificada.</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="sub3">
+      <div class="section-head">
+        <h2>3. Variables lingüísticas y reglas difusas</h2>
+        <div class="accent-line"></div>
+      </div>
+      <div class="section-body">
+        <div class="two-col">
+          <div>
+            <p>Una <strong>regla difusa</strong> es una expresión lingüística que busca emular el razonamiento humano al tomar decisiones.</p>
+
+            <div class="formula">
+IF &lt;proposición difusa A&gt; THEN &lt;proposición difusa B&gt;
+            </div>
+
+            <div class="subtopic">
+              <h3>3.1 Estructura de una regla</h3>
+              <ul class="list">
+                <li><strong>Antecedente:</strong> primera parte de la regla.</li>
+                <li><strong>Consecuente:</strong> segunda parte de la regla.</li>
+                <li>La proposición puede ser <strong>atómica</strong> o <strong>compuesta</strong>.</li>
+                <li>La forma gramatical es: <em>nombre de la variable es valor lingüístico</em>.</li>
+              </ul>
+            </div>
+
+            <div class="subtopic">
+              <h3>3.2 Valor cuantificable de una proposición</h3>
+              <p>Cada proposición difusa toma un valor numérico al evaluar la función de pertenencia correspondiente en el dominio de su variable.</p>
+            </div>
+
+            <div class="subtopic">
+              <h3>3.3 Componentes de un sistema de inferencia difusa</h3>
+              <ul class="list">
+                <li><strong>Fusificador:</strong> convierte entradas numéricas reales en grados de pertenencia.</li>
+                <li><strong>Base de conocimiento o reglas difusas:</strong> reúne todas las reglas IF-THEN construidas con conocimiento experto.</li>
+                <li><strong>Motor de inferencia difusa:</strong> procesa las entradas usando las reglas.</li>
+                <li><strong>Defusificador:</strong> transforma la salida difusa final en un valor numérico útil en el mundo real.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="diagram">
+            <h3>Esquema básico de inferencia difusa</h3>
+            <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" aria-label="Sistema de inferencia difusa">
+              <defs>
+                <style>
+                  .bx{fill:rgba(79,124,255,.12);stroke:#4f7cff;stroke-width:2.5}
+                  .bx2{fill:rgba(123,44,191,.12);stroke:#7b2cbf;stroke-width:2.5}
+                  .txt{fill:currentColor;font: 15px Segoe UI, Arial}
+                  .ttl{fill:currentColor;font: 16px Segoe UI, Arial;font-weight:700}
+                  .arr{stroke:currentColor;stroke-width:2.6;marker-end:url(#arrow)}
+                </style>
+                <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                  <polygon points="0,0 8,4 0,8" fill="currentColor"/>
+                </marker>
+              </defs>
+
+              <rect x="24" y="115" width="110" height="60" rx="16" class="bx"/>
+              <text x="55" y="152" class="ttl">Entrada</text>
+
+              <rect x="170" y="90" width="120" height="110" rx="18" class="bx"/>
+              <text x="198" y="120" class="ttl">Fusificador</text>
+              <text x="183" y="145" class="txt">Evalúa grados</text>
+              <text x="190" y="165" class="txt">de pertenencia</text>
+
+              <rect x="330" y="55" width="145" height="70" rx="18" class="bx2"/>
+              <text x="355" y="83" class="ttl">Base de reglas</text>
+              <text x="360" y="104" class="txt">IF-THEN</text>
+
+              <rect x="330" y="145" width="145" height="70" rx="18" class="bx2"/>
+              <text x="346" y="173" class="ttl">Motor de inferencia</text>
+              <text x="365" y="195" class="txt">Razonamiento</text>
+
+              <rect x="515" y="90" width="110" height="110" rx="18" class="bx"/>
+              <text x="533" y="120" class="ttl">Defusificador</text>
+              <text x="542" y="145" class="txt">Entrega</text>
+              <text x="527" y="165" class="txt">valor real</text>
+
+              <line x1="134" y1="145" x2="170" y2="145" class="arr"/>
+              <line x1="290" y1="145" x2="330" y2="145" class="arr"/>
+              <line x1="402" y1="125" x2="402" y2="145" class="arr"/>
+              <line x1="475" y1="145" x2="515" y2="145" class="arr"/>
+            </svg>
+
+            <div class="card" style="margin-top:14px">
+              <h4>Ejemplo de regla</h4>
+              <p><strong>IF</strong> temperatura es alta <strong>THEN</strong> velocidad del ventilador es grande.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="quiz" data-quiz>
+          <div class="quiz-title">🧠 Preguntas de repaso del subtema 3</div>
+
+          <div class="q-item" data-answer="b">
+            <p>1. En una regla difusa, la parte “IF” corresponde al:</p>
+            <div class="options">
+              <button class="option" data-option="a">Defusificador</button>
+              <button class="option" data-option="b">Antecedente</button>
+              <button class="option" data-option="c">Universo del discurso</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="q-item" data-answer="a">
+            <p>2. ¿Qué bloque convierte datos reales en grados de pertenencia?</p>
+            <div class="options">
+              <button class="option" data-option="a">Fusificador</button>
+              <button class="option" data-option="b">Consecuente</button>
+              <button class="option" data-option="c">Bisector</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="q-item" data-answer="c">
+            <p>3. ¿Cuál es la función principal del motor de inferencia?</p>
+            <div class="options">
+              <button class="option" data-option="a">Dibujar funciones trapezoidales.</button>
+              <button class="option" data-option="b">Cambiar el soporte del conjunto.</button>
+              <button class="option" data-option="c">Aplicar las reglas y modelar el razonamiento.</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="sub4">
+      <div class="section-head">
+        <h2>4. Modelado a partir de reglas de inferencia: Mamdani y TSK</h2>
+        <div class="accent-line"></div>
+      </div>
+      <div class="section-body">
+        <div class="three-col">
+          <div class="card">
+            <h3>4.1 Inferencia tipo Mamdani</h3>
+            <p>Sus reglas son del tipo:</p>
+            <div class="formula">
+Ri: IF x es A OR y es B THEN z es C
+            </div>
+            <p>La salida del consecuente sigue siendo un <strong>conjunto difuso</strong>, por eso luego se necesita <strong>defuzificación</strong>.</p>
+          </div>
+
+          <div class="card">
+            <h3>4.2 Etapas de Mamdani</h3>
+            <ul class="list">
+              <li><strong>Fusificación:</strong> transforma entradas numéricas en valores lingüísticos.</li>
+              <li><strong>Evaluación de reglas:</strong> calcula el valor de verdad usando AND u OR.</li>
+              <li><strong>Agregación:</strong> unifica las salidas difusas de todas las reglas con MAX.</li>
+              <li><strong>Defuzificación:</strong> convierte el conjunto resultante en un valor numérico.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>4.3 Inferencia tipo TSK</h3>
+            <p>Sus reglas son del tipo:</p>
+            <div class="formula">
+Ri: IF x es A OR y es B THEN z = f(x,y) = k
+            </div>
+            <p>Es más eficiente computacionalmente. Aquí el consecuente ya es numérico, por lo que la defuzificación clásica está ausente.</p>
+          </div>
+        </div>
+
+        <div class="two-col" style="margin-top:18px">
+          <div class="diagram">
+            <h3>Flujo de Mamdani</h3>
+            <svg viewBox="0 0 640 210" xmlns="http://www.w3.org/2000/svg" aria-label="Flujo Mamdani">
+              <defs>
+                <style>
+                  .box{fill:rgba(79,124,255,.12);stroke:#4f7cff;stroke-width:2.4}
+                  .tx{fill:currentColor;font: 15px Segoe UI, Arial}
+                  .tt{fill:currentColor;font: 16px Segoe UI, Arial;font-weight:700}
+                  .ar{stroke:currentColor;stroke-width:2.6;marker-end:url(#ar1)}
+                </style>
+                <marker id="ar1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                  <polygon points="0,0 8,4 0,8" fill="currentColor"/>
+                </marker>
+              </defs>
+              <rect x="20" y="70" width="120" height="70" rx="16" class="box"/>
+              <rect x="180" y="70" width="120" height="70" rx="16" class="box"/>
+              <rect x="340" y="70" width="120" height="70" rx="16" class="box"/>
+              <rect x="500" y="70" width="120" height="70" rx="16" class="box"/>
+              <text x="42" y="100" class="tt">Fusificación</text>
+              <text x="188" y="100" class="tt">Evaluación</text>
+              <text x="362" y="100" class="tt">Agregación</text>
+              <text x="512" y="100" class="tt">Defuzificación</text>
+
+              <text x="43" y="123" class="tx">μ de entrada</text>
+              <text x="216" y="123" class="tx">AND / OR</text>
+              <text x="367" y="123" class="tx">MAX</text>
+              <text x="544" y="123" class="tx">valor real</text>
+
+              <line x1="140" y1="105" x2="180" y2="105" class="ar"/>
+              <line x1="300" y1="105" x2="340" y2="105" class="ar"/>
+              <line x1="460" y1="105" x2="500" y2="105" class="ar"/>
+            </svg>
+          </div>
+
+          <div class="diagram">
+            <h3>Flujo de TSK</h3>
+            <svg viewBox="0 0 640 230" xmlns="http://www.w3.org/2000/svg" aria-label="Flujo TSK">
+              <defs>
+                <style>
+                  .box{fill:rgba(123,44,191,.12);stroke:#7b2cbf;stroke-width:2.4}
+                  .tx{fill:currentColor;font: 15px Segoe UI, Arial}
+                  .tt{fill:currentColor;font: 16px Segoe UI, Arial;font-weight:700}
+                  .ar{stroke:currentColor;stroke-width:2.6;marker-end:url(#ar2)}
+                </style>
+                <marker id="ar2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                  <polygon points="0,0 8,4 0,8" fill="currentColor"/>
+                </marker>
+              </defs>
+              <rect x="20" y="80" width="120" height="70" rx="16" class="box"/>
+              <rect x="180" y="80" width="120" height="70" rx="16" class="box"/>
+              <rect x="340" y="80" width="120" height="70" rx="16" class="box"/>
+              <rect x="500" y="80" width="120" height="70" rx="16" class="box"/>
+
+              <text x="45" y="110" class="tt">Fusificación</text>
+              <text x="185" y="110" class="tt">Reglas</text>
+              <text x="352" y="110" class="tt">Consecuentes</text>
+              <text x="520" y="110" class="tt">Ponderación</text>
+
+              <text x="47" y="133" class="tx">μ de entrada</text>
+              <text x="196" y="133" class="tx">IF-THEN</text>
+              <text x="350" y="133" class="tx">z1, z2, ...</text>
+              <text x="530" y="133" class="tx">salida final</text>
+
+              <line x1="140" y1="115" x2="180" y2="115" class="ar"/>
+              <line x1="300" y1="115" x2="340" y2="115" class="ar"/>
+              <line x1="460" y1="115" x2="500" y2="115" class="ar"/>
+
+              <text x="180" y="198" class="tx">No hay defuzificación clásica: se reemplaza por funciones matemáticas.</text>
+            </svg>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:18px">
+          <h3>Diferencia clave entre Mamdani y TSK</h3>
+          <ul class="list">
+            <li><strong>Mamdani:</strong> el consecuente es difuso, por eso hay que defuzificar.</li>
+            <li><strong>TSK:</strong> el consecuente es una función o valor numérico; la salida final se obtiene ponderando resultados.</li>
+          </ul>
+          <div class="formula">
+k = (w1·z1 + w2·z2) / (w1 + w2)
+
+donde:
+z1 = f1(x,y)
+z2 = f2(x,y)
+w1 y w2 son los valores de activación de los antecedentes
+          </div>
+        </div>
+
+        <div class="quiz" data-quiz>
+          <div class="quiz-title">🧠 Preguntas de repaso del subtema 4</div>
+
+          <div class="q-item" data-answer="a">
+            <p>1. En Mamdani, después de evaluar las reglas se realiza una etapa de:</p>
+            <div class="options">
+              <button class="option" data-option="a">Agregación</button>
+              <button class="option" data-option="b">Dilatación</button>
+              <button class="option" data-option="c">Compensación térmica</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="q-item" data-answer="c">
+            <p>2. ¿Qué afirmación es correcta sobre TSK?</p>
+            <div class="options">
+              <button class="option" data-option="a">Siempre usa solo funciones triangulares.</button>
+              <button class="option" data-option="b">Necesita defuzificación clásica obligatoria.</button>
+              <button class="option" data-option="c">El consecuente ya es numérico o funcional.</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="q-item" data-answer="b">
+            <p>3. En Mamdani, el operador MAX aparece principalmente en:</p>
+            <div class="options">
+              <button class="option" data-option="a">La fusificación</button>
+              <button class="option" data-option="b">La agregación de salidas</button>
+              <button class="option" data-option="c">La selección del soporte</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="sub5">
+      <div class="section-head">
+        <h2>5. Defuzificación y taller de aplicación</h2>
+        <div class="accent-line"></div>
+      </div>
+      <div class="section-body">
+        <div class="two-col">
+          <div>
+            <p>La <strong>defuzificación</strong> es el proceso matemático que convierte una variable difusa en un número real. Es necesaria cuando la salida del sistema de inferencia sigue siendo difusa y se requiere una acción concreta o un valor usable en la práctica.</p>
+
+            <div class="subtopic">
+              <h3>5.1 Métodos de defuzificación</h3>
+              <ul class="list">
+                <li><strong>Centro de gravedad (COG):</strong> calcula el centroide del área de salida. Muy usado, aunque puede ser costoso computacionalmente por el cálculo integral.</li>
+                <li><strong>Centros promediados (COA):</strong> usa centros ponderados por las premisas.</li>
+                <li><strong>Criterio de máximo (MC):</strong> toma la salida donde la membresía alcanza su máximo valor.</li>
+                <li><strong>Media de máximo (MOM):</strong> toma el promedio de los valores que alcanzan el máximo.</li>
+                <li><strong>Máximo más chico (SOM):</strong> el menor valor entre los máximos.</li>
+                <li><strong>Máximo más grande (LOM):</strong> el mayor valor entre los máximos.</li>
+                <li><strong>Bisector de área:</strong> divide el área bajo la curva en dos subáreas iguales.</li>
+              </ul>
+            </div>
+
+            <div class="formula">
+COG:
+y = ( Σ ∫ bi·μi(u) du ) / ( Σ ∫ μi(u) du )
+
+COA:
+y = ( Σ bi·μpremisa(i) ) / ( Σ μpremisa(i) )
+            </div>
+          </div>
+
+          <div class="diagram">
+            <h3>Idea visual de defuzificación</h3>
+            <svg viewBox="0 0 560 310" xmlns="http://www.w3.org/2000/svg" aria-label="Defuzificación">
+              <defs>
+                <style>
+                  .axis{stroke:currentColor;stroke-width:2}
+                  .txt{fill:currentColor;font: 14px Segoe UI, Arial}
+                  .curve{fill:rgba(79,124,255,.24);stroke:#4f7cff;stroke-width:3}
+                  .line{stroke:#cc3344;stroke-width:3;stroke-dasharray:8 6}
+                </style>
+              </defs>
+              <line x1="40" y1="250" x2="520" y2="250" class="axis"/>
+              <line x1="40" y1="250" x2="40" y2="45" class="axis"/>
+              <path d="M70 250 L130 220 L190 105 L240 140 L300 90 L360 110 L430 180 L500 250 Z" class="curve"/>
+              <line x1="274" y1="55" x2="274" y2="250" class="line"/>
+              <text x="284" y="72" class="txt">Salida real</text>
+              <text x="20" y="60" class="txt">μ</text>
+              <text x="210" y="286" class="txt">dominio de salida</text>
+            </svg>
+
+            <div class="card" style="margin-top:14px">
+              <h4>Lectura rápida</h4>
+              <p>Después de agregar las salidas difusas, la defuzificación escoge o calcula un único valor numérico representativo.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:18px">
+          <h3>Taller 1 · Modelado del biotipo de adultos entre 20 y 40 años usando Mamdani</h3>
+          <p>El PDF propone este taller práctico para aplicar toda la unidad. Aquí está organizado de forma clara:</p>
+          <ol class="list">
+            <li><strong>Talla</strong> como variable de entrada:
+              <ul class="list">
+                <li>Definir <strong>tres conjuntos triangulares</strong>.</li>
+                <li>Rango: <strong>150 cm a 195 cm</strong>.</li>
+                <li>Identificar parámetros y función de pertenencia de cada conjunto.</li>
+              </ul>
+            </li>
+            <li><strong>Peso</strong> como variable de entrada:
+              <ul class="list">
+                <li>Definir <strong>tres conjuntos trapezoidales</strong>.</li>
+                <li>Rango: <strong>50 kg a 100 kg</strong>.</li>
+                <li>Identificar parámetros y función de pertenencia.</li>
+              </ul>
+            </li>
+            <li><strong>Biotipo</strong> como variable de salida:
+              <ul class="list">
+                <li>Definir <strong>tres conjuntos difusos</strong>.</li>
+                <li>Puede asociarse un indicador como el <strong>índice de masa corporal</strong>.</li>
+                <li>Elegir el tipo de conjunto más apropiado.</li>
+              </ul>
+            </li>
+            <li><strong>Reglas de inferencia</strong>:
+              <ul class="list">
+                <li>Formular reglas para identificar el biotipo de una persona.</li>
+              </ul>
+            </li>
+            <li><strong>Prueba del sistema</strong>:
+              <ul class="list">
+                <li>Persona de <strong>28 años</strong> con <strong>75 kg</strong>.</li>
+                <li>Evaluar funciones de pertenencia de talla y peso.</li>
+                <li>Aplicar reglas de inferencia.</li>
+                <li>Realizar agregación.</li>
+                <li><strong>Defuzificar usando MC</strong>.</li>
+                <li>Identificar la salida final.</li>
+              </ul>
+            </li>
+          </ol>
+        </div>
+
+        <div class="quiz" data-quiz>
+          <div class="quiz-title">🧠 Preguntas de repaso del subtema 5</div>
+
+          <div class="q-item" data-answer="b">
+            <p>1. ¿Qué busca lograr la defuzificación?</p>
+            <div class="options">
+              <button class="option" data-option="a">Aumentar el número de reglas.</button>
+              <button class="option" data-option="b">Convertir una salida difusa en un valor real.</button>
+              <button class="option" data-option="c">Eliminar el universo del discurso.</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="q-item" data-answer="a">
+            <p>2. ¿Cuál método toma el menor valor entre los que alcanzan la membresía máxima?</p>
+            <div class="options">
+              <button class="option" data-option="a">SOM</button>
+              <button class="option" data-option="b">LOM</button>
+              <button class="option" data-option="c">COG</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="q-item" data-answer="c">
+            <p>3. En el taller, para la variable peso se piden conjuntos:</p>
+            <div class="options">
+              <button class="option" data-option="a">Gaussianos</button>
+              <button class="option" data-option="b">Triangulares</button>
+              <button class="option" data-option="c">Trapezoidales</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="resumen-final">
+      <div class="section-head">
+        <h2>Resumen final de la unidad</h2>
+        <div class="accent-line"></div>
+      </div>
+      <div class="section-body">
+        <div class="summary-grid">
+          <div class="card">
+            <h3>Ideas clave</h3>
+            <ul class="list">
+              <li>La lógica difusa trabaja con grados de pertenencia entre 0 y 1.</li>
+              <li>Permite modelar incertidumbre e información lingüística.</li>
+              <li>Las funciones de pertenencia traducen el lenguaje cualitativo a valores cuantificables.</li>
+              <li>Las reglas IF-THEN permiten modelar decisiones humanas.</li>
+              <li>Mamdani usa salidas difusas y requiere defuzificación.</li>
+              <li>TSK usa consecuentes numéricos y ponderación matemática.</li>
+              <li>La defuzificación entrega la salida real utilizable.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>Qué deberías poder explicar ya</h3>
+            <ul class="list">
+              <li>Qué diferencia a la lógica difusa de la lógica convencional.</li>
+              <li>Qué son soporte, altura y universo del discurso.</li>
+              <li>Cuáles son las funciones de pertenencia más comunes.</li>
+              <li>Cómo se forma una regla difusa.</li>
+              <li>Cuáles son las etapas de Mamdani.</li>
+              <li>Cuál es la principal diferencia entre Mamdani y TSK.</li>
+              <li>Qué hacen COG, COA, MC, MOM, SOM, LOM y el bisector.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h3>Palabras clave</h3>
+          <div class="keywords">
+            <span class="keyword">Lógica difusa</span>
+            <span class="keyword">Grado de pertenencia</span>
+            <span class="keyword">Conjunto difuso</span>
+            <span class="keyword">Soporte</span>
+            <span class="keyword">Altura</span>
+            <span class="keyword">Fusificación</span>
+            <span class="keyword">Regla IF-THEN</span>
+            <span class="keyword">Motor de inferencia</span>
+            <span class="keyword">Mamdani</span>
+            <span class="keyword">TSK</span>
+            <span class="keyword">Agregación</span>
+            <span class="keyword">Defuzificación</span>
+            <span class="keyword">COG</span>
+            <span class="keyword">MC</span>
+          </div>
+        </div>
+
+        <div style="margin-top:18px; display:flex; gap:12px; flex-wrap:wrap;">
+          <a href="ContAva.html" class="btn">← Volver al índice del curso</a>
+          <a href="#top" class="btn secondary" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Subir</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">
+      Unidad 1 de Control Avanzado II · Diseño de estudio guiado
+    </div>
+  </main>
+
+  <script>
+    // Tema
+    const body = document.body;
+    const themeToggle = document.getElementById('themeToggle');
+
+    function applyTheme(theme){
+      if(theme === 'dark'){
+        body.classList.add('dark');
+        themeToggle.textContent = '☀️ Modo claro';
+      }else{
+        body.classList.remove('dark');
+        themeToggle.textContent = '🌙 Modo oscuro';
+      }
+    }
+
+    const savedTheme = localStorage.getItem('u1caii-theme') || 'light';
+    applyTheme(savedTheme);
+
+    themeToggle.addEventListener('click', () => {
+      const next = body.classList.contains('dark') ? 'light' : 'dark';
+      localStorage.setItem('u1caii-theme', next);
+      applyTheme(next);
+    });
+
+    // Quiz interactivo
+    document.querySelectorAll('[data-quiz] .q-item').forEach(item => {
+      const correct = item.dataset.answer;
+      const feedback = item.querySelector('.feedback');
+      const buttons = item.querySelectorAll('.option');
+
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          if(item.dataset.locked === 'true') return;
+          item.dataset.locked = 'true';
+
+          buttons.forEach(b => {
+            const val = b.dataset.option;
+            if(val === correct){
+              b.classList.add('correct');
+            }
+            if(b === btn && val !== correct){
+              b.classList.add('wrong');
+            }
+            b.disabled = true;
+          });
+
+          if(btn.dataset.option === correct){
+            feedback.textContent = 'Correcto. Buen trabajo.';
+            feedback.className = 'feedback ok';
+          }else{
+            feedback.textContent = 'Incorrecto. Revisa el subtema y vuelve a intentarlo al recargar la página.';
+            feedback.className = 'feedback bad';
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
