@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unidad 1 - Electrónica Industrial | Diodos de Potencia y Rectificadores</title>
+  <style>
+    :root{
+      --bg:#f4f7fb;
+      --panel:#ffffff;
+      --panel2:#eef4ff;
+      --text:#152033;
+      --muted:#5d6b84;
+      --line:#d8e0ef;
+      --primary:#125dff;
+      --primary2:#4b86ff;
+      --accent:#10b981;
+      --accent2:#8b5cf6;
+      --warn:#d97706;
+      --danger:#dc2626;
+      --ok:#16a34a;
+      --shadow:0 18px 40px rgba(18,35,74,.10);
+      --grad:linear-gradient(135deg,#125dff 0%,#4b86ff 50%,#8b5cf6 100%);
+    }
+
+    body.dark{
+      --bg:#0b1220;
+      --panel:#121b2e;
+      --panel2:#17243c;
+      --text:#eef4ff;
+      --muted:#b6c1d8;
+      --line:#24324d;
+      --primary:#7ba2ff;
+      --primary2:#9eb8ff;
+      --accent:#34d399;
+      --accent2:#c084fc;
+      --warn:#ffba52;
+      --danger:#ff6b7b;
+      --ok:#4ade80;
+      --shadow:0 18px 40px rgba(0,0,0,.35);
+      --grad:linear-gradient(135deg,#214ecf 0%,#4f7dff 50%,#8b5cf6 100%);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:"Segoe UI",Arial,Helvetica,sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(75,134,255,.12), transparent 28%),
+        radial-gradient(circle at top left, rgba(139,92,246,.10), transparent 24%),
+        var(--bg);
+      color:var(--text);
+      line-height:1.6;
+    }
+
+    .container{
+      width:min(1200px,92%);
+      margin:0 auto;
+    }
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(12px);
+      background:color-mix(in srgb, var(--bg) 84%, transparent);
+      border-bottom:1px solid var(--line);
+    }
+
+    .topbar-inner{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      padding:14px 0;
+    }
+
+    .btn{
+      border:none;
+      cursor:pointer;
+      text-decoration:none;
+      color:#fff;
+      background:var(--grad);
+      padding:11px 16px;
+      border-radius:14px;
+      font-weight:700;
+      box-shadow:var(--shadow);
+      transition:.25s ease;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .btn:hover{transform:translateY(-2px)}
+    .btn.secondary{
+      background:var(--panel);
+      color:var(--text);
+      border:1px solid var(--line);
+      box-shadow:none;
+    }
+
+    .hero{
+      padding:32px 0 24px;
+    }
+
+    .hero-card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .hero-top{
+      background:var(--grad);
+      color:#fff;
+      padding:28px;
+    }
+
+    .eyebrow{
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      font-size:.83rem;
+      font-weight:800;
+      opacity:.9;
+      margin-bottom:8px;
+    }
+
+    h1,h2,h3,h4{margin:0 0 12px; line-height:1.2}
+    h1{font-size:clamp(2rem,4vw,3rem)}
+    h2{font-size:clamp(1.35rem,2.4vw,2rem)}
+    h3{font-size:1.15rem}
+    p{margin:0 0 14px}
+
+    .hero-body{
+      display:grid;
+      grid-template-columns:1.35fr .95fr;
+      gap:20px;
+      padding:28px;
+    }
+
+    .mini-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:14px;
+    }
+
+    .mini-card,.card{
+      background:var(--panel2);
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:16px 18px;
+    }
+
+    .tags{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .tag{
+      background:var(--panel2);
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:.92rem;
+      font-weight:700;
+    }
+
+    .toc{
+      margin:24px 0 8px;
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:12px;
+    }
+
+    .toc a{
+      text-decoration:none;
+      background:var(--panel);
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+      font-weight:800;
+      text-align:center;
+      transition:.22s;
+    }
+
+    .toc a:hover{
+      transform:translateY(-2px);
+      border-color:var(--primary);
+    }
+
+    .section{
+      margin:24px 0;
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .section-head{padding:24px 24px 8px}
+    .section-body{padding:0 24px 24px}
+
+    .accent-line{
+      width:86px;
+      height:6px;
+      border-radius:999px;
+      background:var(--grad);
+      margin:10px 0 16px;
+    }
+
+    .two-col{
+      display:grid;
+      grid-template-columns:1.08fr .92fr;
+      gap:20px;
+      align-items:start;
+    }
+
+    .three-col{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:16px;
+    }
+
+    .subtopic{
+      margin-top:18px;
+      padding:18px;
+      border-radius:20px;
+      border:1px dashed var(--line);
+      background:color-mix(in srgb, var(--panel2) 72%, transparent);
+    }
+
+    .list{
+      margin:0;
+      padding-left:18px;
+    }
+
+    .list li{margin-bottom:8px}
+
+    .formula{
+      background:color-mix(in srgb, var(--panel2) 88%, transparent);
+      border-left:5px solid var(--primary);
+      padding:14px 16px;
+      border-radius:14px;
+      font-family:Consolas, monospace;
+      overflow:auto;
+      font-size:.95rem;
+      margin:14px 0;
+      white-space:pre-wrap;
+    }
+
+    .note{
+      background:rgba(217,119,6,.12);
+      border:1px solid color-mix(in srgb, var(--warn) 40%, var(--line));
+      border-radius:18px;
+      padding:14px 16px;
+    }
+
+    .diagram{
+      background:linear-gradient(180deg, color-mix(in srgb, var(--panel2) 88%, transparent), color-mix(in srgb, var(--panel) 86%, transparent));
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:16px;
+    }
+
+    svg{
+      width:100%;
+      height:auto;
+      display:block;
+    }
+
+    .quiz{
+      margin-top:20px;
+      background:var(--panel2);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:18px;
+    }
+
+    .quiz-title{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:14px;
+      font-weight:800;
+      color:var(--primary);
+    }
+
+    .q-item{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      margin-bottom:14px;
+    }
+
+    .q-item p{
+      margin-bottom:12px;
+      font-weight:700;
+    }
+
+    .options{
+      display:grid;
+      gap:10px;
+    }
+
+    .option{
+      border:1px solid var(--line);
+      background:transparent;
+      color:var(--text);
+      padding:12px 14px;
+      border-radius:14px;
+      cursor:pointer;
+      text-align:left;
+      font-weight:600;
+      transition:.2s;
+    }
+
+    .option:hover{
+      border-color:var(--primary);
+      transform:translateY(-1px);
+    }
+
+    .option.correct{
+      border-color:var(--ok);
+      background:rgba(22,163,74,.14);
+    }
+
+    .option.wrong{
+      border-color:var(--danger);
+      background:rgba(220,38,38,.10);
+    }
+
+    .feedback{
+      margin-top:10px;
+      font-weight:700;
+      font-size:.96rem;
+    }
+
+    .feedback.ok{color:var(--ok)}
+    .feedback.bad{color:var(--danger)}
+
+    .summary-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:16px;
+    }
+
+    .keywords{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .keyword{
+      padding:10px 14px;
+      border-radius:999px;
+      background:var(--panel2);
+      border:1px solid var(--line);
+      font-weight:700;
+    }
+
+    .footer{
+      padding:8px 0 40px;
+      text-align:center;
+      color:var(--muted);
+    }
+
+    @media (max-width: 980px){
+      .hero-body,.two-col,.three-col,.summary-grid,.toc{
+        grid-template-columns:1fr;
+      }
+      .mini-grid{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <a href="EI.html" class="btn secondary">← Volver al índice</a>
+        <a href="#resumen-final" class="btn secondary">Ir al resumen final</a>
+      </div>
+      <button class="btn secondary" id="themeToggle">🌙 Modo oscuro</button>
+    </div>
+  </div>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-card">
+        <div class="hero-top">
+          <div class="eyebrow">Electrónica Industrial</div>
+          <h1>Unidad 1 · Diodos de potencia y rectificadores</h1>
+          <p>Unidad guiada para estudiar fundamentos, comportamiento dinámico y rectificación de media onda con apoyo visual e interacción.</p>
+        </div>
+
+        <div class="hero-body">
+          <div>
+            <h2>Objetivo de la unidad</h2>
+            <div class="accent-line"></div>
+            <p>Comprender las propiedades básicas de los diodos semiconductores de potencia, su recuperación inversa, los tipos más usados y el funcionamiento del rectificador monofásico de media onda con carga resistiva, además de reconocer extensiones a cargas R-L y R-C.</p>
+            <div class="tags">
+              <span class="tag">Diodos de potencia</span>
+              <span class="tag">Recuperación inversa</span>
+              <span class="tag">Rectificación</span>
+              <span class="tag">Media onda</span>
+              <span class="tag">Carga resistiva</span>
+              <span class="tag">R-L y R-C</span>
+            </div>
+          </div>
+
+          <div class="mini-grid">
+            <div class="mini-card">
+              <h3>Qué aprenderás</h3>
+              <p>Cómo conduce un diodo de potencia, qué pasa al bloquearlo y cómo se usa en rectificadores.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Cómo estudiar</h3>
+              <p>Lee cada bloque, mira el circuito, revisa las formas de onda y resuelve las preguntas.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Idea central</h3>
+              <p>El diodo deja pasar corriente en un sentido y eso permite convertir CA en una salida con componente continua.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Enfoque</h3>
+              <p>Teoría compacta, ejemplos visuales y secciones de práctica inspiradas en laboratorio.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="toc">
+        <a href="#sub1">1. Diodos de potencia</a>
+        <a href="#sub2">2. Recuperación inversa</a>
+        <a href="#sub3">3. Rectificador media onda</a>
+        <a href="#sub4">4. Otras cargas</a>
+        <a href="#sub5">5. Práctica y repaso</a>
+      </nav>
+    </section>
+
+    <section class="section" id="sub1">
+      <div class="section-head">
+        <h2>1. Diodos semiconductores de potencia</h2>
+        <div class="accent-line"></div>
+      </div>
+      <div class="section-body">
+        <div class="two-col">
+          <div>
+            <p>Los diodos rectificadores de silicio tienen alta capacidad de transporte de corriente directa, resistencia directa pequeña y resistencia inversa muy alta. Se emplean en conversión de energía, fuentes de alimentación, rectificadores e inversores. En esta unidad interesan por su uso directo en circuitos rectificadores. </p>
+
+            <div class="subtopic">
+              <h3>1.1 Qué los caracteriza</h3>
+              <ul class="list">
+                <li>Conducen cuando están polarizados en directa.</li>
+                <li>Bloquean cuando están polarizados en inversa.</li>
+                <li>Soportan corrientes y tensiones mayores que diodos pequeños.</li>
+                <li>Sus parámetros típicos incluyen IFAV, VRRM, VF y trr.</li>
+              </ul>
+            </div>
+
+            <div class="subtopic">
+              <h3>1.2 Tipos importantes</h3>
+              <div class="three-col">
+                <div class="card">
+                  <h4>Baja frecuencia</h4>
+                  <p>Usados en rectificadores de red y aplicaciones de 50 Hz.</p>
+                </div>
+                <div class="card">
+                  <h4>Fast / Ultrafast</h4>
+                  <p>Diseñados para conmutación más rápida, inversores y UPS.</p>
+                </div>
+                <div class="card">
+                  <h4>Schottky</h4>
+                  <p>Baja caída directa y tiempos de recuperación muy pequeños.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="subtopic">
+              <h3>1.3 Parámetros que debes reconocer</h3>
+              <ul class="list">
+                <li><strong>IFAV:</strong> corriente promedio directa admisible.</li>
+                <li><strong>VRRM:</strong> voltaje inverso repetitivo máximo.</li>
+                <li><strong>VF:</strong> caída de tensión directa.</li>
+                <li><strong>trr:</strong> tiempo de recuperación inversa.</li>
+                <li><strong>Irr:</strong> corriente inversa pico de recuperación.</li>
+              </ul>
+              <div class="note">
+                En Electrónica Industrial casi siempre importa no solo si el diodo conduce, sino también <strong>qué tan rápido deja de conducir</strong>.
+              </div>
+            </div>
+          </div>
+
+          <div class="diagram">
+            <h3>Modelo visual básico del diodo</h3>
+            <svg viewBox="0 0 620 360" xmlns="http://www.w3.org/2000/svg" aria-label="Diodo y polarización">
+              <defs>
+                <style>
+                  .w{stroke:currentColor;stroke-width:3;fill:none}
+                  .txt{fill:currentColor;font:15px Segoe UI, Arial}
+                  .ttl{fill:currentColor;font:17px Segoe UI, Arial;font-weight:700}
+                  .accent{stroke:#125dff;stroke-width:4;fill:none}
+                  .accent2{stroke:#10b981;stroke-width:4;fill:none}
+                  .bad{stroke:#dc2626;stroke-width:4;fill:none}
+                </style>
+              </defs>
+
+              <text x="20" y="28" class="ttl">Símbolo y comportamiento</text>
+
+              <line x1="40" y1="100" x2="180" y2="100" class="w"/>
+              <polygon points="180,70 180,130 245,100" fill="none" stroke="#125dff" stroke-width="4"/>
+              <line x1="250" y1="68" x2="250" y2="132" class="accent"/>
+              <line x1="250" y1="100" x2="360" y2="100" class="w"/>
+              <text x="80" y="82" class="txt">Ánodo</text>
+              <text x="270" y="82" class="txt">Cátodo</text>
+
+              <text x="20" y="180" class="ttl">Polarización directa</text>
+              <line x1="40" y1="230" x2="160" y2="230" class="accent2"/>
+              <polygon points="160,205 160,255 220,230" fill="none" stroke="#10b981" stroke-width="4"/>
+              <line x1="225" y1="202" x2="225" y2="258" class="accent2"/>
+              <line x1="225" y1="230" x2="340" y2="230" class="accent2"/>
+              <text x="360" y="235" class="txt">Conduce</text>
+              <text x="48" y="210" class="txt">+   -</text>
+
+              <text x="20" y="315" class="ttl">Polarización inversa</text>
+              <line x1="40" y1="345" x2="160" y2="345" class="bad"/>
+              <polygon points="160,320 160,370 220,345" fill="none" stroke="#dc2626" stroke-width="4"/>
+              <line x1="225" y1="317" x2="225" y2="373" class="bad"/>
+              <line x1="225" y1="345" x2="340" y2="345" class="bad"/>
+              <text x="360" y="350" class="txt">Bloquea</text>
+              <text x="48" y="325" class="txt">-   +</text>
+            </svg>
+
+            <div class="card" style="margin-top:14px">
+              <h4>Recuerda</h4>
+              <p>Un diodo real no conmuta de forma instantánea; por eso el estudio dinámico sí importa en potencia.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="quiz" data-quiz>
+          <div class="quiz-title">🧠 Preguntas del subtema 1</div>
+
+          <div class="q-item" data-answer="b">
+            <p>1. ¿Qué parámetro indica el voltaje inverso repetitivo máximo del diodo?</p>
+            <div class="options">
+              <button class="option" data-option="a">IFAV</button>
+              <button class="option" data-option="b">VRRM</button>
+              <button class="option" data-option="c">VF</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="q-item" data-answer="a">
+            <p>2. ¿Qué ventaja destaca mucho en un diodo Schottky?</p>
+            <div class="options">
+              <button class="option" data-option="a">Baja caída directa y recuperación muy rápida</button>
+              <button class="option" data-option="b">Siempre soporta la tensión más alta de todos</button>
+              <button class="option" data-option="c">Solo trabaja en corriente continua pura</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="q-item" data-answer="c">
+            <p>3. En un diodo de potencia, IFAV representa:</p>
+            <div class="options">
+              <button class="option" data-option="a">Frecuencia promedio de disparo</button>
+              <button class="option" data-option="b">Corriente inversa pico</button>
+              <button class="option" data-option="c">Corriente promedio directa admisible</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="sub2">
+      <div class="section-head">
+        <h2>2. Caracterización dinámica y recuperación inversa</h2>
+        <div class="accent-line"></div>
+      </div>
+      <div class="section-body">
+        <div class="two-col">
+          <div>
+            <p>El paso del estado de conducción al estado de bloqueo no ocurre instantáneamente. Cuando el diodo venía conduciendo, quedan portadores almacenados en la unión; al forzar la anulación de corriente, el diodo todavía conduce un breve tiempo en sentido contrario. A eso se le asocia el fenómeno de <strong>recuperación inversa</strong>.</p>
+
+            <div class="subtopic">
+              <h3>2.1 Qué ocurre físicamente</h3>
+              <ul class="list">
+                <li>Con corriente directa IF, la unión se llena de portadores.</li>
+                <li>Al intentar bloquear el diodo, la corriente baja hasta cero.</li>
+                <li>Pero todavía quedan portadores, así que aparece corriente inversa.</li>
+                <li>Recién después se establece plenamente la tensión inversa.</li>
+              </ul>
+            </div>
+
+            <div class="subtopic">
+              <h3>2.2 Tiempos importantes</h3>
+              <ul class="list">
+                <li><strong>ts:</strong> tiempo de almacenamiento.</li>
+                <li><strong>tf o tb:</strong> tiempo de caída de la corriente inversa.</li>
+                <li><strong>trr:</strong> tiempo total de recuperación inversa.</li>
+              </ul>
+            </div>
+
+            <div class="subtopic">
+              <h3>2.3 Magnitudes de interés</h3>
+              <ul class="list">
+                <li><strong>Irr:</strong> pico de corriente inversa.</li>
+                <li><strong>Qrr:</strong> carga de recuperación inversa.</li>
+                <li><strong>di/dt:</strong> velocidad de cambio de corriente.</li>
+                <li><strong>SF:</strong> factor de suavidad, usado en estimaciones.</li>
+              </ul>
+              <div class="formula">trr = ts + tf</div>
+            </div>
+
+            <div class="subtopic">
+              <h3>2.4 Recuperación directa</h3>
+              <p>También existe un fenómeno al pasar de bloqueo a conducción: aparece un pico de tensión directa antes de llegar al valor normal de conducción. Ese tiempo es menor que el de recuperación inversa, pero en diodos rápidos el pico puede ser importante.</p>
+            </div>
+          </div>
+
+          <div class="diagram">
+            <h3>Forma de onda simplificada de recuperación inversa</h3>
+            <svg viewBox="0 0 620 360" xmlns="http://www.w3.org/2000/svg" aria-label="Recuperación inversa">
+              <defs>
+                <style>
+                  .axis{stroke:currentColor;stroke-width:2.4}
+                  .txt{fill:currentColor;font:14px Segoe UI, Arial}
+                  .ttl{fill:currentColor;font:17px Segoe UI, Arial;font-weight:700}
+                  .cur{fill:none;stroke:#125dff;stroke-width:4}
+                  .dash{stroke:#dc2626;stroke-width:2.5;stroke-dasharray:8 6}
+                  .mark{stroke:#10b981;stroke-width:3}
+                </style>
+              </defs>
+
+              <text x="20" y="28" class="ttl">Corriente del diodo</text>
+              <line x1="40" y1="180" x2="580" y2="180" class="axis"/>
+              <line x1="40" y1="45" x2="40" y2="315" class="axis"/>
+
+              <path d="M60 95 L170 95 L225 180 L310 255 L410 180 L540 180" class="cur"/>
+              <line x1="225" y1="55" x2="225" y2="300" class="dash"/>
+              <line x1="310" y1="55" x2="310" y2="300" class="dash"/>
+              <line x1="410" y1="55" x2="410" y2="300" class="dash"/>
+
+              <text x="210" y="48" class="txt">cero</text>
+              <text x="286" y="285" class="txt">Irr</text>
+              <text x="218" y="325" class="txt">ts</text>
+              <text x="350" y="325" class="txt">tf</text>
+              <text x="278" y="346" class="txt">trr</text>
+              <line x1="225" y1="332" x2="410" y2="332" class="mark"/>
+
+              <text x="10" y="72" class="txt">IF</text>
+              <text x="12" y="266" class="txt">-I</text>
+              <text x="550" y="198" class="txt">t</text>
+            </svg>
+
+            <div class="card" style="margin-top:14px">
+              <h4>Idea clave</h4>
+              <p>Mientras más exigente sea la conmutación, más importante se vuelve trr en el rendimiento y las pérdidas.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="quiz" data-quiz>
+          <div class="quiz-title">🧠 Preguntas del subtema 2</div>
+
+          <div class="q-item" data-answer="a">
+            <p>1. ¿Qué representa trr?</p>
+            <div class="options">
+              <button class="option" data-option="a">El tiempo total de recuperación inversa</button>
+              <button class="option" data-option="b">La tensión de ruptura máxima</button>
+              <button class="option" data-option="c">La potencia promedio de salida</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="q-item" data-answer="c">
+            <p>2. ¿Por qué aparece corriente inversa después de que la corriente directa cruza por cero?</p>
+            <div class="options">
+              <button class="option" data-option="a">Porque la resistencia se vuelve negativa</button>
+              <button class="option" data-option="b">Porque el diodo entra en resonancia</button>
+              <button class="option" data-option="c">Porque aún quedan portadores almacenados en la unión</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="q-item" data-answer="b">
+            <p>3. Irr es:</p>
+            <div class="options">
+              <button class="option" data-option="a">La corriente media de la carga</button>
+              <button class="option" data-option="b">La corriente inversa pico durante la recuperación</button>
+              <button class="option" data-option="c">La corriente mínima del transformador</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="sub3">
+      <div class="section-head">
+        <h2>3. Rectificador monofásico de media onda con carga resistiva</h2>
+        <div class="accent-line"></div>
+      </div>
+      <div class="section-body">
+        <div class="two-col">
+          <div>
+            <p>Un rectificador convierte corriente alterna en corriente continua. En el caso más simple de media onda con carga resistiva, el diodo funciona como interruptor electrónico unidireccional: conduce en el semiciclo positivo y bloquea en el negativo.</p>
+
+            <div class="subtopic">
+              <h3>3.1 Cómo funciona</h3>
+              <ul class="list">
+                <li>En el semiciclo positivo, el diodo queda en directa y conduce.</li>
+                <li>La carga recibe la parte positiva de la señal.</li>
+                <li>En el semiciclo negativo, el diodo queda en inversa y la corriente se hace cero.</li>
+                <li>La salida tiene una componente continua no nula.</li>
+              </ul>
+            </div>
+
+            <div class="subtopic">
+              <h3>3.2 Magnitudes básicas</h3>
+              <p>Para una señal senoidal y diodo ideal, la salida es una senoidal rectificada de media onda. Interesan especialmente el valor medio, el valor eficaz, la corriente media y la potencia en la carga.</p>
+
+              <div class="formula">Vo(prom) = Vm / π</div>
+              <div class="formula">Io(prom) = Vo(prom) / R = Vm / (πR)</div>
+              <div class="formula">Vrms = Vm / 2</div>
+              <div class="formula">P = Vrms² / R = Irms² R</div>
+            </div>
+
+            <div class="subtopic">
+              <h3>3.3 Diodo ideal vs real</h3>
+              <p>Si el diodo es real, su caída directa reduce ligeramente la tensión y corriente de carga. Si la amplitud de la fuente es alta, ese efecto suele ser de segundo orden.</p>
+            </div>
+
+            <div class="subtopic">
+              <h3>3.4 Qué se analiza normalmente</h3>
+              <ul class="list">
+                <li>Señal de entrada.</li>
+                <li>Voltaje en la carga.</li>
+                <li>Voltaje en el diodo.</li>
+                <li>Corriente de carga.</li>
+                <li>Factor de potencia del circuito.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="diagram">
+            <h3>Circuito y formas de onda</h3>
+            <svg viewBox="0 0 640 520" xmlns="http://www.w3.org/2000/svg" aria-label="Rectificador de media onda">
+              <defs>
+                <style>
+                  .wire{stroke:currentColor;stroke-width:3;fill:none}
+                  .txt{fill:currentColor;font:14px Segoe UI, Arial}
+                  .ttl{fill:currentColor;font:17px Segoe UI, Arial;font-weight:700}
+                  .accent{stroke:#125dff;stroke-width:4;fill:none}
+                  .accent2{stroke:#10b981;stroke-width:4;fill:none}
+                  .axis{stroke:currentColor;stroke-width:2}
+                </style>
+              </defs>
+
+              <text x="20" y="26" class="ttl">Circuito</text>
+              <circle cx="80" cy="120" r="28" class="wire"/>
+              <path d="M70 120 q10 -14 20 0 q10 14 20 0" class="accent"/>
+              <text x="52" y="170" class="txt">vs</text>
+
+              <line x1="108" y1="120" x2="190" y2="120" class="wire"/>
+              <polygon points="190,95 190,145 250,120" fill="none" stroke="#125dff" stroke-width="4"/>
+              <line x1="255" y1="92" x2="255" y2="148" class="accent"/>
+              <line x1="255" y1="120" x2="330" y2="120" class="wire"/>
+
+              <rect x="330" y="85" width="55" height="70" rx="6" fill="none" stroke="#10b981" stroke-width="4"/>
+              <text x="349" y="126" class="txt">R</text>
+
+              <line x1="357" y1="155" x2="357" y2="220" class="wire"/>
+              <line x1="357" y1="220" x2="80" y2="220" class="wire"/>
+              <line x1="80" y1="220" x2="80" y2="148" class="wire"/>
+              <text x="278" y="102" class="txt">D</text>
+              <text x="392" y="124" class="txt">vo</text>
+
+              <text x="20" y="285" class="ttl">Entrada vs salida</text>
+
+              <line x1="40" y1="410" x2="590" y2="410" class="axis"/>
+              <line x1="40" y1="320" x2="40" y2="500" class="axis"/>
+
+              <path d="M50 410
+                       C80 340, 110 340, 140 410
+                       C170 480, 200 480, 230 410
+                       C260 340, 290 340, 320 410
+                       C350 480, 380 480, 410 410
+                       C440 340, 470 340, 500 410
+                       C530 480, 560 480, 590 410" class="accent"/>
+
+              <path d="M50 410
+                       C80 340, 110 340, 140 410
+                       L140 410
+                       C170 410, 200 410, 230 410
+                       C260 340, 290 340, 320 410
+                       L320 410
+                       C350 410, 380 410, 410 410
+                       C440 340, 470 340, 500 410
+                       L500 410
+                       C530 410, 560 410, 590 410" class="accent2"/>
+
+              <text x="500" y="332" class="txt">vs</text>
+              <text x="500" y="388" class="txt">vo</text>
+            </svg>
+
+            <div class="card" style="margin-top:14px">
+              <h4>Interpretación</h4>
+              <p>La salida solo conserva los semiciclos positivos de la entrada; los negativos se anulan en la carga.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="quiz" data-quiz>
+          <div class="quiz-title">🧠 Preguntas del subtema 3</div>
+
+          <div class="q-item" data-answer="b">
+            <p>1. En el rectificador de media onda con carga R, el diodo conduce durante:</p>
+            <div class="options">
+              <button class="option" data-option="a">Todo el ciclo</button>
+              <button class="option" data-option="b">El semiciclo positivo</button>
+              <button class="option" data-option="c">Solo el semiciclo negativo</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="q-item" data-answer="a">
+            <p>2. ¿Qué pasa con la corriente de carga en el semiciclo negativo?</p>
+            <div class="options">
+              <button class="option" data-option="a">Se hace cero</button>
+              <button class="option" data-option="b">Se duplica</button>
+              <button class="option" data-option="c">Se vuelve alterna pura</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="q-item" data-answer="c">
+            <p>3. El valor medio de salida ideal de media onda es:</p>
+            <div class="options">
+              <button class="option" data-option="a">Vm</button>
+              <button class="option" data-option="b">Vm/2</button>
+              <button class="option" data-option="c">Vm/π</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="sub4">
+      <div class="section-head">
+        <h2>4. Extensión: otras cargas y panorama de rectificadores</h2>
+        <div class="accent-line"></div>
+      </div>
+      <div class="section-body">
+        <div class="three-col">
+          <div class="card">
+            <h3>4.1 Carga R-L</h3>
+            <p>Las cargas industriales suelen tener inductancia. En media onda con R-L, el diodo puede seguir conduciendo aun cuando la tensión de la fuente ya cruzó por cero, hasta que la corriente cae a cero.</p>
+          </div>
+
+          <div class="card">
+            <h3>4.2 Carga R-C</h3>
+            <p>Con capacitor, el diodo conduce cuando la tensión de red supera la del condensador; luego el condensador se descarga sobre la carga. Esto explica el rizado y la corriente de pico del diodo.</p>
+          </div>
+
+          <div class="card">
+            <h3>4.3 Clasificación general</h3>
+            <p>Los rectificadores pueden ser controlados o no controlados, monofásicos o trifásicos, y pueden usar varias configuraciones para mejorar la forma de onda de salida y la corriente de entrada.</p>
+          </div>
+        </div>
+
+        <div class="two-col" style="margin-top:18px">
+          <div class="diagram">
+            <h3>Media onda con carga R-L</h3>
+            <svg viewBox="0 0 620 320" xmlns="http://www.w3.org/2000/svg" aria-label="Rectificador con carga RL">
+              <defs>
+                <style>
+                  .wire{stroke:currentColor;stroke-width:3;fill:none}
+                  .txt{fill:currentColor;font:14px Segoe UI, Arial}
+                  .ttl{fill:currentColor;font:17px Segoe UI, Arial;font-weight:700}
+                  .accent{stroke:#125dff;stroke-width:4;fill:none}
+                  .accent2{stroke:#10b981;stroke-width:4;fill:none}
+                  .coil{stroke:#8b5cf6;stroke-width:3.5;fill:none}
+                </style>
+              </defs>
+              <text x="20" y="26" class="ttl">Circuito</text>
+
+              <circle cx="80" cy="110" r="28" class="wire"/>
+              <path d="M70 110 q10 -14 20 0 q10 14 20 0" class="accent"/>
+              <line x1="108" y1="110" x2="180" y2="110" class="wire"/>
+              <polygon points="180,85 180,135 240,110" fill="none" stroke="#125dff" stroke-width="4"/>
+              <line x1="245" y1="82" x2="245" y2="138" class="accent"/>
+              <line x1="245" y1="110" x2="310" y2="110" class="wire"/>
+
+              <rect x="310" y="80" width="42" height="60" rx="6" fill="none" stroke="#10b981" stroke-width="4"/>
+              <text x="325" y="116" class="txt">R</text>
+
+              <path d="M352 110 q10 -22 20 0 q10 22 20 0 q10 -22 20 0 q10 22 20 0" class="coil"/>
+              <text x="430" y="116" class="txt">L</text>
+
+              <line x1="438" y1="110" x2="438" y2="190" class="wire"/>
+              <line x1="438" y1="190" x2="80" y2="190" class="wire"/>
+              <line x1="80" y1="190" x2="80" y2="138" class="wire"/>
+
+              <text x="20" y="255" class="ttl">Idea</text>
+              <text x="20" y="285" class="txt">La energía almacenada en L hace que la corriente no se anule instantáneamente.</text>
+            </svg>
+          </div>
+
+          <div class="diagram">
+            <h3>Media onda con carga R-C</h3>
+            <svg viewBox="0 0 620 320" xmlns="http://www.w3.org/2000/svg" aria-label="Rectificador con carga RC">
+              <defs>
+                <style>
+                  .wire{stroke:currentColor;stroke-width:3;fill:none}
+                  .txt{fill:currentColor;font:14px Segoe UI, Arial}
+                  .ttl{fill:currentColor;font:17px Segoe UI, Arial;font-weight:700}
+                  .accent{stroke:#125dff;stroke-width:4;fill:none}
+                  .accent2{stroke:#10b981;stroke-width:4;fill:none}
+                </style>
+              </defs>
+              <text x="20" y="26" class="ttl">Circuito</text>
+
+              <circle cx="80" cy="110" r="28" class="wire"/>
+              <path d="M70 110 q10 -14 20 0 q10 14 20 0" class="accent"/>
+              <line x1="108" y1="110" x2="180" y2="110" class="wire"/>
+              <polygon points="180,85 180,135 240,110" fill="none" stroke="#125dff" stroke-width="4"/>
+              <line x1="245" y1="82" x2="245" y2="138" class="accent"/>
+              <line x1="245" y1="110" x2="320" y2="110" class="wire"/>
+
+              <line x1="320" y1="78" x2="320" y2="145" class="accent2"/>
+              <line x1="340" y1="78" x2="340" y2="145" class="accent2"/>
+              <text x="326" y="66" class="txt">C</text>
+
+              <rect x="385" y="80" width="48" height="60" rx="6" fill="none" stroke="#10b981" stroke-width="4"/>
+              <text x="402" y="116" class="txt">R</text>
+
+              <line x1="340" y1="110" x2="385" y2="110" class="wire"/>
+              <line x1="433" y1="110" x2="433" y2="190" class="wire"/>
+              <line x1="433" y1="190" x2="80" y2="190" class="wire"/>
+              <line x1="80" y1="190" x2="80" y2="138" class="wire"/>
+
+              <text x="20" y="255" class="ttl">Idea</text>
+              <text x="20" y="285" class="txt">El capacitor se carga cerca del pico y luego se descarga en la carga generando rizado.</text>
+            </svg>
+          </div>
+        </div>
+
+        <div class="quiz" data-quiz>
+          <div class="quiz-title">🧠 Preguntas del subtema 4</div>
+
+          <div class="q-item" data-answer="c">
+            <p>1. En una carga R-L, el diodo puede seguir conduciendo después del cruce por cero porque:</p>
+            <div class="options">
+              <button class="option" data-option="a">La resistencia aumenta</button>
+              <button class="option" data-option="b">La fuente se vuelve continua</button>
+              <button class="option" data-option="c">La inductancia mantiene la corriente</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="q-item" data-answer="a">
+            <p>2. En una carga R-C, el diodo conduce cuando:</p>
+            <div class="options">
+              <button class="option" data-option="a">La tensión de la fuente supera la del capacitor</button>
+              <button class="option" data-option="b">La tensión de la fuente es cero</button>
+              <button class="option" data-option="c">La carga se desconecta por completo</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="q-item" data-answer="b">
+            <p>3. Un rectificador puede clasificarse, entre otras cosas, como:</p>
+            <div class="options">
+              <button class="option" data-option="a">Digital o analógico puro</button>
+              <button class="option" data-option="b">Controlado o no controlado</button>
+              <button class="option" data-option="c">Magnético o térmico</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="sub5">
+      <div class="section-head">
+        <h2>5. Práctica guiada, laboratorio y repaso</h2>
+        <div class="accent-line"></div>
+      </div>
+      <div class="section-body">
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <h3>Qué te conviene practicar</h3>
+              <ol class="list">
+                <li>Reconocer parámetros de hoja de datos: IFAV, VRRM, VF, trr.</li>
+                <li>Interpretar la curva característica estática del diodo.</li>
+                <li>Comparar entrada y salida de un rectificador de media onda.</li>
+                <li>Identificar trr, Irr y estimar Qrr.</li>
+                <li>Calcular Vo(prom), Io(prom), Vrms, potencia y factor de potencia en carga resistiva.</li>
+              </ol>
+            </div>
+
+            <div class="subtopic">
+              <h3>5.1 Mini rutina de estudio</h3>
+              <ul class="list">
+                <li>Dibuja el circuito de media onda sin mirar.</li>
+                <li>Explica verbalmente qué hace el diodo en cada semiciclo.</li>
+                <li>Memoriza qué significan VRRM, VF y trr.</li>
+                <li>Practica leer una forma de onda y ubicar Irr y trr.</li>
+                <li>Diferencia rápidamente entre carga R, R-L y R-C.</li>
+              </ul>
+            </div>
+
+            <div class="subtopic">
+              <h3>5.2 Ejemplo rápido de razonamiento</h3>
+              <p>Si el diodo en media onda es ideal y la fuente es senoidal, la salida en la carga resistiva es cero durante el semiciclo negativo. Si la carga pasa a ser R-L, la corriente no se corta de forma instantánea. Si la carga pasa a ser R-C, aparece carga/descarga del capacitor y rizado.</p>
+            </div>
+          </div>
+
+          <div>
+            <div class="card">
+              <h3>Resumen final de la unidad</h3>
+              <ul class="list">
+                <li>El diodo de potencia es clave en conversión CA-CC.</li>
+                <li>Su comportamiento dinámico importa por la recuperación inversa.</li>
+                <li>El rectificador de media onda deja pasar solo una mitad del ciclo.</li>
+                <li>Con carga resistiva, el análisis es el más simple y sirve de base.</li>
+                <li>Con R-L y R-C aparecen fenómenos adicionales por energía almacenada.</li>
+              </ul>
+            </div>
+
+            <div class="card" style="margin-top:16px">
+              <h3>Palabras clave</h3>
+              <div class="keywords">
+                <span class="keyword">IFAV</span>
+                <span class="keyword">VRRM</span>
+                <span class="keyword">VF</span>
+                <span class="keyword">trr</span>
+                <span class="keyword">Irr</span>
+                <span class="keyword">Qrr</span>
+                <span class="keyword">Media onda</span>
+                <span class="keyword">Rectificador</span>
+                <span class="keyword">Carga R</span>
+                <span class="keyword">Carga R-L</span>
+                <span class="keyword">Carga R-C</span>
+                <span class="keyword">Valor medio</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quiz" data-quiz>
+          <div class="quiz-title">🧠 Preguntas finales de repaso</div>
+
+          <div class="q-item" data-answer="b">
+            <p>1. ¿Qué hace especialmente importante al diodo de potencia frente a uno pequeño en este curso?</p>
+            <div class="options">
+              <button class="option" data-option="a">Que siempre funciona sin pérdidas</button>
+              <button class="option" data-option="b">Que trabaja con mayores niveles de potencia y conmutación</button>
+              <button class="option" data-option="c">Que no necesita polarización</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="q-item" data-answer="a">
+            <p>2. El rectificador de media onda convierte:</p>
+            <div class="options">
+              <button class="option" data-option="a">Una CA en una salida con componente continua</button>
+              <button class="option" data-option="b">Una CC en alta frecuencia</button>
+              <button class="option" data-option="c">Una salida trifásica en binaria</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="q-item" data-answer="c">
+            <p>3. Si en el laboratorio te piden comparar entrada y salida del rectificador, lo más lógico es observar:</p>
+            <div class="options">
+              <button class="option" data-option="a">Solo el color del diodo</button>
+              <button class="option" data-option="b">Únicamente el valor del resistor</button>
+              <button class="option" data-option="c">Las formas de onda y su componente continua</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="resumen-final">
+      <div class="section-head">
+        <h2>Resumen global</h2>
+        <div class="accent-line"></div>
+      </div>
+      <div class="section-body">
+        <div class="summary-grid">
+          <div class="card">
+            <h3>Lo más importante</h3>
+            <ul class="list">
+              <li>El diodo de potencia permite rectificar y manejar niveles mayores de energía.</li>
+              <li>La recuperación inversa explica por qué el apagado del diodo no es instantáneo.</li>
+              <li>En media onda con carga resistiva, el diodo conduce solo en el semiciclo positivo.</li>
+              <li>La salida tiene valor medio distinto de cero.</li>
+              <li>Las cargas R-L y R-C modifican notablemente la forma de corriente y tensión.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>Qué deberías poder explicar</h3>
+            <ul class="list">
+              <li>Qué significan IFAV, VRRM, VF y trr.</li>
+              <li>Qué son Irr y Qrr.</li>
+              <li>Cómo funciona el rectificador de media onda.</li>
+              <li>Por qué una inductancia prolonga la conducción.</li>
+              <li>Por qué un capacitor genera rizado y picos de corriente.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="margin-top:18px; display:flex; gap:12px; flex-wrap:wrap;">
+          <a href="EI.html" class="btn">← Volver al índice de Electrónica Industrial</a>
+          <a href="#top" class="btn secondary" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Subir</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">
+      Unidad 1 de Electrónica Industrial · Estudio guiado
+    </div>
+  </main>
+
+  <script>
+    const body = document.body;
+    const themeToggle = document.getElementById('themeToggle');
+
+    function applyTheme(theme){
+      if(theme === 'dark'){
+        body.classList.add('dark');
+        themeToggle.textContent = '☀️ Modo claro';
+      }else{
+        body.classList.remove('dark');
+        themeToggle.textContent = '🌙 Modo oscuro';
+      }
+    }
+
+    const savedTheme = localStorage.getItem('u1ei-theme') || 'light';
+    applyTheme(savedTheme);
+
+    themeToggle.addEventListener('click', () => {
+      const next = body.classList.contains('dark') ? 'light' : 'dark';
+      localStorage.setItem('u1ei-theme', next);
+      applyTheme(next);
+    });
+
+    document.querySelectorAll('[data-quiz] .q-item').forEach(item => {
+      const correct = item.dataset.answer;
+      const feedback = item.querySelector('.feedback');
+      const buttons = item.querySelectorAll('.option');
+
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          if(item.dataset.locked === 'true') return;
+          item.dataset.locked = 'true';
+
+          buttons.forEach(b => {
+            const val = b.dataset.option;
+            if(val === correct) b.classList.add('correct');
+            if(b === btn && val !== correct) b.classList.add('wrong');
+            b.disabled = true;
+          });
+
+          if(btn.dataset.option === correct){
+            feedback.textContent = 'Correcto. Buen trabajo.';
+            feedback.className = 'feedback ok';
+          }else{
+            feedback.textContent = 'Incorrecto. Revisa el subtema y vuelve a intentarlo al recargar la página.';
+            feedback.className = 'feedback bad';
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
