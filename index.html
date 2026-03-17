@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Práctica diaria de funciones en Python</title>
+  <style>
+    :root {
+      --bg: #f7fafc;
+      --panel: #ffffff;
+      --panel-2: #eef6ff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #2563eb;
+      --primary-soft: #dbeafe;
+      --success: #15803d;
+      --success-soft: #dcfce7;
+      --warning: #b45309;
+      --warning-soft: #fef3c7;
+      --danger: #b91c1c;
+      --danger-soft: #fee2e2;
+      --border: #dbe4ee;
+      --shadow: 0 12px 30px rgba(37, 99, 235, 0.08);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(180deg, #f9fbff 0%, #eef6ff 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .container {
+      width: min(1100px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 50px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #ffffff 0%, #eaf3ff 100%);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: 34px;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 3rem);
+      line-height: 1.15;
+      color: #0f172a;
+    }
+
+    .hero p {
+      margin: 0;
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 850px;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .badge {
+      background: var(--primary-soft);
+      color: var(--primary);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.92rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
+    .card h2, .card h3 {
+      margin-top: 0;
+      color: #111827;
+    }
+
+    .theory {
+      margin-bottom: 24px;
+    }
+
+    .theory ul {
+      padding-left: 18px;
+    }
+
+    .theory li + li {
+      margin-top: 8px;
+    }
+
+    .mini-box {
+      background: #f8fbff;
+      border-left: 5px solid var(--primary);
+      padding: 14px 16px;
+      border-radius: 14px;
+      margin: 14px 0;
+      overflow-x: auto;
+    }
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.95rem;
+      color: #0f172a;
+    }
+
+    .question-meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .pill {
+      background: var(--panel-2);
+      border: 1px solid #cfe2ff;
+      border-radius: 16px;
+      padding: 12px;
+    }
+
+    .pill strong {
+      display: block;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .statement {
+      background: #f8fbff;
+      border: 1px solid #d8e9ff;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .help {
+      background: #fffbea;
+      border: 1px solid #f5df8a;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 220px;
+      resize: vertical;
+      border-radius: 18px;
+      border: 1px solid #cbd5e1;
+      padding: 16px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.97rem;
+      color: #0f172a;
+      background: #ffffff;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 18px;
+      font-size: 0.98rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.18);
+    }
+
+    .btn-secondary {
+      background: #e5eefc;
+      color: #1e3a8a;
+    }
+
+    .feedback {
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: #fafcff;
+      display: none;
+    }
+
+    .score-box {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .excellent { background: var(--success-soft); color: var(--success); }
+    .regular { background: var(--warning-soft); color: var(--warning); }
+    .bad { background: var(--danger-soft); color: var(--danger); }
+
+    .feedback ul {
+      padding-left: 18px;
+      margin-bottom: 0;
+    }
+
+    .status {
+      margin-top: 16px;
+      background: #f8fbff;
+      border: 1px dashed #c1d7ff;
+      border-radius: 16px;
+      padding: 14px 16px;
+      color: #1e3a8a;
+      font-weight: 600;
+    }
+
+    .progress-card .big-number {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1;
+      margin: 8px 0;
+    }
+
+    .list-clean {
+      padding-left: 18px;
+      margin: 0;
+    }
+
+    .list-clean li + li { margin-top: 8px; }
+
+    .footer-note {
+      margin-top: 24px;
+      font-size: 0.95rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .question-meta {
+        grid-template-columns: 1fr;
+      }
+
+      .hero, .card {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>Práctica diaria de funciones en Python</h1>
+      <p>
+        Esta página te muestra una pregunta nueva cada 24 horas para practicar funciones en Python,
+        tal como te pueden pedir en becados de Cerroverde. Incluye teoría, pista de ayuda,
+        evaluación automática y retroalimentación para que sepas qué mejorar.
+      </p>
+      <div class="badge-row">
+        <span class="badge">30 preguntas</span>
+        <span class="badge">1 reto por día</span>
+        <span class="badge">Corrección automática</span>
+        <span class="badge">Diseño claro</span>
+      </div>
+    </section>
+
+    <div class="grid">
+      <div>
+        <section class="card theory">
+          <h2>Marco teórico: cómo crear funciones en Python</h2>
+          <p>
+            Una <strong>función</strong> es un bloque de código reutilizable que realiza una tarea específica.
+            Sirve para organizar mejor los programas, evitar repetir código y facilitar la lectura.
+          </p>
+
+          <ul>
+            <li><strong>Se define</strong> con la palabra reservada <code>def</code>.</li>
+            <li><strong>Puede recibir parámetros</strong>, que son datos de entrada.</li>
+            <li><strong>Puede retornar un valor</strong> usando <code>return</code>.</li>
+            <li><strong>Puede no retornar nada</strong> y solo mostrar resultados con <code>print()</code>.</li>
+            <li><strong>Debe tener buena indentación</strong> para que Python reconozca el bloque.</li>
+          </ul>
+
+          <div class="mini-box">
+<pre>def saludar(nombre):
+    return f"Hola, {nombre}"</pre>
+          </div>
+
+          <p>
+            En este ejemplo, <code>saludar</code> es el nombre de la función y <code>nombre</code>
+            es el parámetro. Cuando la función se ejecuta, devuelve un saludo personalizado.
+          </p>
+
+          <h3>Partes importantes de una función</h3>
+          <ul>
+            <li><strong>Nombre:</strong> debe describir lo que hace la función.</li>
+            <li><strong>Parámetros:</strong> valores que la función necesita para trabajar.</li>
+            <li><strong>Cuerpo:</strong> instrucciones que ejecuta la función.</li>
+            <li><strong>Return:</strong> resultado final que entrega la función.</li>
+          </ul>
+
+          <h3>Buenas prácticas</h3>
+          <ul>
+            <li>Usar nombres claros como <code>calcular_area</code> o <code>es_par</code>.</li>
+            <li>Hacer una sola tarea por función.</li>
+            <li>Retornar resultados en lugar de depender siempre de <code>print()</code>.</li>
+            <li>Probar la función con varios casos.</li>
+          </ul>
+        </section>
+
+        <section class="card">
+          <h2>Pregunta del día</h2>
+          <div class="question-meta">
+            <div class="pill">
+              <strong>Día actual</strong>
+              <span id="dayLabel">—</span>
+            </div>
+            <div class="pill">
+              <strong>Pregunta</strong>
+              <span id="questionNumber">—</span>
+            </div>
+            <div class="pill">
+              <strong>Siguiente cambio</strong>
+              <span id="countdown">—</span>
+            </div>
+          </div>
+
+          <div class="statement">
+            <h3>Enunciado</h3>
+            <p id="statementText"></p>
+          </div>
+
+          <div class="help">
+            <h3>Referencia de ayuda</h3>
+            <p id="helpText"></p>
+          </div>
+
+          <label for="answer"><strong>Escribe tu solución en Python:</strong></label>
+          <textarea id="answer" placeholder="Ejemplo:
+def sumar(a, b):
+    return a + b"></textarea>
+
+          <div class="btn-row">
+            <button class="btn-primary" onclick="evaluateAnswer()">Enviar respuesta</button>
+            <button class="btn-secondary" onclick="loadTodayQuestion(true)">Cargar pregunta del día</button>
+            <button class="btn-secondary" onclick="clearAnswer()">Limpiar</button>
+          </div>
+
+          <div class="feedback" id="feedbackBox"></div>
+          <div class="status" id="statusText"></div>
+        </section>
+      </div>
+
+      <div>
+        <section class="card progress-card">
+          <h2>Tu progreso</h2>
+          <p>Este panel guarda tus avances en el navegador.</p>
+          <div class="big-number" id="solvedCount">0 / 30</div>
+          <p id="averageText">Promedio acumulado: 0 / 100</p>
+          <ul class="list-clean">
+            <li>Las respuestas se guardan localmente.</li>
+            <li>La pregunta cambia cada 24 horas según la fecha actual.</li>
+            <li>Si vuelves mañana, aparecerá otro reto automáticamente.</li>
+          </ul>
+        </section>
+
+        <section class="card">
+          <h2>Qué evalúa esta página</h2>
+          <ul class="list-clean">
+            <li>Uso correcto de <code>def</code>.</li>
+            <li>Nombre de función apropiado.</li>
+            <li>Parámetros necesarios.</li>
+            <li>Uso correcto de <code>return</code> o <code>print()</code>.</li>
+            <li>Lógica relacionada con el enunciado.</li>
+            <li>Buenas prácticas de legibilidad.</li>
+          </ul>
+        </section>
+
+        <section class="card">
+          <h2>Consejo rápido</h2>
+          <p id="quickTip">
+            Antes de escribir el código, piensa: ¿qué entra?, ¿qué proceso hace la función?, ¿qué debe devolver?
+          </p>
+        </section>
+      </div>
+    </div>
+
+    <p class="footer-note">
+      Hecho para practicar funciones de Python de forma diaria, clara y ordenada.
+    </p>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        title: "Función que suma dos números",
+        statement: "Crea una función llamada sumar que reciba dos números y retorne la suma de ambos.",
+        help: "Recuerda usar def, dos parámetros y return para devolver el resultado.",
+        expectedKeywords: ["def", "sumar", "return", "+"],
+        improvements: [
+          "Asegúrate de que la función reciba exactamente dos parámetros.",
+          "Devuelve el resultado con return en lugar de solo imprimirlo.",
+          "Usa un nombre de función claro y relacionado al problema."
+        ]
+      },
+      {
+        title: "Función que determina si un número es par",
+        statement: "Crea una función llamada es_par que reciba un número y retorne True si es par o False si es impar.",
+        help: "Puedes usar el operador módulo %. Si un número % 2 == 0, entonces es par.",
+        expectedKeywords: ["def", "es_par", "%", "return"],
+        improvements: [
+          "Evalúa la divisibilidad entre 2 usando el operador %.",
+          "Retorna valores booleanos, no textos, salvo que el profesor lo pida.",
+          "La función debe trabajar con un solo parámetro."
+        ]
+      },
+      {
+        title: "Función que calcula el área de un rectángulo",
+        statement: "Crea una función llamada area_rectangulo que reciba base y altura, y retorne el área.",
+        help: "La fórmula es base * altura.",
+        expectedKeywords: ["def", "area_rectangulo", "return", "*"],
+        improvements: [
+          "Multiplica base por altura dentro de la función.",
+          "No olvides retornar el área calculada.",
+          "Usa parámetros con nombres comprensibles."
+        ]
+      },
+      {
+        title: "Función que devuelve el mayor de dos números",
+        statement: "Crea una función llamada mayor que reciba dos números y retorne el mayor de ellos.",
+        help: "Puedes usar una condición if o la función max().",
+        expectedKeywords: ["def", "mayor", "return"],
+        improvements: [
+          "Compara ambos números antes de retornar el resultado.",
+          "Si usas if, cuida bien la indentación.",
+          "La salida debe ser el número mayor, no un mensaje largo."
+        ]
+      },
+      {
+        title: "Función para convertir Celsius a Fahrenheit",
+        statement: "Crea una función llamada celsius_a_fahrenheit que reciba una temperatura en Celsius y retorne su equivalente en Fahrenheit.",
+        help: "La fórmula es F = C * 9/5 + 32.",
+        expectedKeywords: ["def", "celsius_a_fahrenheit", "return", "32"],
+        improvements: [
+          "Aplica correctamente la fórmula de conversión.",
+          "Devuelve el valor final con return.",
+          "Usa un parámetro que represente la temperatura de entrada."
+        ]
+      },
+      {
+        title: "Función que cuenta letras de una palabra",
+        statement: "Crea una función llamada contar_letras que reciba una palabra y retorne cuántos caracteres tiene.",
+        help: "Puedes usar len().",
+        expectedKeywords: ["def", "contar_letras", "len", "return"],
+        improvements: [
+          "Usa len() para contar caracteres.",
+          "Retorna la cantidad calculada.",
+          "Recibe una cadena como parámetro."
+        ]
+      },
+      {
+        title: "Función que calcula el cuadrado de un número",
+        statement: "Crea una función llamada cuadrado que reciba un número y retorne su cuadrado.",
+        help: "Puedes multiplicar el número por sí mismo o usar ** 2.",
+        expectedKeywords: ["def", "cuadrado", "return"],
+        improvements: [
+          "Eleva el número al cuadrado correctamente.",
+          "Evita imprimir; es mejor retornar el resultado.",
+          "Mantén la función simple y directa."
+        ]
+      },
+      {
+        title: "Función que saluda por nombre",
+        statement: "Crea una función llamada saludar que reciba un nombre y retorne un saludo personalizado.",
+        help: "Puedes usar un f-string, por ejemplo: f'Hola, {nombre}'.",
+        expectedKeywords: ["def", "saludar", "return"],
+        improvements: [
+          "Usa el parámetro dentro del saludo personalizado.",
+          "Retorna el mensaje, no solo lo muestres.",
+          "El nombre de la función debe coincidir con el enunciado."
+        ]
+      },
+      {
+        title: "Función que calcula el promedio de tres notas",
+        statement: "Crea una función llamada promedio_tres_notas que reciba tres notas y retorne el promedio.",
+        help: "Suma las tres notas y divide entre 3.",
+        expectedKeywords: ["def", "promedio_tres_notas", "return", "/ 3"],
+        improvements: [
+          "Suma correctamente los tres valores antes de dividir.",
+          "La función debe recibir tres parámetros.",
+          "Retorna el promedio final."
+        ]
+      },
+      {
+        title: "Función que verifica si una palabra está vacía",
+        statement: "Crea una función llamada esta_vacia que reciba un texto y retorne True si está vacío o False si contiene algo.",
+        help: "Puedes comparar el texto con '' o usar len(texto) == 0.",
+        expectedKeywords: ["def", "esta_vacia", "return"],
+        improvements: [
+          "Comprueba correctamente si la cadena está vacía.",
+          "Devuelve True o False según corresponda.",
+          "Asegúrate de trabajar con un solo parámetro."
+        ]
+      },
+      {
+        title: "Función que multiplica tres números",
+        statement: "Crea una función llamada multiplicar_tres que reciba tres números y retorne su producto.",
+        help: "Multiplica los tres parámetros entre sí.",
+        expectedKeywords: ["def", "multiplicar_tres", "return", "*"],
+        improvements: [
+          "Multiplica los tres argumentos correctamente.",
+          "La función debe recibir tres parámetros.",
+          "Usa return para entregar el producto."
+        ]
+      },
+      {
+        title: "Función que devuelve el último carácter",
+        statement: "Crea una función llamada ultimo_caracter que reciba un texto y retorne su último carácter.",
+        help: "En Python, puedes acceder al último carácter con índice -1.",
+        expectedKeywords: ["def", "ultimo_caracter", "return", "-1"],
+        improvements: [
+          "Usa indexación para obtener el último carácter.",
+          "La función debe devolver solo el carácter final.",
+          "Piensa qué pasaría si el texto estuviera vacío."
+        ]
+      },
+      {
+        title: "Función que calcula descuento",
+        statement: "Crea una función llamada aplicar_descuento que reciba un precio y un porcentaje de descuento, y retorne el precio final.",
+        help: "El descuento puede calcularse como precio * porcentaje / 100.",
+        expectedKeywords: ["def", "aplicar_descuento", "return", "/ 100"],
+        improvements: [
+          "Calcula primero el monto del descuento.",
+          "Resta el descuento al precio original.",
+          "Retorna el precio final ya descontado."
+        ]
+      },
+      {
+        title: "Función que verifica mayoría de edad",
+        statement: "Crea una función llamada es_mayor_edad que reciba una edad y retorne True si es 18 o más, y False en caso contrario.",
+        help: "Usa una comparación con >= 18.",
+        expectedKeywords: ["def", "es_mayor_edad", "18", "return"],
+        improvements: [
+          "Compara la edad con 18 correctamente.",
+          "Devuelve un valor booleano.",
+          "Evita respuestas ambiguas como textos cuando el ejercicio pide True o False."
+        ]
+      },
+      {
+        title: "Función que une nombre y apellido",
+        statement: "Crea una función llamada nombre_completo que reciba nombre y apellido, y retorne ambos en una sola cadena.",
+        help: "Puedes concatenar con + ' ' + o usar un f-string.",
+        expectedKeywords: ["def", "nombre_completo", "return"],
+        improvements: [
+          "Incluye un espacio entre nombre y apellido.",
+          "Retorna una sola cadena completa.",
+          "Usa ambos parámetros dentro del resultado."
+        ]
+      },
+      {
+        title: "Función que calcula potencia",
+        statement: "Crea una función llamada potencia que reciba base y exponente, y retorne el resultado de elevar la base al exponente.",
+        help: "Puedes usar el operador **.",
+        expectedKeywords: ["def", "potencia", "return"],
+        improvements: [
+          "Aplica la potencia correctamente con ** o pow().",
+          "La función debe aceptar dos parámetros.",
+          "Retorna el resultado final."
+        ]
+      },
+      {
+        title: "Función que devuelve la primera letra",
+        statement: "Crea una función llamada primera_letra que reciba una palabra y retorne su primera letra.",
+        help: "El primer carácter de una cadena está en la posición 0.",
+        expectedKeywords: ["def", "primera_letra", "return", "[0]"],
+        improvements: [
+          "Usa indexación para obtener el primer carácter.",
+          "Retorna solo una letra.",
+          "Considera qué pasaría si la cadena fuera vacía."
+        ]
+      },
+      {
+        title: "Función que calcula IVA",
+        statement: "Crea una función llamada calcular_iva que reciba un monto y retorne el total agregando un 18% de IVA.",
+        help: "Puedes multiplicar por 1.18 o sumar monto * 0.18.",
+        expectedKeywords: ["def", "calcular_iva", "return", "18"],
+        improvements: [
+          "Agrega correctamente el 18% al monto inicial.",
+          "Retorna el total final.",
+          "Evita confundir el IVA con el monto del impuesto solamente."
+        ]
+      },
+      {
+        title: "Función que verifica si un número es positivo",
+        statement: "Crea una función llamada es_positivo que reciba un número y retorne True si es mayor que 0.",
+        help: "Usa una comparación con > 0.",
+        expectedKeywords: ["def", "es_positivo", "0", "return"],
+        improvements: [
+          "Comprueba correctamente si el número es mayor que cero.",
+          "Devuelve True o False.",
+          "No confundas positivo con distinto de cero."
+        ]
+      },
+      {
+        title: "Función que calcula perímetro de cuadrado",
+        statement: "Crea una función llamada perimetro_cuadrado que reciba el lado y retorne el perímetro del cuadrado.",
+        help: "El perímetro de un cuadrado es lado * 4.",
+        expectedKeywords: ["def", "perimetro_cuadrado", "return", "4"],
+        improvements: [
+          "Multiplica el lado por 4.",
+          "No confundas perímetro con área.",
+          "Retorna el resultado final."
+        ]
+      },
+      {
+        title: "Función que convierte minutos a segundos",
+        statement: "Crea una función llamada minutos_a_segundos que reciba minutos y retorne la cantidad equivalente en segundos.",
+        help: "Un minuto tiene 60 segundos.",
+        expectedKeywords: ["def", "minutos_a_segundos", "return", "60"],
+        improvements: [
+          "Multiplica los minutos por 60.",
+          "La función debe recibir un solo parámetro.",
+          "Retorna el valor en segundos."
+        ]
+      },
+      {
+        title: "Función que calcula la mitad",
+        statement: "Crea una función llamada mitad que reciba un número y retorne su mitad.",
+        help: "Solo debes dividir entre 2.",
+        expectedKeywords: ["def", "mitad", "return", "/ 2"],
+        improvements: [
+          "Divide correctamente el valor entre 2.",
+          "Retorna el resultado obtenido.",
+          "Usa un solo parámetro numérico."
+        ]
+      },
+      {
+        title: "Función que determina si una letra es vocal",
+        statement: "Crea una función llamada es_vocal que reciba una letra y retorne True si es vocal y False si no lo es.",
+        help: "Puedes comparar la letra con una lista o cadena como 'aeiou'.",
+        expectedKeywords: ["def", "es_vocal", "return"],
+        improvements: [
+          "Comprueba si la letra pertenece al grupo de vocales.",
+          "Considera usar lower() para evitar problemas con mayúsculas.",
+          "Retorna un booleano."
+        ]
+      },
+      {
+        title: "Función que repite una palabra",
+        statement: "Crea una función llamada repetir_palabra que reciba una palabra y un número, y retorne la palabra repetida esa cantidad de veces.",
+        help: "En Python, puedes multiplicar una cadena por un entero.",
+        expectedKeywords: ["def", "repetir_palabra", "return"],
+        improvements: [
+          "Usa el número de repeticiones correctamente.",
+          "Retorna la cadena final repetida.",
+          "Asegúrate de recibir dos parámetros."
+        ]
+      },
+      {
+        title: "Función que calcula el cubo",
+        statement: "Crea una función llamada cubo que reciba un número y retorne su cubo.",
+        help: "Puedes usar ** 3 o multiplicar tres veces el número.",
+        expectedKeywords: ["def", "cubo", "return", "3"],
+        improvements: [
+          "Eleva el número a la potencia 3.",
+          "Retorna el resultado final.",
+          "No confundas cubo con cuadrado."
+        ]
+      },
+      {
+        title: "Función que devuelve si aprueba",
+        statement: "Crea una función llamada aprueba que reciba una nota y retorne True si la nota es mayor o igual a 11.",
+        help: "Usa una comparación con >= 11.",
+        expectedKeywords: ["def", "aprueba", "11", "return"],
+        improvements: [
+          "Compara la nota con el valor mínimo correcto.",
+          "Devuelve True o False según corresponda.",
+          "Mantén la lógica clara."
+        ]
+      },
+      {
+        title: "Función que invierte una palabra",
+        statement: "Crea una función llamada invertir_palabra que reciba una palabra y la retorne invertida.",
+        help: "Puedes usar slicing con [::-1].",
+        expectedKeywords: ["def", "invertir_palabra", "return"],
+        improvements: [
+          "Invierte la cadena correctamente.",
+          "Usa slicing o una lógica equivalente.",
+          "Retorna la nueva cadena."
+        ]
+      },
+      {
+        title: "Función que calcula salario con bono",
+        statement: "Crea una función llamada salario_con_bono que reciba salario y bono, y retorne el total a pagar.",
+        help: "Solo debes sumar salario y bono.",
+        expectedKeywords: ["def", "salario_con_bono", "return", "+"],
+        improvements: [
+          "Suma ambas cantidades dentro de la función.",
+          "Retorna el total final.",
+          "Usa dos parámetros claros."
+        ]
+      },
+      {
+        title: "Función que calcula longitud de lista",
+        statement: "Crea una función llamada contar_elementos que reciba una lista y retorne cuántos elementos tiene.",
+        help: "Puedes usar len() también con listas.",
+        expectedKeywords: ["def", "contar_elementos", "len", "return"],
+        improvements: [
+          "Usa len() sobre la lista recibida.",
+          "Retorna la cantidad de elementos.",
+          "Recibe una lista como parámetro."
+        ]
+      },
+      {
+        title: "Función que compara dos textos",
+        statement: "Crea una función llamada son_iguales que reciba dos textos y retorne True si son iguales o False si son diferentes.",
+        help: "Puedes usar el operador == para comparar cadenas.",
+        expectedKeywords: ["def", "son_iguales", "==", "return"],
+        improvements: [
+          "Compara correctamente ambos textos.",
+          "Retorna un valor booleano.",
+          "No olvides recibir dos parámetros."
+        ]
+      }
+    ];
+
+    const tips = [
+      "Primero piensa en las entradas y la salida esperada.",
+      "Si el problema pide retornar, evita usar solo print().",
+      "Los nombres claros hacen que tu código se vea más profesional.",
+      "Una función bien hecha suele resolver una sola tarea.",
+      "Prueba mentalmente tu función con un ejemplo sencillo.",
+      "Si el ejercicio menciona True o False, probablemente espera un booleano.",
+      "Usa parámetros con nombres fáciles de entender."
+    ];
+
+    function getTodayIndex() {
+      const startDate = new Date("2026-01-01T00:00:00");
+      const now = new Date();
+      const diffMs = now - startDate;
+      const dayNumber = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      return ((dayNumber % questions.length) + questions.length) % questions.length;
+    }
+
+    function getTodayKey() {
+      const now = new Date();
+      return `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+    }
+
+    function formatDate(date) {
+      return date.toLocaleDateString("es-PE", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      });
+    }
+
+    function getTimeUntilNextDay() {
+      const now = new Date();
+      const tomorrow = new Date(now);
+      tomorrow.setDate(now.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0);
+      const diff = tomorrow - now;
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      return `${hours}h ${minutes}min`;
+    }
+
+    function loadTodayQuestion(showStatus = false) {
+      const index = getTodayIndex();
+      const q = questions[index];
+      const todayKey = getTodayKey();
+      const saved = JSON.parse(localStorage.getItem("pythonFuncPracticeAnswers") || "{}");
+
+      document.getElementById("dayLabel").textContent = formatDate(new Date());
+      document.getElementById("questionNumber").textContent = `${index + 1} de ${questions.length}`;
+      document.getElementById("countdown").textContent = getTimeUntilNextDay();
+      document.getElementById("statementText").textContent = q.statement;
+      document.getElementById("helpText").textContent = q.help;
+      document.getElementById("quickTip").textContent = tips[index % tips.length];
+      document.getElementById("answer").value = saved[todayKey]?.answer || "";
+      document.getElementById("feedbackBox").style.display = saved[todayKey]?.feedbackHtml ? "block" : "none";
+      document.getElementById("feedbackBox").innerHTML = saved[todayKey]?.feedbackHtml || "";
+
+      if (showStatus) {
+        document.getElementById("statusText").textContent = `Se cargó la pregunta del día: ${q.title}.`;
+      } else {
+        document.getElementById("statusText").textContent = `Pregunta activa: ${q.title}.`;
+      }
+
+      updateProgress();
+    }
+
+    function evaluateAnswer() {
+      const index = getTodayIndex();
+      const q = questions[index];
+      const todayKey = getTodayKey();
+      const rawAnswer = document.getElementById("answer").value.trim();
+      const answer = rawAnswer.toLowerCase();
+
+      if (!rawAnswer) {
+        document.getElementById("statusText").textContent = "Primero escribe una respuesta antes de enviarla.";
+        return;
+      }
+
+      let score = 0;
+      const feedback = [];
+      const matchedKeywords = [];
+
+      if (answer.includes("def ")) {
+        score += 25;
+        matchedKeywords.push("Usaste la palabra clave def.");
+      } else {
+        feedback.push("Tu respuesta debería definir una función usando def.");
+      }
+
+      if (answer.includes("return")) {
+        score += 20;
+        matchedKeywords.push("Usaste return para devolver el resultado.");
+      } else if (answer.includes("print")) {
+        score += 8;
+        feedback.push("Tu solución usa print(), pero en este tipo de ejercicios normalmente es mejor usar return.");
+      } else {
+        feedback.push("Falta devolver el resultado. Revisa si necesitas usar return.");
+      }
+
+      q.expectedKeywords.forEach(keyword => {
+        if (answer.includes(keyword.toLowerCase())) {
+          score += 12;
+          matchedKeywords.push(`Incluiste un elemento importante: ${keyword}.`);
+        }
+      });
+
+      if (rawAnswer.split("\n").length >= 2) {
+        score += 8;
+      }
+
+      if (rawAnswer.length > 25) {
+        score += 5;
+      }
+
+      if (score > 100) score = 100;
+
+      q.improvements.forEach(item => {
+        if (feedback.length < 3) feedback.push(item);
+      });
+
+      let levelClass = "bad";
+      let message = "Tu respuesta aún puede mejorar bastante.";
+
+      if (score >= 80) {
+        levelClass = "excellent";
+        message = "Muy buena respuesta. Vas por buen camino.";
+      } else if (score >= 55) {
+        levelClass = "regular";
+        message = "Respuesta aceptable, pero hay detalles por corregir.";
+      }
+
+      const feedbackHtml = `
+        <div class="score-box ${levelClass}">Calificación: ${score} / 100</div>
+        <p><strong>Evaluación:</strong> ${message}</p>
+        <p><strong>Lo que hiciste bien:</strong></p>
+        <ul>
+          ${matchedKeywords.length ? matchedKeywords.map(item => `<li>${item}</li>`).join("") : "<li>Se detectaron pocos elementos clave en tu respuesta.</li>"}
+        </ul>
+        <p><strong>Qué deberías mejorar:</strong></p>
+        <ul>
+          ${feedback.slice(0, 4).map(item => `<li>${item}</li>`).join("")}
+        </ul>
+      `;
+
+      document.getElementById("feedbackBox").style.display = "block";
+      document.getElementById("feedbackBox").innerHTML = feedbackHtml;
+      document.getElementById("statusText").textContent = "Tu respuesta fue evaluada y guardada en este navegador.";
+
+      const saved = JSON.parse(localStorage.getItem("pythonFuncPracticeAnswers") || "{}");
+      saved[todayKey] = {
+        questionIndex: index,
+        answer: rawAnswer,
+        score,
+        feedbackHtml
+      };
+      localStorage.setItem("pythonFuncPracticeAnswers", JSON.stringify(saved));
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const saved = JSON.parse(localStorage.getItem("pythonFuncPracticeAnswers") || "{}");
+      const entries = Object.values(saved);
+      const solved = entries.length;
+      const avg = solved ? (entries.reduce((acc, item) => acc + (item.score || 0), 0) / solved).toFixed(1) : 0;
+
+      document.getElementById("solvedCount").textContent = `${solved} / ${questions.length}`;
+      document.getElementById("averageText").textContent = `Promedio acumulado: ${avg} / 100`;
+    }
+
+    function clearAnswer() {
+      document.getElementById("answer").value = "";
+      document.getElementById("statusText").textContent = "Se limpió el área de respuesta.";
+    }
+
+    loadTodayQuestion();
+    setInterval(() => {
+      document.getElementById("countdown").textContent = getTimeUntilNextDay();
+    }, 60000);
+  </script>
+</body>
+</html>
