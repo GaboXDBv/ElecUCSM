@@ -1,0 +1,691 @@
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proyecto Electrónico I - Industria 4.0</title>
+  <style>
+    :root{
+      --bg1:#08111f;
+      --bg2:#0f1f35;
+      --panel:rgba(10,18,32,.78);
+      --panel-2:rgba(18,31,52,.82);
+      --line:rgba(125,164,220,.18);
+      --text:#edf4ff;
+      --muted:#a9b9d4;
+      --accent:#5fb7ff;
+      --accent2:#7ef0d3;
+      --accent3:#ffd56a;
+      --danger:#ff8f8f;
+      --shadow:0 20px 50px rgba(0,0,0,.35);
+      --radius:24px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family: "Segoe UI", Inter, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(95,183,255,.15), transparent 28%),
+        radial-gradient(circle at 90% 10%, rgba(126,240,211,.10), transparent 24%),
+        linear-gradient(180deg, var(--bg1), var(--bg2) 45%, #08111e 100%);
+      min-height:100vh;
+    }
+    .grid-bg{
+      position:fixed; inset:0; pointer-events:none; opacity:.12;
+      background-image:
+        linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,.9), transparent 92%);
+    }
+    .container{width:min(1180px, calc(100% - 32px)); margin:0 auto}
+    header.hero{
+      padding:72px 0 36px;
+      position:relative;
+      overflow:hidden;
+    }
+    .hero-card{
+      background:linear-gradient(135deg, rgba(18,29,48,.92), rgba(10,18,30,.78));
+      border:1px solid var(--line);
+      border-radius:32px;
+      box-shadow:var(--shadow);
+      padding:34px;
+      display:grid;
+      grid-template-columns:1.35fr .95fr;
+      gap:28px;
+      align-items:center;
+      backdrop-filter: blur(10px);
+    }
+    .eyebrow{
+      display:inline-flex; gap:10px; align-items:center;
+      font-size:.9rem; letter-spacing:.12em; text-transform:uppercase;
+      color:var(--accent2); font-weight:700;
+      padding:10px 14px; border:1px solid rgba(126,240,211,.18);
+      border-radius:999px; background:rgba(126,240,211,.08);
+      margin-bottom:18px;
+    }
+    h1{
+      margin:0 0 16px;
+      font-size:clamp(2rem,4.6vw,4rem);
+      line-height:1.02;
+      letter-spacing:-.04em;
+    }
+    .lead{
+      color:var(--muted);
+      font-size:1.05rem;
+      line-height:1.75;
+      max-width:62ch;
+      margin:0 0 24px;
+    }
+    .meta{
+      display:flex; flex-wrap:wrap; gap:12px;
+    }
+    .meta span{
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(95,183,255,.08);
+      border:1px solid rgba(95,183,255,.16);
+      color:#d9ecff;
+      font-size:.95rem;
+    }
+    .hero-art{
+      min-height:340px;
+      border-radius:28px;
+      background:
+        linear-gradient(155deg, rgba(95,183,255,.18), transparent 30%),
+        radial-gradient(circle at 15% 15%, rgba(126,240,211,.18), transparent 18%),
+        linear-gradient(180deg, rgba(15,26,42,.98), rgba(8,17,31,.98));
+      border:1px solid rgba(255,255,255,.08);
+      position:relative;
+      overflow:hidden;
+      padding:22px;
+    }
+    .hero-art .ring{
+      position:absolute;
+      border:1px solid rgba(126,240,211,.24);
+      border-radius:50%;
+      filter:drop-shadow(0 0 18px rgba(95,183,255,.12));
+    }
+    .ring.r1{width:250px;height:250px;right:-40px;top:-30px}
+    .ring.r2{width:180px;height:180px;right:55px;top:35px}
+    .ring.r3{width:310px;height:310px;left:-120px;bottom:-110px;border-color:rgba(95,183,255,.18)}
+    .chip, .motor, .sensor, .cloud, .chart{
+      position:absolute; border-radius:20px; border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.04); backdrop-filter: blur(8px);
+      display:flex; align-items:center; justify-content:center;
+      color:#f3f8ff; text-align:center; font-weight:600;
+      box-shadow:0 12px 28px rgba(0,0,0,.18);
+    }
+    .motor{left:26px; bottom:58px; width:120px; height:84px}
+    .sensor{left:174px; top:54px; width:116px; height:68px}
+    .chip{right:26px; top:110px; width:112px; height:112px}
+    .cloud{right:38px; bottom:34px; width:132px; height:74px}
+    .chart{left:148px; bottom:148px; width:132px; height:74px}
+    .wire{
+      position:absolute; background:linear-gradient(90deg, transparent, var(--accent), transparent);
+      height:2px; opacity:.7;
+    }
+    .w1{left:130px; bottom:100px; width:118px; transform:rotate(-22deg)}
+    .w2{left:225px; top:118px; width:146px; transform:rotate(25deg)}
+    .w3{left:242px; bottom:180px; width:164px; transform:rotate(-15deg)}
+    nav.index{
+      position:sticky; top:10px; z-index:10;
+      padding:10px 0 24px;
+      backdrop-filter: blur(10px);
+    }
+    .index-wrap{
+      border:1px solid var(--line);
+      background:rgba(8,17,31,.64);
+      border-radius:20px;
+      padding:14px;
+      display:flex; flex-wrap:wrap; gap:10px;
+      box-shadow:0 8px 26px rgba(0,0,0,.2);
+    }
+    .index-wrap a{
+      text-decoration:none; color:#eaf4ff; font-weight:600; font-size:.95rem;
+      padding:10px 14px; border-radius:999px;
+      background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06);
+      transition:transform .2s ease, background .2s ease, border-color .2s ease;
+    }
+    .index-wrap a:hover{transform:translateY(-2px); background:rgba(95,183,255,.12); border-color:rgba(95,183,255,.26)}
+    main{padding:0 0 60px}
+    .section{
+      margin:26px 0;
+      background:linear-gradient(180deg, var(--panel), var(--panel-2));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      overflow:hidden;
+      box-shadow:var(--shadow);
+    }
+    .section-head{
+      padding:24px 24px 0;
+      display:flex; justify-content:space-between; gap:18px; align-items:flex-start; flex-wrap:wrap;
+    }
+    .section h2{
+      margin:0;
+      font-size:clamp(1.45rem, 3vw, 2.2rem);
+      letter-spacing:-.03em;
+    }
+    .badge{
+      color:var(--accent2); border:1px solid rgba(126,240,211,.16); background:rgba(126,240,211,.07);
+      padding:10px 14px; border-radius:999px; font-weight:700; font-size:.9rem;
+      white-space:nowrap;
+    }
+    .section-body{
+      display:grid; grid-template-columns:1.15fr .85fr; gap:24px;
+      padding:24px;
+    }
+    .card{
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:22px;
+      padding:22px;
+    }
+    .question{
+      color:var(--accent3); font-weight:800; letter-spacing:.03em;
+      text-transform:uppercase; font-size:.9rem; margin-bottom:10px;
+    }
+    p{color:var(--muted); line-height:1.8; margin:0 0 14px}
+    .mini-grid{
+      display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:14px;
+    }
+    .mini{
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:18px;
+      padding:16px;
+    }
+    .mini h4, .card h3{
+      margin:0 0 8px; font-size:1rem; color:#f3f8ff;
+    }
+    ul.clean{
+      list-style:none; margin:14px 0 0; padding:0; display:grid; gap:10px;
+    }
+    ul.clean li{
+      position:relative; padding-left:18px; color:var(--muted); line-height:1.7;
+    }
+    ul.clean li::before{
+      content:""; width:8px; height:8px; border-radius:50%;
+      background:linear-gradient(180deg, var(--accent), var(--accent2));
+      position:absolute; left:0; top:.72em;
+      box-shadow:0 0 12px rgba(95,183,255,.45);
+    }
+    .visual{
+      min-height:100%;
+      position:relative;
+      overflow:hidden;
+    }
+    .panel-title{
+      font-size:.92rem; color:#dceafe; letter-spacing:.08em; text-transform:uppercase; margin-bottom:16px;
+    }
+    .timeline{
+      display:grid; gap:14px;
+    }
+    .step{
+      display:grid; grid-template-columns:44px 1fr; gap:14px; align-items:flex-start;
+      padding:14px; border-radius:18px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06);
+    }
+    .num{
+      width:44px; height:44px; border-radius:14px; display:grid; place-items:center;
+      background:linear-gradient(135deg, rgba(95,183,255,.22), rgba(126,240,211,.12));
+      color:white; font-weight:800;
+      border:1px solid rgba(95,183,255,.18);
+    }
+    .diagram{
+      display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-top:16px; align-items:center;
+    }
+    .node{
+      text-align:center; font-size:.88rem; color:#e8f1ff;
+      padding:14px 10px; border-radius:16px; background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.06); min-height:84px; display:grid; place-items:center;
+    }
+    .arrow{
+      text-align:center; color:var(--accent2); font-size:1.5rem; font-weight:700;
+    }
+    table{
+      width:100%; border-collapse:collapse; margin-top:16px; overflow:hidden;
+      border-radius:18px;
+    }
+    th, td{
+      padding:14px 12px; text-align:left; vertical-align:top;
+      border-bottom:1px solid rgba(255,255,255,.07);
+      color:var(--muted); line-height:1.6;
+    }
+    th{
+      color:#f4f9ff; font-size:.95rem; background:rgba(95,183,255,.10);
+    }
+    .svg-wrap{
+      border-radius:20px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.08);
+      background:linear-gradient(180deg, rgba(11,23,40,.85), rgba(8,17,31,.98));
+      padding:6px;
+    }
+    footer{
+      padding:12px 0 50px;
+    }
+    .foot{
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:22px;
+      padding:22px;
+      color:var(--muted);
+      line-height:1.8;
+    }
+    .note{
+      margin-top:12px;
+      padding:14px 16px;
+      border-left:4px solid var(--accent);
+      background:rgba(95,183,255,.08);
+      border-radius:14px;
+      color:#dcecff;
+    }
+    @media (max-width: 980px){
+      .hero-card, .section-body{grid-template-columns:1fr}
+      .diagram{grid-template-columns:1fr}
+      .arrow{transform:rotate(90deg)}
+    }
+    @media (max-width: 620px){
+      header.hero{padding-top:42px}
+      .hero-card, .section-body, .section-head{padding:18px}
+      .mini-grid{grid-template-columns:1fr}
+      .index-wrap{gap:8px}
+      .index-wrap a{font-size:.88rem}
+      .hero-art{min-height:300px}
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+
+  <header class="hero">
+    <div class="container">
+      <div class="hero-card">
+        <div>
+          <div class="eyebrow">Proyecto Electrónico I · Exposición técnica</div>
+          <h1>Industria 4.0, sensores y monitoreo inteligente de motores</h1>
+          <p class="lead">
+            Página web técnica organizada en <strong>6 preguntas principales</strong>, con una estética elegante y moderna,
+            basada en la teoría trabajada en clase: efecto fotoeléctrico, sensores 4.0, variables físicas del motor,
+            adquisición de datos, análisis inteligente y diferenciación entre ciencia fáctica y tecnología aplicada.
+          </p>
+          <div class="meta">
+            <span>Diseño técnico</span>
+            <span>Enfoque académico</span>
+            <span>Lista para exposición</span>
+          </div>
+        </div>
+
+        <div class="hero-art">
+          <div class="ring r1"></div>
+          <div class="ring r2"></div>
+          <div class="ring r3"></div>
+          <div class="motor">Motor<br>industrial</div>
+          <div class="sensor">Sensor<br>inteligente</div>
+          <div class="chip">Edge / PLC</div>
+          <div class="cloud">Nube / SCADA</div>
+          <div class="chart">Análisis<br>predictivo</div>
+          <div class="wire w1"></div>
+          <div class="wire w2"></div>
+          <div class="wire w3"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="index">
+    <div class="container">
+      <div class="index-wrap">
+        <a href="#q1">Pregunta 1</a>
+        <a href="#q2">Pregunta 2</a>
+        <a href="#q3">Pregunta 3</a>
+        <a href="#q4">Pregunta 4</a>
+        <a href="#q5">Pregunta 5</a>
+        <a href="#q6">Pregunta 6</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+
+    <section class="section" id="q1">
+      <div class="section-head">
+        <h2>Pregunta 1. ¿Cómo evoluciona el efecto fotoeléctrico desde la ciencia hasta la Industria 4.0?</h2>
+        <div class="badge">Fenómeno → sensor → sistema inteligente</div>
+      </div>
+      <div class="section-body">
+        <div class="card">
+          <div class="question">Idea central</div>
+          <p>
+            El efecto fotoeléctrico nace como un fenómeno físico: la luz incide sobre un material y logra expulsar electrones si la energía del fotón es suficiente.
+            A partir de esa base científica se desarrollan sensores fotoeléctricos capaces de detectar objetos sin contacto, lo que permite su aplicación en automatización industrial.
+          </p>
+          <p>
+            En un entorno de Industria 4.0, el sensor deja de ser un elemento aislado. Ahora se integra con controladores, redes industriales y plataformas de supervisión,
+            aportando datos en tiempo real para trazabilidad, monitoreo, optimización del proceso y toma de decisiones automáticas.
+          </p>
+
+          <div class="mini-grid">
+            <div class="mini">
+              <h4>Fundamento científico</h4>
+              <p>La luz se comporta también como partícula; cada fotón transfiere energía al material y puede liberar electrones.</p>
+            </div>
+            <div class="mini">
+              <h4>Aplicación tecnológica</h4>
+              <p>Ese principio permite crear sensores fotoeléctricos para conteo, posición, presencia y supervisión de etapas productivas.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card visual">
+          <div class="panel-title">Línea de evolución</div>
+          <div class="timeline">
+            <div class="step"><div class="num">1</div><div><h3>Descubrimiento</h3><p>Observación del fenómeno fotoeléctrico y comprensión de la interacción entre luz y materia.</p></div></div>
+            <div class="step"><div class="num">2</div><div><h3>Base cuántica</h3><p>La emisión depende de la frecuencia de la radiación y de la energía entregada por los fotones.</p></div></div>
+            <div class="step"><div class="num">3</div><div><h3>Sensado industrial</h3><p>Surgen sensores beam break, retroreflectivos, difusos y convergentes para detectar objetos sin contacto.</p></div></div>
+            <div class="step"><div class="num">4</div><div><h3>Integración 4.0</h3><p>Los sensores comparten datos con PLC, red industrial, dashboards y sistemas de análisis inteligente.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="q2">
+      <div class="section-head">
+        <h2>Pregunta 2. Si un sensor de temperatura convencional mide una variable, ¿qué lo convierte en Tecnología 4.0?</h2>
+        <div class="badge">Medición + conectividad + análisis</div>
+      </div>
+      <div class="section-body">
+        <div class="card">
+          <div class="question">Respuesta técnica</div>
+          <p>
+            Un sensor convencional solo mide una variable física y entrega una señal. En cambio, un sensor 4.0 no solo mide:
+            también transmite datos en tiempo real, se comunica con otros equipos, puede almacenar históricos,
+            integrarse a redes industriales y aportar información útil para análisis, mantenimiento predictivo y decisiones automáticas.
+          </p>
+          <p>
+            La diferencia con la Industria 3.0 es que ahora el sensor forma parte de un sistema digital conectado.
+            Por eso, deja de ser únicamente un instrumento de medición y se transforma en un nodo inteligente dentro del proceso productivo.
+          </p>
+
+          <ul class="clean">
+            <li>Comunicación con otros dispositivos y plataformas.</li>
+            <li>Monitoreo remoto en tiempo real.</li>
+            <li>Almacenamiento histórico para análisis.</li>
+            <li>Base para mantenimiento predictivo.</li>
+            <li>Integración con control y supervisión industrial.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="panel-title">Comparación conceptual</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Industria 3.0</th>
+                <th>Industria 4.0</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Automatiza procesos con electrónica y TI.</td>
+                <td>Conecta, analiza y optimiza sistemas en tiempo real.</td>
+              </tr>
+              <tr>
+                <td>El sensor mide y envía una señal al controlador.</td>
+                <td>El sensor comparte datos, alimenta análisis y participa en decisiones automáticas.</td>
+              </tr>
+              <tr>
+                <td>Enfoque local y funcional.</td>
+                <td>Enfoque inteligente, distribuido e interconectado.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="q3">
+      <div class="section-head">
+        <h2>Pregunta 3. ¿Qué variables físicas afectan la vida útil del motor y qué ley científica las sustenta?</h2>
+        <div class="badge">Temperatura · vibración · potencia</div>
+      </div>
+      <div class="section-body">
+        <div class="card">
+          <div class="question">Variables críticas</div>
+
+          <div class="mini-grid">
+            <div class="mini">
+              <h4>Temperatura</h4>
+              <p>El calor excesivo degrada el aislamiento del bobinado y reduce la vida útil del motor.</p>
+              <p><strong>Ley asociada:</strong> Ley de Joule, porque la circulación de corriente genera calor proporcional a la resistencia y al cuadrado de la corriente.</p>
+            </div>
+            <div class="mini">
+              <h4>Vibración</h4>
+              <p>La vibración excesiva desgasta rodamientos, genera desalineación y acelera fallas mecánicas.</p>
+              <p><strong>Base científica:</strong> dinámica y vibraciones mecánicas, donde fuerzas periódicas pueden causar resonancia y deterioro estructural.</p>
+            </div>
+            <div class="mini">
+              <h4>Potencia eléctrica</h4>
+              <p>Una potencia fuera del rango de diseño obliga al motor a trabajar en condiciones ineficientes o forzadas.</p>
+              <p><strong>Relación física:</strong> depende de voltaje y corriente; un suministro inadecuado incrementa esfuerzo térmico y eléctrico.</p>
+            </div>
+            <div class="mini">
+              <h4>Humedad (variable de entorno)</h4>
+              <p>En una embotelladora, la humedad favorece condensación y deterioro interno, elevando la probabilidad de fallas.</p>
+              <p>Es importante como condición ambiental complementaria del monitoreo.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="panel-title">Mapa visual del riesgo</div>
+          <div class="svg-wrap">
+            <svg viewBox="0 0 620 420" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mapa de variables del motor">
+              <defs>
+                <linearGradient id="g1" x1="0" x2="1">
+                  <stop offset="0%" stop-color="#5fb7ff"/>
+                  <stop offset="100%" stop-color="#7ef0d3"/>
+                </linearGradient>
+              </defs>
+              <rect x="0" y="0" width="620" height="420" rx="28" fill="#091221"/>
+              <rect x="212" y="138" width="196" height="132" rx="26" fill="#15263d" stroke="rgba(255,255,255,.14)"/>
+              <text x="310" y="188" text-anchor="middle" fill="#eef5ff" font-size="26" font-family="Segoe UI" font-weight="700">Motor</text>
+              <text x="310" y="220" text-anchor="middle" fill="#c3d3ec" font-size="18" font-family="Segoe UI">Vida útil y confiabilidad</text>
+
+              <g>
+                <circle cx="112" cy="92" r="58" fill="#12253e" stroke="url(#g1)" stroke-width="3"/>
+                <text x="112" y="88" text-anchor="middle" fill="#eef5ff" font-size="20" font-family="Segoe UI" font-weight="700">Temp.</text>
+                <text x="112" y="114" text-anchor="middle" fill="#c6d8f3" font-size="14" font-family="Segoe UI">Ley de Joule</text>
+                <line x1="158" y1="126" x2="232" y2="171" stroke="url(#g1)" stroke-width="4"/>
+              </g>
+
+              <g>
+                <circle cx="500" cy="92" r="58" fill="#12253e" stroke="url(#g1)" stroke-width="3"/>
+                <text x="500" y="88" text-anchor="middle" fill="#eef5ff" font-size="20" font-family="Segoe UI" font-weight="700">Vibración</text>
+                <text x="500" y="114" text-anchor="middle" fill="#c6d8f3" font-size="14" font-family="Segoe UI">Dinámica</text>
+                <line x1="454" y1="126" x2="388" y2="171" stroke="url(#g1)" stroke-width="4"/>
+              </g>
+
+              <g>
+                <circle cx="112" cy="334" r="58" fill="#12253e" stroke="url(#g1)" stroke-width="3"/>
+                <text x="112" y="330" text-anchor="middle" fill="#eef5ff" font-size="20" font-family="Segoe UI" font-weight="700">Potencia</text>
+                <text x="112" y="356" text-anchor="middle" fill="#c6d8f3" font-size="14" font-family="Segoe UI">V · I</text>
+                <line x1="158" y1="300" x2="232" y2="237" stroke="url(#g1)" stroke-width="4"/>
+              </g>
+
+              <g>
+                <circle cx="500" cy="334" r="58" fill="#12253e" stroke="url(#g1)" stroke-width="3"/>
+                <text x="500" y="330" text-anchor="middle" fill="#eef5ff" font-size="20" font-family="Segoe UI" font-weight="700">Humedad</text>
+                <text x="500" y="356" text-anchor="middle" fill="#c6d8f3" font-size="14" font-family="Segoe UI">Entorno</text>
+                <line x1="454" y1="300" x2="388" y2="237" stroke="url(#g1)" stroke-width="4"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="q4">
+      <div class="section-head">
+        <h2>Pregunta 4. ¿Cómo es la cadena de adquisición de datos y cómo la tecnología supera las limitaciones de la ciencia?</h2>
+        <div class="badge">Medición → procesamiento → acción</div>
+      </div>
+      <div class="section-body">
+        <div class="card">
+          <div class="question">Cadena propuesta</div>
+          <p>
+            La ciencia explica por qué aumentan la temperatura, la vibración o la sobrecorriente, pero por sí sola no evita fallas en tiempo real.
+            La tecnología toma ese conocimiento y lo transforma en un sistema capaz de medir continuamente, procesar datos, transmitir información y ejecutar acciones concretas.
+          </p>
+
+          <div class="diagram">
+            <div class="node">Sensores<br>temperatura / vibración / corriente</div>
+            <div class="arrow">→</div>
+            <div class="node">Acondicionamiento<br>de señal</div>
+            <div class="arrow">→</div>
+            <div class="node">Conversión A/D</div>
+            <div class="arrow">→</div>
+            <div class="node">PLC / microcontrolador / edge</div>
+            <div class="arrow">→</div>
+            <div class="node">Red industrial / gateway / nube</div>
+            <div class="arrow">→</div>
+            <div class="node">Dashboard / alertas / mantenimiento</div>
+          </div>
+
+          <div class="note">
+            La tecnología supera la limitación de la ciencia porque convierte una explicación teórica en una respuesta operativa continua, automática y útil dentro de la planta.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="panel-title">Tres niveles de análisis</div>
+          <div class="timeline">
+            <div class="step"><div class="num">A</div><div><h3>Análisis en el borde</h3><p>Filtrado, FFT y umbrales críticos ejecutados localmente para actuar sin esperar a internet.</p></div></div>
+            <div class="step"><div class="num">B</div><div><h3>Análisis predictivo</h3><p>Modelos de detección de anomalías y cálculo de vida útil remanente para anticipar fallas.</p></div></div>
+            <div class="step"><div class="num">C</div><div><h3>Visualización y acción</h3><p>Dashboard 4.0, alertas inteligentes y apoyo al mantenimiento basado en condición.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="q5">
+      <div class="section-head">
+        <h2>Pregunta 5. ¿Qué característica adicional necesita el diseño para no ser solo un instrumento de medición, sino un componente 4.0?</h2>
+        <div class="badge">Conectividad e integración digital</div>
+      </div>
+      <div class="section-body">
+        <div class="card">
+          <div class="question">Condición clave</div>
+          <p>
+            La característica adicional es la <strong>conectividad e integración digital inteligente</strong>.
+            El sistema no debe limitarse a medir una variable; también debe comunicarla, almacenarla, analizarla y utilizarla para tomar decisiones automáticas dentro de un entorno industrial conectado.
+          </p>
+          <ul class="clean">
+            <li>Monitoreo en tiempo real del estado del motor.</li>
+            <li>Históricos de operación para trazabilidad.</li>
+            <li>Análisis automático para detectar anomalías.</li>
+            <li>Predicción de fallas y planificación del mantenimiento.</li>
+            <li>Integración con plataformas de control, supervisión o nube.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="panel-title">De instrumento a componente 4.0</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Instrumento convencional</th>
+                <th>Componente 4.0</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Solo mide.</td>
+                <td>Mide, comunica, analiza y apoya decisiones.</td>
+              </tr>
+              <tr>
+                <td>Opera de forma aislada.</td>
+                <td>Se integra a una red industrial o plataforma digital.</td>
+              </tr>
+              <tr>
+                <td>No genera inteligencia operativa.</td>
+                <td>Permite monitoreo, trazabilidad y mantenimiento predictivo.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="q6">
+      <div class="section-head">
+        <h2>Pregunta 6. ¿Cómo diferenciar ciencia fáctica y tecnología aplicada en un sistema industrial?</h2>
+        <div class="badge">Concepto · criterio · aplicación</div>
+      </div>
+      <div class="section-body">
+        <div class="card">
+          <div class="question">Criterio de diferenciación</div>
+          <p>
+            La ciencia fáctica explica fenómenos de la realidad y construye conocimiento verificable.
+            La tecnología aplicada utiliza ese conocimiento para diseñar herramientas, procesos o soluciones concretas.
+            En Industria 4.0, ambos niveles conviven: primero se comprende el fenómeno y luego se desarrolla una implementación útil y repetible.
+          </p>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Nivel de análisis</th>
+                <th>Ejemplo</th>
+                <th>Clasificación</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Óptica cuántica</td>
+                <td>Interacción de los fotones con el sensor CMOS.</td>
+                <td>Ciencia fáctica</td>
+              </tr>
+              <tr>
+                <td>Procesamiento digital</td>
+                <td>Filtrado de ruido en la imagen mediante algoritmos.</td>
+                <td>Tecnología aplicada</td>
+              </tr>
+              <tr>
+                <td>Interoperabilidad</td>
+                <td>Envío de alertas mediante protocolo MQTT.</td>
+                <td>Tecnología aplicada</td>
+              </tr>
+              <tr>
+                <td>Electromagnetismo</td>
+                <td>Radiotransmisión basada en ondas electromagnéticas.</td>
+                <td>Tecnología aplicada</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="panel-title">Cierre para exposición</div>
+          <p>
+            En resumen, la Industria 4.0 no reemplaza la ciencia: la aprovecha. La ciencia permite entender el fenómeno; la tecnología lo convierte en una solución industrial robusta, conectada y escalable.
+          </p>
+          <p>
+            Por eso, un sistema moderno de monitoreo de motores no solo mide variables: interpreta información, se comunica con otros sistemas y apoya decisiones automáticas que mejoran confiabilidad, seguridad y productividad.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="foot">
+        <strong>Nota para personalización:</strong> esta versión ya incluye gráficos técnicos propios hechos con CSS y SVG, así que la web se ve completa sin depender de imágenes externas.
+        Si después quieres mejorarla aún más, puedes añadir fotografías reales del laboratorio, motores, sensores o diagramas del curso en estas secciones.
+        <div class="note" style="margin-top:16px;">
+          Espacios recomendados para añadir imágenes externas: portada, pregunta 1 (sensor fotoeléctrico real), pregunta 4 (diagrama real de adquisición) y pregunta 6 (tabla o foto del sistema de visión).
+        </div>
+      </div>
+    </footer>
+  </main>
+</body>
+</html>
