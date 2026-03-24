@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Práctica PLC y Secuencias</title>
+  <style>
+    :root{
+      --bg:#090909;
+      --bg2:#141414;
+      --card:#171717;
+      --card2:#1e1e1e;
+      --red:#ff2b2b;
+      --red2:#c40000;
+      --red3:#ff5a5a;
+      --text:#f5f5f5;
+      --muted:#bdbdbd;
+      --ok:#00c853;
+      --bad:#ff3d3d;
+      --border:rgba(255,255,255,.10);
+      --shadow:0 12px 30px rgba(0,0,0,.45);
+      --radius:20px;
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+
+    body{
+      background:
+        radial-gradient(circle at top left, rgba(255,0,0,.18), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(255,0,0,.12), transparent 25%),
+        linear-gradient(135deg, var(--bg), #111, var(--bg2));
+      color:var(--text);
+      min-height:100vh;
+      padding:24px;
+    }
+
+    .container{
+      max-width:1200px;
+      margin:0 auto;
+    }
+
+    .hero{
+      background:linear-gradient(135deg, rgba(255,43,43,.18), rgba(0,0,0,.55));
+      border:1px solid rgba(255,43,43,.25);
+      border-radius:28px;
+      padding:28px;
+      box-shadow:var(--shadow);
+      margin-bottom:24px;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      flex-wrap:wrap;
+      margin-bottom:16px;
+    }
+
+    .btn{
+      border:none;
+      cursor:pointer;
+      border-radius:14px;
+      padding:12px 18px;
+      font-weight:700;
+      transition:.2s ease;
+      text-decoration:none;
+      display:inline-block;
+    }
+
+    .btn:hover{
+      transform:translateY(-2px);
+    }
+
+    .btn-back{
+      background:linear-gradient(135deg, #2a0000, var(--red2));
+      color:white;
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow:0 8px 18px rgba(255,0,0,.25);
+    }
+
+    .btn-main{
+      background:linear-gradient(135deg, var(--red), var(--red2));
+      color:#fff;
+      box-shadow:0 8px 18px rgba(255,0,0,.25);
+    }
+
+    .btn-ghost{
+      background:#111;
+      color:#fff;
+      border:1px solid rgba(255,255,255,.12);
+    }
+
+    h1{
+      font-size:clamp(28px, 4vw, 42px);
+      margin-bottom:10px;
+      color:#fff;
+      text-shadow:0 0 18px rgba(255,0,0,.25);
+    }
+
+    .subtitle{
+      color:var(--muted);
+      line-height:1.6;
+      max-width:900px;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:14px;
+      margin-top:22px;
+    }
+
+    .stat{
+      background:linear-gradient(180deg, #151515, #101010);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:16px;
+      box-shadow:var(--shadow);
+    }
+
+    .stat small{
+      color:var(--muted);
+      display:block;
+      margin-bottom:8px;
+    }
+
+    .stat strong{
+      font-size:1.2rem;
+      color:#fff;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:24px;
+    }
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+      border:1px solid var(--border);
+      border-radius:24px;
+      padding:22px;
+      box-shadow:var(--shadow);
+      margin-bottom:24px;
+    }
+
+    .card h2{
+      margin-bottom:14px;
+      color:var(--red3);
+      font-size:1.45rem;
+    }
+
+    .tag{
+      display:inline-block;
+      padding:7px 12px;
+      border-radius:999px;
+      background:rgba(255,0,0,.13);
+      border:1px solid rgba(255,0,0,.25);
+      color:#ffd6d6;
+      font-size:.88rem;
+      margin-bottom:14px;
+    }
+
+    .question-box{
+      background:linear-gradient(180deg, #161616, #101010);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:20px;
+      padding:18px;
+      margin-top:12px;
+    }
+
+    .question-text{
+      font-size:1.12rem;
+      font-weight:700;
+      line-height:1.6;
+      margin-bottom:18px;
+    }
+
+    .options{
+      display:grid;
+      gap:12px;
+    }
+
+    .option-btn{
+      width:100%;
+      text-align:left;
+      background:#111;
+      color:#fff;
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:14px;
+      padding:14px;
+      cursor:pointer;
+      transition:.2s ease;
+      font-size:.98rem;
+    }
+
+    .option-btn:hover{
+      border-color:rgba(255,0,0,.55);
+      background:#1a1a1a;
+      transform:translateX(3px);
+    }
+
+    .result{
+      margin-top:16px;
+      padding:14px 16px;
+      border-radius:14px;
+      display:none;
+      font-weight:700;
+    }
+
+    .ok{
+      display:block;
+      background:rgba(0,200,83,.14);
+      border:1px solid rgba(0,200,83,.35);
+      color:#b9ffd0;
+    }
+
+    .bad{
+      display:block;
+      background:rgba(255,61,61,.14);
+      border:1px solid rgba(255,61,61,.35);
+      color:#ffd0d0;
+    }
+
+    .hint{
+      margin-top:10px;
+      color:#d9d9d9;
+      font-size:.95rem;
+      line-height:1.55;
+    }
+
+    .controls{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:18px;
+    }
+
+    .small-title{
+      font-size:1rem;
+      color:#fff;
+      margin-bottom:10px;
+      font-weight:700;
+    }
+
+    .sequence-pool,
+    .sequence-answer{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      min-height:64px;
+      padding:14px;
+      border-radius:16px;
+      background:#101010;
+      border:1px dashed rgba(255,255,255,.16);
+      margin-top:10px;
+    }
+
+    .step-chip{
+      padding:10px 14px;
+      border-radius:12px;
+      background:linear-gradient(135deg, #2a0000, #770000);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.10);
+      cursor:pointer;
+      user-select:none;
+      font-size:.95rem;
+      transition:.2s ease;
+    }
+
+    .step-chip:hover{
+      transform:translateY(-2px);
+      box-shadow:0 6px 16px rgba(255,0,0,.20);
+    }
+
+    .builder-tools{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin:14px 0;
+    }
+
+    .builder-btn{
+      padding:10px 14px;
+      background:#111;
+      color:#fff;
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:700;
+    }
+
+    .builder-btn:hover{
+      border-color:rgba(255,0,0,.45);
+      background:#181818;
+    }
+
+    .builder-canvas{
+      min-height:90px;
+      background:#101010;
+      border:1px dashed rgba(255,255,255,.16);
+      border-radius:16px;
+      padding:14px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:flex-start;
+    }
+
+    .builder-item{
+      padding:10px 14px;
+      border-radius:12px;
+      background:linear-gradient(135deg, #350000, #8b0000);
+      border:1px solid rgba(255,255,255,.10);
+      cursor:pointer;
+    }
+
+    .builder-note{
+      color:var(--muted);
+      margin-top:10px;
+      line-height:1.55;
+      font-size:.95rem;
+    }
+
+    .side-list{
+      display:grid;
+      gap:12px;
+    }
+
+    .mini{
+      background:linear-gradient(180deg, #141414, #0d0d0d);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:16px;
+    }
+
+    .mini strong{
+      color:#fff;
+      display:block;
+      margin-bottom:8px;
+    }
+
+    .mini p{
+      color:var(--muted);
+      line-height:1.5;
+      font-size:.95rem;
+    }
+
+    .progress{
+      height:12px;
+      background:#0d0d0d;
+      border-radius:999px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.08);
+      margin-top:10px;
+    }
+
+    .bar{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg, #7a0000, var(--red), #ff7b7b);
+      transition:.35s ease;
+    }
+
+    .footer-note{
+      text-align:center;
+      color:#9d9d9d;
+      padding:12px 0 0;
+      font-size:.95rem;
+    }
+
+    @media (max-width: 900px){
+      .grid{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <section class="hero">
+      <div class="topbar">
+        <a href="SPDC.html" class="btn btn-back">⬅ Volver</a>
+        <button class="btn btn-main" onclick="nextQuestion()">Nueva pregunta</button>
+      </div>
+
+      <h1>Práctica Dinámica de PLC y Secuencias</h1>
+      <p class="subtitle">
+        Página interactiva para repasar entradas, salidas, PLC Siemens, PLC Allen-Bradley,
+        secuencias, lógica paso a paso y ejercicios tipo GRAFCET / automatización.
+        El sistema genera preguntas dinámicas para que practiques varias veces.
+      </p>
+
+      <div class="stats">
+        <div class="stat">
+          <small>Puntaje</small>
+          <strong id="score">0</strong>
+        </div>
+        <div class="stat">
+          <small>Preguntas respondidas</small>
+          <strong id="answered">0</strong>
+        </div>
+        <div class="stat">
+          <small>Aciertos</small>
+          <strong id="corrects">0</strong>
+        </div>
+        <div class="stat">
+          <small>Tema actual</small>
+          <strong id="currentTopic">Cargando...</strong>
+        </div>
+      </div>
+
+      <div class="progress">
+        <div class="bar" id="progressBar"></div>
+      </div>
+    </section>
+
+    <div class="grid">
+      <main>
+        <section class="card">
+          <span class="tag">Preguntas dinámicas</span>
+          <h2>Evaluación rápida</h2>
+
+          <div class="question-box">
+            <div class="question-text" id="questionText">Presiona "Nueva pregunta"</div>
+            <div class="options" id="optionsBox"></div>
+            <div class="result" id="resultBox"></div>
+            <div class="hint" id="hintBox"></div>
+
+            <div class="controls">
+              <button class="btn btn-main" onclick="nextQuestion()">Siguiente</button>
+              <button class="btn btn-ghost" onclick="showHint()">Ver ayuda</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <span class="tag">Ordena la secuencia</span>
+          <h2>Construye el orden correcto</h2>
+
+          <div class="small-title" id="sequenceInstruction">
+            Ordena los pasos de la secuencia correctamente.
+          </div>
+
+          <div class="small-title">Pasos desordenados</div>
+          <div class="sequence-pool" id="sequencePool"></div>
+
+          <div class="small-title" style="margin-top:16px;">Tu secuencia</div>
+          <div class="sequence-answer" id="sequenceAnswer"></div>
+
+          <div class="controls">
+            <button class="btn btn-main" onclick="checkSequence()">Verificar secuencia</button>
+            <button class="btn btn-ghost" onclick="loadSequenceExercise()">Otra secuencia</button>
+            <button class="btn btn-ghost" onclick="clearSequenceAnswer()">Limpiar</button>
+          </div>
+
+          <div class="result" id="sequenceResult"></div>
+        </section>
+
+        <section class="card">
+          <span class="tag">Dibuja tu secuencia</span>
+          <h2>Mini constructor de pasos</h2>
+          <div class="small-title">Haz clic para ir armando una secuencia lógica</div>
+
+          <div class="builder-tools">
+            <button class="builder-btn" onclick="addBuilderItem('Inicio')">Inicio</button>
+            <button class="builder-btn" onclick="addBuilderItem('Pulsador START')">Pulsador START</button>
+            <button class="builder-btn" onclick="addBuilderItem('Sensor activado')">Sensor activado</button>
+            <button class="builder-btn" onclick="addBuilderItem('Temporizador T1')">Temporizador T1</button>
+            <button class="builder-btn" onclick="addBuilderItem('Motor ON')">Motor ON</button>
+            <button class="builder-btn" onclick="addBuilderItem('Electroválvula ON')">Electroválvula ON</button>
+            <button class="builder-btn" onclick="addBuilderItem('Lámpara piloto')">Lámpara piloto</button>
+            <button class="builder-btn" onclick="addBuilderItem('Fin')">Fin</button>
+          </div>
+
+          <div class="builder-canvas" id="builderCanvas"></div>
+
+          <div class="controls">
+            <button class="btn btn-main" onclick="analyzeBuilder()">Analizar secuencia</button>
+            <button class="btn btn-ghost" onclick="clearBuilder()">Borrar dibujo</button>
+          </div>
+
+          <div class="result" id="builderResult"></div>
+          <div class="builder-note">
+            Consejo: una secuencia normalmente debe tener inicio, condición o transición, una acción y final.
+            Puedes usar este módulo para practicar cómo ordenar mentalmente el proceso.
+          </div>
+        </section>
+      </main>
+
+      <aside>
+        <section class="card">
+          <span class="tag">Repaso</span>
+          <h2>Puntos clave</h2>
+
+          <div class="side-list">
+            <div class="mini">
+              <strong>Entradas PLC</strong>
+              <p>
+                Reciben señales de campo: pulsadores, finales de carrera, sensores inductivos,
+                fotoceldas, selectores, presostatos, etc.
+              </p>
+            </div>
+
+            <div class="mini">
+              <strong>Salidas PLC</strong>
+              <p>
+                Activan actuadores: contactores, relés, lámparas piloto, electroválvulas, motores
+                mediante etapa de potencia, alarmas, etc.
+              </p>
+            </div>
+
+            <div class="mini">
+              <strong>Siemens</strong>
+              <p>
+                Usualmente se identifica con direcciones tipo I0.0, I0.1 para entradas y Q0.0, Q0.1
+                para salidas.
+              </p>
+            </div>
+
+            <div class="mini">
+              <strong>Allen-Bradley</strong>
+              <p>
+                Puede usar nomenclaturas según familia, pero en práctica se reconocen entradas y
+                salidas del módulo, además de tags en programación.
+              </p>
+            </div>
+
+            <div class="mini">
+              <strong>Secuencia</strong>
+              <p>
+                Una secuencia correcta debe seguir un orden lógico: condición inicial, transición,
+                acción, siguiente paso y condición de parada o fin.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <span class="tag">Modo estudio</span>
+          <h2>Cómo practicar bien</h2>
+          <div class="side-list">
+            <div class="mini">
+              <strong>1. Lee la pregunta</strong>
+              <p>No respondas apurado. Fíjate si te preguntan entrada, salida, secuencia o transición.</p>
+            </div>
+            <div class="mini">
+              <strong>2. Compara opciones</strong>
+              <p>Descarta primero las que claramente no encajan con la lógica industrial.</p>
+            </div>
+            <div class="mini">
+              <strong>3. Arma la secuencia</strong>
+              <p>Piensa qué ocurre primero, qué condición permite avanzar y qué actuador debe activarse.</p>
+            </div>
+            <div class="mini">
+              <strong>4. Repite</strong>
+              <p>Mientras más preguntas distintas resuelvas, más rápido reconocerás patrones reales de automatización.</p>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <p class="footer-note">Práctica interactiva PLC · Tema rojo/negro · Botón de retorno a SPDC.html</p>
+  </div>
+
+  <script>
+    let score = 0;
+    let answered = 0;
+    let corrects = 0;
+    let currentQuestion = null;
+    let hintVisible = false;
+
+    const questions = [
+      {
+        topic: "Entradas Siemens",
+        question: "¿Cuál de los siguientes elementos normalmente sería una entrada en un PLC Siemens?",
+        options: ["Pulsador START", "Contactor principal", "Lámpara piloto", "Motor trifásico"],
+        correct: 0,
+        hint: "Las entradas reciben señales desde dispositivos de mando o sensores.",
+        explanation: "Correcto. Un pulsador START entrega una señal al PLC, por eso es una entrada."
+      },
+      {
+        topic: "Salidas Siemens",
+        question: "¿Qué elemento suele conectarse a una salida del PLC Siemens?",
+        options: ["Sensor inductivo", "Final de carrera", "Electroválvula", "Selector manual como lectura"],
+        correct: 2,
+        hint: "Las salidas accionan actuadores.",
+        explanation: "Correcto. La electroválvula es un actuador, por lo tanto se activa desde una salida."
+      },
+      {
+        topic: "Direcciones Siemens",
+        question: "En Siemens, ¿qué tipo de dirección suele representar una entrada digital?",
+        options: ["Q0.0", "I0.0", "M0.0", "T1"],
+        correct: 1,
+        hint: "La letra ayuda: I de Input.",
+        explanation: "Correcto. I0.0 representa una entrada digital en Siemens."
+      },
+      {
+        topic: "Direcciones Siemens",
+        question: "En Siemens, ¿qué tipo de dirección suele representar una salida digital?",
+        options: ["Q0.1", "I0.1", "M1.0", "C0"],
+        correct: 0,
+        hint: "La Q suele asociarse a salida.",
+        explanation: "Correcto. Q0.1 representa una salida digital."
+      },
+      {
+        topic: "Allen-Bradley",
+        question: "En un sistema Allen-Bradley, ¿cuál sería típicamente una señal de entrada?",
+        options: ["Señal de un sensor fotoeléctrico", "Bobina de un contactor", "Sirena de alarma como actuador", "Motor DC"],
+        correct: 0,
+        hint: "Piensa qué manda información al PLC.",
+        explanation: "Correcto. El sensor fotoeléctrico envía información al PLC, así que es entrada."
+      },
+      {
+        topic: "Allen-Bradley",
+        question: "¿Qué sería normalmente una salida en un PLC Allen-Bradley?",
+        options: ["Pulsador de paro", "Final de carrera", "Lámpara indicadora", "Selector de modo"],
+        correct: 2,
+        hint: "Las salidas energizan dispositivos.",
+        explanation: "Correcto. La lámpara indicadora es activada por el PLC, por eso es salida."
+      },
+      {
+        topic: "Secuencias",
+        question: "¿Cuál de estas secuencias es más lógica para arrancar un motor con pulsador?",
+        options: [
+          "Motor ON → Pulsador START → Verificación de seguridad",
+          "Verificación de seguridad → Pulsador START → Motor ON",
+          "Motor ON → Fin → START",
+          "Temporizador → Fin → Sensor → Inicio"
+        ],
+        correct: 1,
+        hint: "Primero debe existir condición, luego mando, luego acción.",
+        explanation: "Correcto. Antes de activar el motor debe verificarse la condición de seguridad y luego ejecutar el arranque."
+      },
+      {
+        topic: "Secuencias",
+        question: "¿Qué está mal en una secuencia si la acción ocurre antes de la transición?",
+        options: [
+          "Nada, es normal",
+          "La lógica está invertida",
+          "Mejora la seguridad",
+          "El PLC siempre lo corrige"
+        ],
+        correct: 1,
+        hint: "La transición permite pasar al siguiente paso.",
+        explanation: "Correcto. Si la acción ocurre antes de la condición, la secuencia está lógicamente mal."
+      },
+      {
+        topic: "Sensores y actuadores",
+        question: "¿Cuál de los siguientes es un actuador y no un sensor?",
+        options: ["Final de carrera", "Sensor inductivo", "Electroválvula", "Pulsador NA"],
+        correct: 2,
+        hint: "Un actuador realiza una acción física.",
+        explanation: "Correcto. La electroválvula actúa sobre el proceso."
+      },
+      {
+        topic: "Lógica básica",
+        question: "Si un pulsador STOP está presionado, ¿qué debería pasar normalmente con la secuencia?",
+        options: [
+          "Continúa igual",
+          "Se reinicia o detiene según diseño",
+          "Las salidas se energizan más",
+          "Se activa un temporizador automáticamente siempre"
+        ],
+        correct: 1,
+        hint: "El STOP normalmente interrumpe la operación.",
+        explanation: "Correcto. El pulsador STOP se usa para detener o reiniciar la secuencia según la lógica implementada."
+      },
+      {
+        topic: "Diagnóstico",
+        question: "¿Cuál opción describe mejor una entrada analógica?",
+        options: [
+          "Solo vale 0 o 1",
+          "Entrega un rango variable de valores",
+          "Solo activa motores",
+          "Es siempre una salida"
+        ],
+        correct: 1,
+        hint: "Analógica significa valor variable.",
+        explanation: "Correcto. Una entrada analógica puede leer niveles variables como temperatura, presión o nivel."
+      },
+      {
+        topic: "Secuencia correcta/incorrecta",
+        question: "¿Qué secuencia está mejor planteada para llenar un tanque?",
+        options: [
+          "Tanque lleno → Abrir válvula → Sensor de nivel mínimo",
+          "Pulsador START → Abrir válvula → Sensor de nivel alto → Cerrar válvula",
+          "Cerrar válvula → START → Abrir válvula → Rebose",
+          "Motor ON → Fin → Sensor → Inicio"
+        ],
+        correct: 1,
+        hint: "Busca inicio, acción y condición de parada.",
+        explanation: "Correcto. Esa secuencia sigue una lógica de llenado coherente."
+      },
+      {
+        topic: "Comparación Siemens / Allen-Bradley",
+        question: "¿Qué tienen en común Siemens y Allen-Bradley en automatización?",
+        options: [
+          "Ambos solo trabajan con neumática",
+          "Ambos usan PLC para procesar entradas y controlar salidas",
+          "Ambos no permiten sensores",
+          "Ambos solo sirven para iluminación doméstica"
+        ],
+        correct: 1,
+        hint: "Piensa en la función principal del PLC.",
+        explanation: "Correcto. Ambos controlan procesos a partir de entradas, lógica y salidas."
+      },
+      {
+        topic: "Errores de secuencia",
+        question: "¿Cuál es un error típico en una secuencia automática?",
+        options: [
+          "Usar condiciones claras de transición",
+          "No definir el estado inicial",
+          "Separar entradas de salidas",
+          "Agregar paro de emergencia"
+        ],
+        correct: 1,
+        hint: "Toda secuencia debe saber desde dónde inicia.",
+        explanation: "Correcto. Si no se define el estado inicial, la secuencia puede ser ambigua o peligrosa."
+      }
+    ];
+
+    const sequenceExercises = [
+      {
+        instruction: "Ordena la secuencia para arrancar una banda transportadora de forma básica.",
+        correct: [
+          "Verificar seguridad",
+          "Pulsador START",
+          "Contactor ON",
+          "Motor en marcha"
+        ]
+      },
+      {
+        instruction: "Ordena la secuencia para llenar un tanque automáticamente.",
+        correct: [
+          "Pulsador START",
+          "Abrir electroválvula",
+          "Sube nivel del tanque",
+          "Sensor de nivel alto",
+          "Cerrar electroválvula"
+        ]
+      },
+      {
+        instruction: "Ordena la secuencia para un sistema con cilindro neumático.",
+        correct: [
+          "Inicio",
+          "Sensor de pieza detecta objeto",
+          "Electroválvula activa cilindro",
+          "Cilindro avanza",
+          "Final de carrera detecta avance",
+          "Cilindro retorna"
+        ]
+      },
+      {
+        instruction: "Ordena la secuencia para encender una lámpara piloto con confirmación.",
+        correct: [
+          "Inicio",
+          "Pulsador START",
+          "PLC valida condición",
+          "Salida Q activa lámpara",
+          "Lámpara encendida"
+        ]
+      }
+    ];
+
+    let currentSequence = null;
+    let sequenceAnswer = [];
+
+    function shuffle(arr){
+      return [...arr].sort(() => Math.random() - 0.5);
+    }
+
+    function updateStats(){
+      document.getElementById("score").textContent = score;
+      document.getElementById("answered").textContent = answered;
+      document.getElementById("corrects").textContent = corrects;
+      const progress = answered === 0 ? 0 : Math.round((corrects / answered) * 100);
+      document.getElementById("progressBar").style.width = progress + "%";
+    }
+
+    function nextQuestion(){
+      hintVisible = false;
+      document.getElementById("hintBox").textContent = "";
+      document.getElementById("resultBox").className = "result";
+      document.getElementById("resultBox").textContent = "";
+
+      currentQuestion = questions[Math.floor(Math.random() * questions.length)];
+      document.getElementById("currentTopic").textContent = currentQuestion.topic;
+      document.getElementById("questionText").textContent = currentQuestion.question;
+
+      const optionsBox = document.getElementById("optionsBox");
+      optionsBox.innerHTML = "";
+
+      currentQuestion.options.forEach((opt, index) => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.textContent = opt;
+        btn.onclick = () => answerQuestion(index);
+        optionsBox.appendChild(btn);
+      });
+    }
+
+    function answerQuestion(index){
+      if(!currentQuestion) return;
+
+      answered++;
+      const resultBox = document.getElementById("resultBox");
+
+      if(index === currentQuestion.correct){
+        score += 10;
+        corrects++;
+        resultBox.className = "result ok";
+        resultBox.textContent = "✅ Correcto. " + currentQuestion.explanation;
+      }else{
+        score = Math.max(0, score - 2);
+        resultBox.className = "result bad";
+        resultBox.textContent = "❌ Incorrecto. Respuesta correcta: " + currentQuestion.options[currentQuestion.correct] + ". " + currentQuestion.explanation;
+      }
+
+      updateStats();
+    }
+
+    function showHint(){
+      if(!currentQuestion) return;
+      document.getElementById("hintBox").textContent = "💡 Ayuda: " + currentQuestion.hint;
+      hintVisible = true;
+    }
+
+    function loadSequenceExercise(){
+      currentSequence = sequenceExercises[Math.floor(Math.random() * sequenceExercises.length)];
+      sequenceAnswer = [];
+      document.getElementById("sequenceInstruction").textContent = currentSequence.instruction;
+      document.getElementById("sequenceResult").className = "result";
+      document.getElementById("sequenceResult").textContent = "";
+
+      const pool = document.getElementById("sequencePool");
+      const answer = document.getElementById("sequenceAnswer");
+      pool.innerHTML = "";
+      answer.innerHTML = "";
+
+      shuffle(currentSequence.correct).forEach(step => {
+        const chip = document.createElement("div");
+        chip.className = "step-chip";
+        chip.textContent = step;
+        chip.onclick = () => moveToAnswer(step, chip);
+        pool.appendChild(chip);
+      });
+    }
+
+    function moveToAnswer(step, element){
+      const answerBox = document.getElementById("sequenceAnswer");
+
+      sequenceAnswer.push(step);
+
+      const chip = document.createElement("div");
+      chip.className = "step-chip";
+      chip.textContent = step;
+      chip.onclick = () => removeFromAnswer(step, chip);
+
+      answerBox.appendChild(chip);
+      element.remove();
+    }
+
+    function removeFromAnswer(step, element){
+      const pool = document.getElementById("sequencePool");
+      const index = sequenceAnswer.indexOf(step);
+      if(index > -1) sequenceAnswer.splice(index, 1);
+
+      const chip = document.createElement("div");
+      chip.className = "step-chip";
+      chip.textContent = step;
+      chip.onclick = () => moveToAnswer(step, chip);
+
+      pool.appendChild(chip);
+      element.remove();
+    }
+
+    function clearSequenceAnswer(){
+      if(!currentSequence) return;
+      loadSequenceExercise();
+    }
+
+    function checkSequence(){
+      if(!currentSequence) return;
+
+      const result = document.getElementById("sequenceResult");
+
+      const ok = JSON.stringify(sequenceAnswer) === JSON.stringify(currentSequence.correct);
+
+      if(ok){
+        result.className = "result ok";
+        result.textContent = "✅ Secuencia correcta. Muy bien, el orden lógico está bien planteado.";
+        score += 15;
+        corrects++;
+        answered++;
+      }else{
+        result.className = "result bad";
+        result.textContent = "❌ Secuencia incorrecta. Orden esperado: " + currentSequence.correct.join(" → ");
+        answered++;
+      }
+
+      updateStats();
+    }
+
+    const builderCanvas = document.getElementById("builderCanvas");
+    const builderResult = document.getElementById("builderResult");
+
+    function addBuilderItem(text){
+      const item = document.createElement("div");
+      item.className = "builder-item";
+      item.textContent = text;
+      item.title = "Click para eliminar";
+      item.onclick = () => item.remove();
+      builderCanvas.appendChild(item);
+    }
+
+    function clearBuilder(){
+      builderCanvas.innerHTML = "";
+      builderResult.className = "result";
+      builderResult.textContent = "";
+    }
+
+    function analyzeBuilder(){
+      const items = [...builderCanvas.querySelectorAll(".builder-item")].map(el => el.textContent);
+
+      if(items.length < 3){
+        builderResult.className = "result bad";
+        builderResult.textContent = "❌ Tu secuencia es muy corta. Intenta agregar inicio, condición/acción y fin.";
+        return;
+      }
+
+      const hasStart = items.includes("Inicio") || items.includes("Pulsador START");
+      const hasAction = items.includes("Motor ON") || items.includes("Electroválvula ON") || items.includes("Lámpara piloto");
+      const hasEnd = items.includes("Fin");
+
+      if(hasStart && hasAction && hasEnd){
+        builderResult.className = "result ok";
+        builderResult.textContent = "✅ Buena estructura. Tu secuencia tiene inicio, acción y fin. Revísala según el proceso real.";
+      }else{
+        builderResult.className = "result bad";
+        builderResult.textContent = "⚠️ La secuencia puede mejorar. Normalmente conviene incluir inicio, una acción principal y un fin o condición de cierre.";
+      }
+    }
+
+    nextQuestion();
+    loadSequenceExercise();
+    updateStats();
+  </script>
+</body>
+</html>
