@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Card Studio Royale</title>
+  <style>
+    :root{
+      --bg:#09111f;
+      --panel:#0f1b31;
+      --panel2:#13233f;
+      --text:#edf4ff;
+      --muted:#9ab0d0;
+      --red:#ef4444;
+      --red2:#b91c1c;
+      --blue:#3b82f6;
+      --blue2:#1d4ed8;
+      --gold:#fbbf24;
+      --line:rgba(255,255,255,.08);
+      --win:#22c55e;
+      --lose:#fb7185;
+      --draw:#f59e0b;
+      --shadow:0 20px 60px rgba(0,0,0,.35);
+      --radius:24px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 20% 0%, rgba(239,68,68,.18), transparent 25%),
+        radial-gradient(circle at 80% 0%, rgba(59,130,246,.18), transparent 25%),
+        linear-gradient(135deg,#07101d,#0b1730 45%,#08111f);
+      padding:22px;
+    }
+
+    .app{max-width:1280px;margin:0 auto;display:grid;gap:18px}
+
+    .hero,.panel{
+      background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero{padding:22px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+    .title{margin:0;font-size:clamp(1.7rem,3vw,2.8rem);line-height:1}
+    .subtitle{margin:.4rem 0 0;color:var(--muted)}
+
+    .hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+    .badge{padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid var(--line);font-weight:700}
+
+    .grid{display:grid;grid-template-columns:1.5fr .9fr;gap:18px}
+
+    .main{padding:20px}
+    .topstats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+    .stat{padding:14px;border-radius:18px;background:rgba(255,255,255,.04);border:1px solid var(--line);text-align:center}
+    .stat span{display:block;color:var(--muted);font-size:.88rem;margin-bottom:6px}
+    .stat strong{font-size:1.35rem}
+
+    .arena{
+      position:relative;
+      overflow:hidden;
+      border-radius:28px;
+      border:1px solid var(--line);
+      background:linear-gradient(135deg, rgba(239,68,68,.12), rgba(255,255,255,.03) 45%, rgba(59,130,246,.12));
+      padding:24px;
+      min-height:430px;
+      display:grid;
+      grid-template-columns:1fr auto 1fr;
+      align-items:center;
+      gap:18px;
+    }
+
+    .side{display:grid;justify-items:center;gap:12px}
+    .shield{
+      width:min(280px,100%);
+      aspect-ratio: 5/6;
+      clip-path: polygon(50% 0%, 92% 14%, 92% 58%, 50% 100%, 8% 58%, 8% 14%);
+      border:3px solid rgba(255,255,255,.22);
+      position:relative;
+      display:grid;
+      place-items:center;
+      font-weight:900;
+      box-shadow: inset 0 0 40px rgba(255,255,255,.05), 0 20px 40px rgba(0,0,0,.25);
+      isolation:isolate;
+    }
+    .shield.red{background:linear-gradient(180deg,var(--red),var(--red2))}
+    .shield.blue{background:linear-gradient(180deg,var(--blue),var(--blue2))}
+    .shield::after{
+      content:'';position:absolute;inset:10px;border:2px solid rgba(255,255,255,.2);clip-path: inherit;z-index:-1;
+    }
+    .card-value{font-size:clamp(4rem,8vw,6rem);line-height:1;text-shadow:0 8px 20px rgba(0,0,0,.3)}
+    .label{font-size:1.25rem;font-weight:800;letter-spacing:.08em}
+
+    .vsBox{display:grid;justify-items:center;gap:14px;min-width:180px}
+    .timerRing{
+      width:110px;height:110px;border-radius:50%;display:grid;place-items:center;
+      background:conic-gradient(var(--gold) calc(var(--p, 0) * 1%), rgba(255,255,255,.08) 0);
+      padding:8px;
+    }
+    .timerInner{
+      width:100%;height:100%;border-radius:50%;background:#08111f;border:1px solid var(--line);
+      display:grid;place-items:center;text-align:center;
+    }
+    .timerInner strong{font-size:2rem;display:block}
+    .resultPill{padding:10px 16px;border-radius:999px;font-weight:800;border:1px solid var(--line);background:rgba(255,255,255,.05)}
+
+    .betRow{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;margin-top:18px}
+    .betBtn{
+      border:none;border-radius:18px;padding:16px 18px;font-size:1rem;font-weight:900;color:white;cursor:pointer;
+      transition:transform .15s ease, filter .15s ease, opacity .15s ease;
+    }
+    .betBtn:hover{transform:translateY(-1px);filter:brightness(1.05)}
+    .betBtn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+    .bet-red{background:linear-gradient(135deg,var(--red),var(--red2))}
+    .bet-draw{background:linear-gradient(135deg,#8b5cf6,#6d28d9)}
+    .bet-blue{background:linear-gradient(135deg,var(--blue),var(--blue2))}
+
+    .controls{display:grid;grid-template-columns:1fr auto;gap:12px;margin-top:14px;align-items:center}
+    .chipWrap{display:flex;gap:10px;flex-wrap:wrap}
+    .chip{
+      padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid var(--line);cursor:pointer;font-weight:800;
+    }
+    .chip.active{outline:2px solid rgba(251,191,36,.7);background:rgba(251,191,36,.15)}
+
+    .status{
+      min-height:58px;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.04);border:1px solid var(--line);margin-top:14px;
+      display:flex;align-items:center;font-weight:700
+    }
+
+    .sidebar{padding:20px;display:grid;gap:16px}
+    .sideCard{padding:16px;border-radius:20px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
+    .sideCard h3{margin:0 0 12px}
+
+    .history{display:grid;gap:10px;max-height:560px;overflow:auto;padding-right:4px}
+    .histItem{
+      padding:12px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.03);
+      display:grid;gap:6px
+    }
+    .histTop{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:.9rem}
+    .miniScore{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;font-weight:900}
+    .redTxt{color:#fca5a5}.blueTxt{color:#93c5fd}.goldTxt{color:#fcd34d}
+
+    .legend{display:flex;gap:8px;flex-wrap:wrap}
+    .tag{padding:8px 10px;border-radius:999px;font-size:.85rem;border:1px solid var(--line);background:rgba(255,255,255,.04)}
+
+    .small{color:var(--muted);font-size:.92rem;line-height:1.55}
+
+    @media (max-width:1050px){
+      .grid{grid-template-columns:1fr}
+    }
+    @media (max-width:780px){
+      .topstats{grid-template-columns:1fr 1fr}
+      .arena{grid-template-columns:1fr;min-height:auto}
+      .betRow{grid-template-columns:1fr}
+      .controls{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="hero">
+      <div>
+        <h1 class="title">Card Studio Royale</h1>
+        <p class="subtitle">Predice el resultado de cada duelo de cartas. Diseño inspirado en estudio rojo vs azul, con puntos virtuales e historial en tiempo real.</p>
+      </div>
+      <div class="hero-badges">
+        <div class="badge">Modo seguro: sin dinero real</div>
+        <div class="badge" id="roundText">Ronda #1</div>
+        <div class="badge" id="clockText">Siguiente en 12s</div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <section class="hero main">
+        <div class="topstats">
+          <div class="stat"><span>Puntos</span><strong id="balance">1000</strong></div>
+          <div class="stat"><span>Apuesta actual</span><strong id="betAmount">50</strong></div>
+          <div class="stat"><span>Victorias</span><strong id="wins">0</strong></div>
+          <div class="stat"><span>Derrotas</span><strong id="losses">0</strong></div>
+        </div>
+
+        <div class="arena">
+          <div class="side">
+            <div class="shield red"><div class="card-value" id="redValue">4</div></div>
+            <div class="label redTxt">LOCAL</div>
+          </div>
+
+          <div class="vsBox">
+            <div class="timerRing" id="timerRing" style="--p:100">
+              <div class="timerInner">
+                <div>
+                  <strong id="timerText">12</strong>
+                  <span class="small">seg</span>
+                </div>
+              </div>
+            </div>
+            <div class="resultPill" id="resultPill">Esperando resultado...</div>
+          </div>
+
+          <div class="side">
+            <div class="shield blue"><div class="card-value" id="blueValue">7</div></div>
+            <div class="label blueTxt">VISITANTE</div>
+          </div>
+        </div>
+
+        <div class="betRow">
+          <button class="betBtn bet-red" data-choice="LOCAL">Apostar LOCAL</button>
+          <button class="betBtn bet-draw" data-choice="EMPATE">Apostar EMPATE</button>
+          <button class="betBtn bet-blue" data-choice="VISITANTE">Apostar VISITANTE</button>
+        </div>
+
+        <div class="controls">
+          <div class="chipWrap" id="chips"></div>
+          <button class="betBtn bet-draw" id="resetBtn" style="padding:12px 16px;max-width:220px">Reiniciar partida</button>
+        </div>
+
+        <div class="status" id="statusBox">Selecciona un monto y luego predice si gana LOCAL, EMPATE o VISITANTE.</div>
+      </section>
+
+      <aside class="hero sidebar">
+        <div class="sideCard">
+          <h3>Cómo funciona</h3>
+          <div class="legend">
+            <div class="tag">Rojo = Local</div>
+            <div class="tag">Azul = Visitante</div>
+            <div class="tag">Iguales = Empate</div>
+          </div>
+          <p class="small">Cada ronda dura unos segundos. Los valores se revelan al final y el historial queda guardado en esta sesión. Tus puntos suben o bajan según el acierto.</p>
+        </div>
+
+        <div class="sideCard">
+          <h3>Historial</h3>
+          <div class="history" id="historyList"></div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const ROUND_SECONDS = 12;
+    const START_BALANCE = 1000;
+    const STORAGE_KEY = 'card_studio_royale_v1';
+    const chipValues = [25, 50, 100, 250, 500];
+
+    const redValueEl = document.getElementById('redValue');
+    const blueValueEl = document.getElementById('blueValue');
+    const timerText = document.getElementById('timerText');
+    const timerRing = document.getElementById('timerRing');
+    const resultPill = document.getElementById('resultPill');
+    const balanceEl = document.getElementById('balance');
+    const betAmountEl = document.getElementById('betAmount');
+    const winsEl = document.getElementById('wins');
+    const lossesEl = document.getElementById('losses');
+    const statusBox = document.getElementById('statusBox');
+    const historyList = document.getElementById('historyList');
+    const roundText = document.getElementById('roundText');
+    const clockText = document.getElementById('clockText');
+    const chipsWrap = document.getElementById('chips');
+    const resetBtn = document.getElementById('resetBtn');
+    const betButtons = [...document.querySelectorAll('.betBtn[data-choice]')];
+
+    let state = loadState();
+    let countdown = ROUND_SECONDS;
+    let interval = null;
+    let locked = false;
+    let selectedBet = state.selectedBet || 50;
+    let pendingChoice = null;
+
+    function loadState(){
+      const base = {
+        balance: START_BALANCE,
+        wins: 0,
+        losses: 0,
+        round: 1,
+        history: [],
+        selectedBet: 50
+      };
+      try {
+        return {...base, ...(JSON.parse(localStorage.getItem(STORAGE_KEY)) || {})};
+      } catch {
+        return base;
+      }
+    }
+
+    function saveState(){
+      state.selectedBet = selectedBet;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function setStatus(msg){
+      statusBox.textContent = msg;
+    }
+
+    function randCard(){
+      return Math.floor(Math.random() * 10);
+    }
+
+    function getResult(a,b){
+      if(a>b) return 'LOCAL';
+      if(b>a) return 'VISITANTE';
+      return 'EMPATE';
+    }
+
+    function payoutMultiplier(result){
+      if(result === 'EMPATE') return 3;
+      return 2;
+    }
+
+    function renderHistory(){
+      historyList.innerHTML = '';
+      if(state.history.length === 0){
+        historyList.innerHTML = '<div class="histItem"><div class="small">Aún no hay rondas jugadas.</div></div>';
+        return;
+      }
+      state.history.slice().reverse().forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'histItem';
+        div.innerHTML = `
+          <div class="histTop">
+            <span>Ronda #${item.round}</span>
+            <span>${item.time}</span>
+          </div>
+          <div class="miniScore">
+            <span class="redTxt">${item.red}</span>
+            <span class="goldTxt">vs</span>
+            <span class="blueTxt">${item.blue}</span>
+          </div>
+          <div><strong>Resultado:</strong> ${item.result}</div>
+          <div><strong>Tu jugada:</strong> ${item.choice || 'Sin apuesta'} ${item.delta !== 0 ? `| ${item.delta > 0 ? '+' : ''}${item.delta}` : ''}</div>
+        `;
+        historyList.appendChild(div);
+      });
+    }
+
+    function renderHUD(){
+      balanceEl.textContent = state.balance;
+      betAmountEl.textContent = selectedBet;
+      winsEl.textContent = state.wins;
+      lossesEl.textContent = state.losses;
+      roundText.textContent = `Ronda #${state.round}`;
+      renderHistory();
+      saveState();
+    }
+
+    function renderChips(){
+      chipsWrap.innerHTML = '';
+      chipValues.forEach(value => {
+        const btn = document.createElement('button');
+        btn.className = 'chip' + (selectedBet === value ? ' active' : '');
+        btn.textContent = value;
+        btn.addEventListener('click', () => {
+          selectedBet = value;
+          renderChips();
+          renderHUD();
+        });
+        chipsWrap.appendChild(btn);
+      });
+    }
+
+    function setBetButtonsDisabled(disabled){
+      betButtons.forEach(btn => btn.disabled = disabled);
+    }
+
+    function previewValues(){
+      redValueEl.textContent = '?';
+      blueValueEl.textContent = '?';
+      resultPill.textContent = pendingChoice ? `Tu apuesta: ${pendingChoice}` : 'Esperando resultado...';
+    }
+
+    function placeBet(choice){
+      if(locked) return;
+      if(state.balance <= 0){
+        setStatus('Te quedaste sin puntos. Reinicia la partida para volver a empezar.');
+        return;
+      }
+      if(selectedBet > state.balance){
+        setStatus('No tienes suficientes puntos para ese monto.');
+        return;
+      }
+      pendingChoice = choice;
+      setStatus(`Apuesta registrada: ${choice} con ${selectedBet} puntos.`);
+      resultPill.textContent = `Tu apuesta: ${choice}`;
+    }
+
+    function resolveRound(){
+      locked = true;
+      setBetButtonsDisabled(true);
+
+      const red = randCard();
+      const blue = randCard();
+      const result = getResult(red, blue);
+      const now = new Date().toLocaleTimeString('es-PE', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+
+      redValueEl.textContent = red;
+      blueValueEl.textContent = blue;
+      resultPill.textContent = `Resultado: ${result}`;
+
+      let delta = 0;
+      if(pendingChoice){
+        if(pendingChoice === result){
+          delta = selectedBet * (payoutMultiplier(result) - 1);
+          state.balance += delta;
+          state.wins += 1;
+          setStatus(`¡Ganaste! Acertaste ${result} y sumaste ${delta} puntos.`);
+        } else {
+          delta = -selectedBet;
+          state.balance += delta;
+          state.losses += 1;
+          setStatus(`Perdiste ${selectedBet} puntos. Salió ${result}.`);
+        }
+      } else {
+        setStatus(`Ronda resuelta sin apuesta. Salió ${result}.`);
+      }
+
+      state.history.push({
+        round: state.round,
+        red,
+        blue,
+        result,
+        choice: pendingChoice,
+        delta,
+        time: now
+      });
+      if(state.history.length > 20) state.history.shift();
+
+      renderHUD();
+
+      if(state.balance <= 0){
+        state.balance = 0;
+        renderHUD();
+        setStatus('Te quedaste sin puntos. Pulsa “Reiniciar partida” para volver a comenzar.');
+        clearInterval(interval);
+        return;
+      }
+
+      setTimeout(() => {
+        state.round += 1;
+        pendingChoice = null;
+        countdown = ROUND_SECONDS;
+        locked = false;
+        setBetButtonsDisabled(false);
+        previewValues();
+        renderHUD();
+      }, 2500);
+    }
+
+    function tick(){
+      timerText.textContent = countdown;
+      clockText.textContent = `Siguiente en ${countdown}s`;
+      timerRing.style.setProperty('--p', (countdown / ROUND_SECONDS) * 100);
+
+      if(countdown <= 0){
+        resolveRound();
+        countdown = ROUND_SECONDS;
+        return;
+      }
+      countdown -= 1;
+    }
+
+    betButtons.forEach(btn => {
+      btn.addEventListener('click', () => placeBet(btn.dataset.choice));
+    });
+
+    resetBtn.addEventListener('click', () => {
+      state = {
+        balance: START_BALANCE,
+        wins: 0,
+        losses: 0,
+        round: 1,
+        history: [],
+        selectedBet: 50
+      };
+      selectedBet = 50;
+      pendingChoice = null;
+      countdown = ROUND_SECONDS;
+      locked = false;
+      clearInterval(interval);
+      renderChips();
+      renderHUD();
+      previewValues();
+      setBetButtonsDisabled(false);
+      setStatus('Partida reiniciada. Ya puedes volver a jugar con puntos virtuales.');
+      startLoop();
+    });
+
+    function startLoop(){
+      clearInterval(interval);
+      interval = setInterval(tick, 1000);
+      tick();
+    }
+
+    renderChips();
+    renderHUD();
+    previewValues();
+    startLoop();
+  </script>
+</body>
+</html>
