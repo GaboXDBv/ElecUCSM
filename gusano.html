@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Juego del Gusanito</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --grid: #1f2937;
+      --snake: #22c55e;
+      --snake-head: #86efac;
+      --food: #f43f5e;
+      --text: #e5eefc;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at top, #18233f, var(--bg));
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      padding: 20px;
+    }
+
+    .app {
+      width: min(95vw, 720px);
+      background: rgba(17, 24, 39, 0.95);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      text-align: center;
+      font-size: clamp(2rem, 5vw, 3rem);
+    }
+
+    .sub {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .card span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 5px;
+    }
+
+    .card strong {
+      font-size: 1.3rem;
+    }
+
+    .board-wrap {
+      display: flex;
+      justify-content: center;
+    }
+
+    canvas {
+      background:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+        #0b1220;
+      background-size: 24px 24px;
+      border: 2px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      max-width: 100%;
+      height: auto;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 18px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      color: white;
+      background: linear-gradient(135deg, #0ea5e9, #2563eb);
+    }
+
+    button:hover { opacity: 0.92; }
+
+    .hint {
+      margin-top: 14px;
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: none;
+      place-items: center;
+      padding: 20px;
+    }
+
+    .overlay.show { display: grid; }
+
+    .modal {
+      width: min(420px, 100%);
+      background: #0f172a;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 22px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    .modal h2 {
+      margin-top: 0;
+      font-size: 2rem;
+    }
+
+    .modal p {
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    @media (max-width: 600px) {
+      .topbar { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>🐍 Juego del Gusanito</h1>
+    <div class="sub">Muévete con las flechas del teclado y come la comida sin chocar.</div>
+
+    <div class="topbar">
+      <div class="card"><span>Puntaje</span><strong id="score">0</strong></div>
+      <div class="card"><span>Récord</span><strong id="best">0</strong></div>
+      <div class="card"><span>Velocidad</span><strong id="speed">1</strong></div>
+    </div>
+
+    <div class="board-wrap">
+      <canvas id="game" width="480" height="480"></canvas>
+    </div>
+
+    <div class="actions">
+      <button id="startBtn">Iniciar / Reiniciar</button>
+      <button id="pauseBtn">Pausar</button>
+    </div>
+
+    <div class="hint">
+      Flechas = mover<br>
+      Espacio = pausar / continuar<br>
+      Si pierdes, reinicia con el botón.
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <h2>Perdiste 💀</h2>
+      <p id="finalText">Tu puntaje fue 0.</p>
+      <button id="restartOverlayBtn">Jugar otra vez</button>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+
+    const scoreEl = document.getElementById('score');
+    const bestEl = document.getElementById('best');
+    const speedEl = document.getElementById('speed');
+    const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const overlay = document.getElementById('overlay');
+    const finalText = document.getElementById('finalText');
+    const restartOverlayBtn = document.getElementById('restartOverlayBtn');
+
+    const tileSize = 24;
+    const tiles = canvas.width / tileSize;
+    const bestKey = 'gusano_best_score_v1';
+
+    let snake;
+    let direction;
+    let nextDirection;
+    let food;
+    let score;
+    let speed;
+    let loop;
+    let running = false;
+    let paused = false;
+
+    function loadBest() {
+      return Number(localStorage.getItem(bestKey) || 0);
+    }
+
+    function saveBest(value) {
+      localStorage.setItem(bestKey, String(value));
+    }
+
+    function randomFoodPosition() {
+      let pos;
+      do {
+        pos = {
+          x: Math.floor(Math.random() * tiles),
+          y: Math.floor(Math.random() * tiles)
+        };
+      } while (snake.some(part => part.x === pos.x && part.y === pos.y));
+      return pos;
+    }
+
+    function resetGame() {
+      snake = [
+        { x: 10, y: 10 },
+        { x: 9, y: 10 },
+        { x: 8, y: 10 }
+      ];
+      direction = { x: 1, y: 0 };
+      nextDirection = { x: 1, y: 0 };
+      food = randomFoodPosition();
+      score = 0;
+      speed = 1;
+      running = true;
+      paused = false;
+      overlay.classList.remove('show');
+      updateHud();
+      restartLoop();
+      draw();
+    }
+
+    function updateHud() {
+      scoreEl.textContent = score;
+      bestEl.textContent = loadBest();
+      speedEl.textContent = speed;
+      pauseBtn.textContent = paused ? 'Continuar' : 'Pausar';
+    }
+
+    function restartLoop() {
+      clearInterval(loop);
+      const interval = Math.max(70, 170 - (speed - 1) * 10);
+      loop = setInterval(gameStep, interval);
+    }
+
+    function gameOver() {
+      running = false;
+      clearInterval(loop);
+      const best = loadBest();
+      if (score > best) {
+        saveBest(score);
+      }
+      updateHud();
+      finalText.textContent = `Tu puntaje fue ${score}.`;
+      overlay.classList.add('show');
+    }
+
+    function gameStep() {
+      if (!running || paused) return;
+
+      direction = nextDirection;
+      const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
+
+      if (
+        head.x < 0 || head.y < 0 || head.x >= tiles || head.y >= tiles ||
+        snake.some(part => part.x === head.x && part.y === head.y)
+      ) {
+        gameOver();
+        return;
+      }
+
+      snake.unshift(head);
+
+      if (head.x === food.x && head.y === food.y) {
+        score += 1;
+        speed = 1 + Math.floor(score / 4);
+        food = randomFoodPosition();
+        const best = loadBest();
+        if (score > best) saveBest(score);
+        updateHud();
+        restartLoop();
+      } else {
+        snake.pop();
+      }
+
+      draw();
+    }
+
+    function drawRoundedTile(x, y, color, radius = 7) {
+      const px = x * tileSize + 2;
+      const py = y * tileSize + 2;
+      const size = tileSize - 4;
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(px + radius, py);
+      ctx.lineTo(px + size - radius, py);
+      ctx.quadraticCurveTo(px + size, py, px + size, py + radius);
+      ctx.lineTo(px + size, py + size - radius);
+      ctx.quadraticCurveTo(px + size, py + size, px + size - radius, py + size);
+      ctx.lineTo(px + radius, py + size);
+      ctx.quadraticCurveTo(px, py + size, px, py + size - radius);
+      ctx.lineTo(px, py + radius);
+      ctx.quadraticCurveTo(px, py, px + radius, py);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      drawRoundedTile(food.x, food.y, '#f43f5e', 8);
+
+      snake.forEach((part, index) => {
+        drawRoundedTile(part.x, part.y, index === 0 ? '#86efac' : '#22c55e', 8);
+      });
+
+      const head = snake[0];
+      const eyeOffsetX = direction.x !== 0 ? direction.x * 4 : 0;
+      const eyeOffsetY = direction.y !== 0 ? direction.y * 4 : 0;
+      const baseX = head.x * tileSize;
+      const baseY = head.y * tileSize;
+
+      ctx.fillStyle = '#0b1220';
+      ctx.beginPath();
+      ctx.arc(baseX + 8 + eyeOffsetX, baseY + 8 + eyeOffsetY, 2, 0, Math.PI * 2);
+      ctx.arc(baseX + 16 + eyeOffsetX, baseY + 8 + eyeOffsetY, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      const key = e.key;
+
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(key)) {
+        e.preventDefault();
+      }
+
+      if (!running && key !== ' ') return;
+
+      if (key === 'ArrowUp' && direction.y !== 1) nextDirection = { x: 0, y: -1 };
+      else if (key === 'ArrowDown' && direction.y !== -1) nextDirection = { x: 0, y: 1 };
+      else if (key === 'ArrowLeft' && direction.x !== 1) nextDirection = { x: -1, y: 0 };
+      else if (key === 'ArrowRight' && direction.x !== -1) nextDirection = { x: 1, y: 0 };
+      else if (key === ' ') togglePause();
+    });
+
+    function togglePause() {
+      if (!running) return;
+      paused = !paused;
+      updateHud();
+    }
+
+    startBtn.addEventListener('click', resetGame);
+    pauseBtn.addEventListener('click', togglePause);
+    restartOverlayBtn.addEventListener('click', resetGame);
+
+    bestEl.textContent = loadBest();
+    draw();
+  </script>
+</body>
+</html>
