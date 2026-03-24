@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carta de Clash Royale del Día</title>
+  <style>
+    :root {
+      --bg1: #0b1020;
+      --bg2: #111933;
+      --card: rgba(255,255,255,0.08);
+      --card-strong: rgba(255,255,255,0.12);
+      --text: #eef4ff;
+      --muted: #afbdd6;
+      --accent: #58b6ff;
+      --accent2: #8c6bff;
+      --ok: #34d399;
+      --bad: #fb7185;
+      --warn: #fbbf24;
+      --shadow: 0 18px 40px rgba(0,0,0,0.35);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(88,182,255,0.22), transparent 25%),
+        radial-gradient(circle at top right, rgba(140,107,255,0.20), transparent 25%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .app {
+      width: min(960px, 100%);
+      display: grid;
+      gap: 20px;
+    }
+
+    .hero, .panel {
+      background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.05));
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero {
+      padding: 28px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .title {
+      margin: 0;
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      line-height: 1.05;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .badge {
+      padding: 10px 14px;
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 999px;
+      color: var(--text);
+      font-size: 0.92rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 20px;
+    }
+
+    .panel {
+      padding: 24px;
+    }
+
+    .panel h2 {
+      margin: 0 0 16px;
+      font-size: 1.25rem;
+    }
+
+    .clue-box {
+      display: grid;
+      gap: 14px;
+    }
+
+    .clue {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 14px 16px;
+    }
+
+    .clue span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-bottom: 4px;
+    }
+
+    .answer-box {
+      display: grid;
+      gap: 12px;
+    }
+
+    input, button {
+      width: 100%;
+      border: none;
+      outline: none;
+      border-radius: 16px;
+      font-size: 1rem;
+    }
+
+    input {
+      padding: 15px 16px;
+      background: rgba(255,255,255,0.09);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.10);
+    }
+
+    input::placeholder {
+      color: #a9b9d6;
+    }
+
+    button {
+      padding: 14px 16px;
+      cursor: pointer;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(1px); }
+
+    .ghost {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.10);
+    }
+
+    .result {
+      min-height: 58px;
+      border-radius: 18px;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      font-weight: 600;
+    }
+
+    .result.ok {
+      color: #d1fae5;
+      background: rgba(52,211,153,0.15);
+      border-color: rgba(52,211,153,0.35);
+    }
+
+    .result.bad {
+      color: #ffe4ea;
+      background: rgba(251,113,133,0.15);
+      border-color: rgba(251,113,133,0.35);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .stat {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.3rem;
+      margin-bottom: 4px;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .cards-list {
+      max-height: 220px;
+      overflow: auto;
+      margin-top: 14px;
+      padding-right: 6px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: 0.88rem;
+      text-align: center;
+    }
+
+    @media (max-width: 860px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="hero">
+      <h1 class="title">Adivina la carta de Clash Royale del día</h1>
+      <p class="subtitle">La carta cambia automáticamente según el día del año. Tienes pistas, intentos y una respuesta única por fecha.</p>
+      <div class="badges">
+        <div class="badge" id="todayText">Cargando fecha...</div>
+        <div class="badge" id="dayOfYearText">Día del año: --</div>
+        <div class="badge" id="dailySeedText">Carta diaria fija para hoy</div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="panel">
+        <h2>Pistas del día</h2>
+        <div class="clue-box">
+          <div class="clue"><span>Rareza</span><strong id="clueRarity">--</strong></div>
+          <div class="clue"><span>Costo de elixir</span><strong id="clueElixir">--</strong></div>
+          <div class="clue"><span>Tipo</span><strong id="clueType">--</strong></div>
+          <div class="clue"><span>Primera letra</span><strong id="clueFirstLetter">--</strong></div>
+          <div class="clue"><span>Cantidad de palabras</span><strong id="clueWords">--</strong></div>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <strong id="attemptsLeft">6</strong>
+            <span class="small">Intentos</span>
+          </div>
+          <div class="stat">
+            <strong id="streak">0</strong>
+            <span class="small">Racha</span>
+          </div>
+          <div class="stat">
+            <strong id="wins">0</strong>
+            <span class="small">Victorias</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Escribe tu respuesta</h2>
+        <div class="answer-box">
+          <input id="guessInput" type="text" placeholder="Ejemplo: Mini P.E.K.K.A" autocomplete="off" />
+          <button id="guessBtn">Intentar</button>
+          <button id="giveUpBtn" class="ghost">Rendirme</button>
+          <div id="resultBox" class="result">Escribe el nombre de una carta para comenzar.</div>
+        </div>
+
+        <div class="cards-list" id="cardsList"></div>
+      </div>
+    </section>
+
+    <p class="footer-note">Tip: puedes modificar o ampliar la lista de cartas en el arreglo <strong>cards</strong> dentro del código.</p>
+  </main>
+
+  <script>
+    const cards = [
+      { name: "Arquero Mágico", rarity: "Legendaria", elixir: 4, type: "Tropa" },
+      { name: "Bebé Dragón", rarity: "Épica", elixir: 4, type: "Tropa" },
+      { name: "Bandida", rarity: "Legendaria", elixir: 3, type: "Tropa" },
+      { name: "Barril de Duendes", rarity: "Épica", elixir: 3, type: "Hechizo" },
+      { name: "Bruja", rarity: "Épica", elixir: 5, type: "Tropa" },
+      { name: "Caballero", rarity: "Común", elixir: 3, type: "Tropa" },
+      { name: "Cañón", rarity: "Común", elixir: 3, type: "Estructura" },
+      { name: "Cohete", rarity: "Rara", elixir: 6, type: "Hechizo" },
+      { name: "Descarga", rarity: "Común", elixir: 2, type: "Hechizo" },
+      { name: "Dragón Eléctrico", rarity: "Épica", elixir: 5, type: "Tropa" },
+      { name: "Ejército de Esqueletos", rarity: "Épica", elixir: 3, type: "Tropa" },
+      { name: "Esqueletos", rarity: "Común", elixir: 1, type: "Tropa" },
+      { name: "Espíritu de Fuego", rarity: "Común", elixir: 1, type: "Tropa" },
+      { name: "Flechas", rarity: "Común", elixir: 3, type: "Hechizo" },
+      { name: "Gigante", rarity: "Rara", elixir: 5, type: "Tropa" },
+      { name: "Globo Bombástico", rarity: "Épica", elixir: 5, type: "Tropa" },
+      { name: "Gólem", rarity: "Épica", elixir: 8, type: "Tropa" },
+      { name: "Guardias", rarity: "Épica", elixir: 3, type: "Tropa" },
+      { name: "Hielo", rarity: "Legendaria", elixir: 1, type: "Hechizo" },
+      { name: "Leñador", rarity: "Legendaria", elixir: 4, type: "Tropa" },
+      { name: "Lanzafuegos", rarity: "Rara", elixir: 5, type: "Tropa" },
+      { name: "Mago", rarity: "Rara", elixir: 5, type: "Tropa" },
+      { name: "Megacaballero", rarity: "Legendaria", elixir: 7, type: "Tropa" },
+      { name: "Mini P.E.K.K.A", rarity: "Rara", elixir: 4, type: "Tropa" },
+      { name: "Montapuercos", rarity: "Rara", elixir: 4, type: "Tropa" },
+      { name: "Mosquetera", rarity: "Rara", elixir: 4, type: "Tropa" },
+      { name: "P.E.K.K.A", rarity: "Épica", elixir: 7, type: "Tropa" },
+      { name: "Príncipe", rarity: "Épica", elixir: 5, type: "Tropa" },
+      { name: "Princesa", rarity: "Legendaria", elixir: 3, type: "Tropa" },
+      { name: "Recolector de Elixir", rarity: "Rara", elixir: 6, type: "Estructura" },
+      { name: "Reina Arquera", rarity: "Campeona", elixir: 5, type: "Tropa" },
+      { name: "Sabueso de Lava", rarity: "Legendaria", elixir: 7, type: "Tropa" },
+      { name: "Torre Infernal", rarity: "Rara", elixir: 5, type: "Estructura" },
+      { name: "Tronco", rarity: "Legendaria", elixir: 2, type: "Hechizo" },
+      { name: "Valquiria", rarity: "Rara", elixir: 4, type: "Tropa" },
+      { name: "Veneno", rarity: "Épica", elixir: 4, type: "Hechizo" },
+      { name: "X-Bow", rarity: "Épica", elixir: 6, type: "Estructura" },
+      { name: "Minero", rarity: "Legendaria", elixir: 3, type: "Tropa" },
+      { name: "Fantasma Real", rarity: "Legendaria", elixir: 3, type: "Tropa" },
+      { name: "Carnero de Batalla", rarity: "Rara", elixir: 4, type: "Tropa" },
+      { name: "Bombardero", rarity: "Común", elixir: 2, type: "Tropa" },
+      { name: "Choza de Duendes", rarity: "Rara", elixir: 5, type: "Estructura" },
+      { name: "Duendes con Lanza", rarity: "Común", elixir: 2, type: "Tropa" },
+      { name: "Gigante Noble", rarity: "Rara", elixir: 6, type: "Tropa" },
+      { name: "Mago Eléctrico", rarity: "Legendaria", elixir: 4, type: "Tropa" },
+      { name: "Ballesta", rarity: "Épica", elixir: 6, type: "Estructura" },
+      { name: "Espejo", rarity: "Épica", elixir: 1, type: "Hechizo" },
+      { name: "Tornado", rarity: "Épica", elixir: 3, type: "Hechizo" },
+      { name: "Curación", rarity: "Rara", elixir: 1, type: "Hechizo" },
+      { name: "Murciélagos", rarity: "Común", elixir: 2, type: "Tropa" }
+    ];
+
+    const MAX_ATTEMPTS = 6;
+    const STORAGE_KEY = "clash_card_daily_progress_v1";
+
+    const guessInput = document.getElementById("guessInput");
+    const guessBtn = document.getElementById("guessBtn");
+    const giveUpBtn = document.getElementById("giveUpBtn");
+    const resultBox = document.getElementById("resultBox");
+    const attemptsLeftEl = document.getElementById("attemptsLeft");
+    const streakEl = document.getElementById("streak");
+    const winsEl = document.getElementById("wins");
+
+    const todayText = document.getElementById("todayText");
+    const dayOfYearText = document.getElementById("dayOfYearText");
+    const clueRarity = document.getElementById("clueRarity");
+    const clueElixir = document.getElementById("clueElixir");
+    const clueType = document.getElementById("clueType");
+    const clueFirstLetter = document.getElementById("clueFirstLetter");
+    const clueWords = document.getElementById("clueWords");
+    const cardsList = document.getElementById("cardsList");
+
+    function getDayOfYear(date = new Date()) {
+      const start = new Date(date.getFullYear(), 0, 0);
+      const diff = date - start;
+      const oneDay = 1000 * 60 * 60 * 24;
+      return Math.floor(diff / oneDay);
+    }
+
+    function normalizeText(text) {
+      return text
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "")
+        .trim();
+    }
+
+    function getTodayKey(date = new Date()) {
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    }
+
+    function getDailyCard() {
+      const today = new Date();
+      const day = getDayOfYear(today);
+      const index = (day - 1) % cards.length;
+      return { card: cards[index], day };
+    }
+
+    function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const base = {
+        lastPlayedDate: null,
+        attemptsUsed: 0,
+        solved: false,
+        gaveUp: false,
+        wins: 0,
+        streak: 0,
+        guesses: []
+      };
+
+      if (!raw) return base;
+
+      try {
+        return { ...base, ...JSON.parse(raw) };
+      } catch {
+        return base;
+      }
+    }
+
+    function saveState(state) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function resetForNewDayIfNeeded(state, todayKey) {
+      if (state.lastPlayedDate !== todayKey) {
+        const wasYesterdaySolved = state.solved;
+        state.lastPlayedDate = todayKey;
+        state.attemptsUsed = 0;
+        state.solved = false;
+        state.gaveUp = false;
+        state.guesses = [];
+        if (!wasYesterdaySolved) state.streak = 0;
+        saveState(state);
+      }
+      return state;
+    }
+
+    function setResult(message, type = "") {
+      resultBox.textContent = message;
+      resultBox.className = "result" + (type ? ` ${type}` : "");
+    }
+
+    function renderList() {
+      cardsList.innerHTML = `<strong>Cartas incluidas:</strong><br>${cards.map(c => c.name).join(" • ")}`;
+    }
+
+    const { card: secretCard, day } = getDailyCard();
+    const today = new Date();
+    const todayKey = getTodayKey(today);
+
+    todayText.textContent = `Hoy: ${today.toLocaleDateString("es-PE", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}`;
+    dayOfYearText.textContent = `Día del año: ${day}`;
+
+    clueRarity.textContent = secretCard.rarity;
+    clueElixir.textContent = secretCard.elixir;
+    clueType.textContent = secretCard.type;
+    clueFirstLetter.textContent = secretCard.name.charAt(0);
+    clueWords.textContent = secretCard.name.trim().split(/\s+/).length;
+
+    renderList();
+
+    let state = resetForNewDayIfNeeded(loadState(), todayKey);
+
+    function refreshStats() {
+      attemptsLeftEl.textContent = Math.max(0, MAX_ATTEMPTS - state.attemptsUsed);
+      streakEl.textContent = state.streak;
+      winsEl.textContent = state.wins;
+    }
+
+    function lockGame(message, type) {
+      guessInput.disabled = true;
+      guessBtn.disabled = true;
+      setResult(message, type);
+    }
+
+    function restoreSession() {
+      refreshStats();
+
+      if (state.solved) {
+        lockGame(`Ya ganaste hoy. La carta era: ${secretCard.name} 👑`, "ok");
+        return;
+      }
+
+      if (state.gaveUp) {
+        lockGame(`Hoy te rendiste. La carta era: ${secretCard.name} 😅`, "bad");
+        return;
+      }
+
+      if (state.attemptsUsed >= MAX_ATTEMPTS) {
+        lockGame(`Se acabaron los intentos. La carta era: ${secretCard.name} 💀`, "bad");
+        return;
+      }
+
+      if (state.guesses.length > 0) {
+        const lastGuess = state.guesses[state.guesses.length - 1];
+        setResult(`Último intento: ${lastGuess}. Sigue probando.`, "");
+      }
+    }
+
+    function handleGuess() {
+      if (state.solved || state.gaveUp || state.attemptsUsed >= MAX_ATTEMPTS) return;
+
+      const guess = guessInput.value.trim();
+      if (!guess) {
+        setResult("Escribe una carta antes de intentar.", "bad");
+        return;
+      }
+
+      const normalizedGuess = normalizeText(guess);
+      const normalizedAnswer = normalizeText(secretCard.name);
+
+      state.attemptsUsed += 1;
+      state.guesses.push(guess);
+
+      if (normalizedGuess === normalizedAnswer) {
+        state.solved = true;
+        state.wins += 1;
+        state.streak += 1;
+        saveState(state);
+        refreshStats();
+        lockGame(`¡Correcto! La carta del día es ${secretCard.name} 🏆`, "ok");
+        return;
+      }
+
+      saveState(state);
+      refreshStats();
+
+      if (state.attemptsUsed >= MAX_ATTEMPTS) {
+        lockGame(`Perdiste. La carta del día era ${secretCard.name} 💥`, "bad");
+        return;
+      }
+
+      const hints = [];
+      if (normalizeText(secretCard.name).includes(normalizedGuess) && normalizedGuess.length > 2) {
+        hints.push("Tu respuesta se parece bastante al nombre real.");
+      }
+      if (guess.charAt(0).toLowerCase() === secretCard.name.charAt(0).toLowerCase()) {
+        hints.push("Acertaste la primera letra.");
+      }
+
+      setResult(`No es correcto. ${hints.join(" ") || "Sigue intentando."}`, "bad");
+    }
+
+    guessBtn.addEventListener("click", handleGuess);
+    guessInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") handleGuess();
+    });
+
+    giveUpBtn.addEventListener("click", () => {
+      if (state.solved || state.gaveUp) return;
+      state.gaveUp = true;
+      state.streak = 0;
+      saveState(state);
+      refreshStats();
+      lockGame(`Te rendiste. La carta del día era ${secretCard.name} 😴`, "bad");
+    });
+
+    restoreSession();
+  </script>
+</body>
+</html>
