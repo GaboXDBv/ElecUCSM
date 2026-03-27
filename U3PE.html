@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ingeniería de Requerimientos - Proyecto Electrónico I</title>
+  <style>
+    :root{
+      --bg:#071a2f;
+      --bg2:#0a2746;
+      --card:#0f355f;
+      --card2:#114d7d;
+      --soft:#dff7ff;
+      --text:#effcff;
+      --muted:#c4e8f0;
+      --green:#20c997;
+      --green2:#119d74;
+      --blue:#3ba3ff;
+      --blue2:#1168c7;
+      --line:rgba(255,255,255,.15);
+      --shadow:0 20px 45px rgba(0,0,0,.25);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(32,201,151,.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(59,163,255,.18), transparent 26%),
+        linear-gradient(135deg, var(--bg), var(--bg2));
+      line-height:1.65;
+    }
+
+    .container{
+      width:min(1200px, 92%);
+      margin:auto;
+    }
+
+    header{
+      padding:56px 0 28px;
+    }
+
+    .hero{
+      background:linear-gradient(145deg, rgba(17,77,125,.88), rgba(15,53,95,.88));
+      border:1px solid var(--line);
+      border-radius:28px;
+      padding:34px;
+      box-shadow:var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero::before,
+    .hero::after{
+      content:"";
+      position:absolute;
+      border-radius:50%;
+      filter:blur(10px);
+      opacity:.25;
+    }
+
+    .hero::before{
+      width:220px;height:220px;
+      background:var(--green);
+      right:-60px;top:-60px;
+    }
+
+    .hero::after{
+      width:240px;height:240px;
+      background:var(--blue);
+      left:-80px;bottom:-120px;
+    }
+
+    .badge{
+      display:inline-block;
+      padding:8px 14px;
+      border-radius:999px;
+      background:linear-gradient(90deg, rgba(32,201,151,.2), rgba(59,163,255,.2));
+      border:1px solid rgba(255,255,255,.18);
+      color:#ecfffb;
+      font-weight:700;
+      letter-spacing:.3px;
+      margin-bottom:14px;
+      position:relative;
+      z-index:1;
+    }
+
+    h1,h2,h3{margin:0 0 14px}
+    h1{
+      font-size:clamp(2rem, 4vw, 3.35rem);
+      line-height:1.12;
+      position:relative;
+      z-index:1;
+    }
+
+    .hero p{
+      max-width:860px;
+      color:var(--muted);
+      font-size:1.05rem;
+      position:relative;
+      z-index:1;
+    }
+
+    nav{
+      position:sticky;
+      top:0;
+      z-index:20;
+      backdrop-filter: blur(10px);
+      background:rgba(7,26,47,.72);
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+
+    .nav-wrap{
+      width:min(1200px, 92%);
+      margin:auto;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      padding:14px 0;
+    }
+
+    nav a{
+      text-decoration:none;
+      color:var(--text);
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.08);
+      font-size:.94rem;
+      transition:.22s ease;
+    }
+
+    nav a:hover{
+      transform:translateY(-2px);
+      background:linear-gradient(90deg, rgba(32,201,151,.22), rgba(59,163,255,.22));
+      border-color:rgba(255,255,255,.18);
+    }
+
+    main{
+      padding:28px 0 60px;
+    }
+
+    section{
+      margin:26px 0;
+      background:linear-gradient(180deg, rgba(15,53,95,.92), rgba(10,39,70,.92));
+      border:1px solid var(--line);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .section-head{
+      padding:24px 24px 0;
+    }
+
+    .section-body{
+      padding:0 24px 26px;
+    }
+
+    .section-title{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .number{
+      width:46px;
+      height:46px;
+      display:grid;
+      place-items:center;
+      border-radius:14px;
+      font-weight:800;
+      background:linear-gradient(135deg, var(--green), var(--blue));
+      color:white;
+      box-shadow:0 8px 20px rgba(0,0,0,.22);
+      flex:0 0 auto;
+    }
+
+    .section-title h2{
+      font-size:clamp(1.3rem, 2vw, 1.9rem);
+    }
+
+    .highlight{
+      margin-top:14px;
+      padding:16px 18px;
+      border-left:4px solid var(--green);
+      background:rgba(255,255,255,.05);
+      border-radius:16px;
+      color:var(--soft);
+    }
+
+    .grid-2{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:18px;
+      margin-top:18px;
+    }
+
+    .mini-card{
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:18px;
+      padding:18px;
+    }
+
+    .mini-card h3{
+      color:#f2fffd;
+      font-size:1.05rem;
+      margin-bottom:10px;
+    }
+
+    ul{
+      margin:10px 0 0 18px;
+      padding:0;
+    }
+
+    .table-wrap{
+      margin-top:18px;
+      overflow-x:auto;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.1);
+    }
+
+    table{
+      width:100%;
+      min-width:760px;
+      border-collapse:collapse;
+      background:rgba(255,255,255,.03);
+    }
+
+    th,td{
+      border:1px solid rgba(255,255,255,.12);
+      padding:14px 13px;
+      text-align:left;
+      vertical-align:top;
+    }
+
+    th{
+      background:linear-gradient(135deg, var(--blue2), var(--green2));
+      color:#fff;
+      font-size:.96rem;
+    }
+
+    tr:nth-child(even) td{
+      background:rgba(255,255,255,.035);
+    }
+
+    .quote{
+      font-size:1.12rem;
+      font-weight:700;
+      color:#f1fffb;
+      padding:18px 20px;
+      background:linear-gradient(135deg, rgba(32,201,151,.16), rgba(59,163,255,.16));
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:20px;
+      margin-top:16px;
+    }
+
+    .footer{
+      text-align:center;
+      color:var(--muted);
+      padding:16px 0 34px;
+      font-size:.95rem;
+    }
+
+    @media (max-width: 900px){
+      .grid-2{grid-template-columns:1fr}
+      .hero{padding:26px}
+      .section-head{padding:20px 18px 0}
+      .section-body{padding:0 18px 22px}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="hero">
+        <span class="badge">Proyecto Electrónico I · Ingeniería de Requerimientos</span>
+        <h1>Sistema electrónico de monitoreo y control del agua en minería</h1>
+      </div>
+    </div>
+  </header>
+
+  <nav>
+    <div class="nav-wrap">
+      <a href="#p1">Punto 1</a>
+      <a href="#p2">Punto 2</a>
+      <a href="#p3">Punto 3</a>
+      <a href="#p4">Punto 4</a>
+      <a href="#p5">Punto 5</a>
+      <a href="#p6">Punto 6</a>
+      <a href="#p7">Punto 7</a>
+      <a href="#p8">Punto 8</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section id="p1">
+      <div class="section-head">
+        <div class="section-title">
+          <div class="number">1</div>
+          <h2>Sector elegido y árbol del problema</h2>
+        </div>
+      </div>
+      <div class="section-body">
+        <p>
+          El sector elegido es <strong>Minería</strong>. El problema central del proyecto es la <strong>ineficiencia en el uso del agua en minería</strong>. A partir del árbol desarrollado en el documento, se identifican causas técnicas en las raíces, el problema principal en el tronco y los impactos sociales y ambientales en las ramas.
+        </p>
+
+        <div class="grid-2">
+          <div class="mini-card">
+            <h3>Raíces: causas técnicas</h3>
+            <ul>
+              <li>Falta de sensores de flujo y calidad del agua.</li>
+              <li>Sistemas de reciclaje no automatizados.</li>
+              <li>Poca digitalización del proceso.</li>
+              <li>Ausencia de control en tiempo real.</li>
+              <li>Infraestructura obsoleta.</li>
+            </ul>
+          </div>
+          <div class="mini-card">
+            <h3>Ramas: impacto social y ambiental</h3>
+            <ul>
+              <li>Escasez de agua en comunidades.</li>
+              <li>Conflictos sociales.</li>
+              <li>Impacto ambiental.</li>
+              <li>Incremento de costos.</li>
+              <li>Sanciones regulatorias.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="highlight">
+          <strong>Problema central:</strong> uso ineficiente del recurso hídrico en operaciones mineras.
+        </div>
+
+        <div style="margin-top:20px; text-align:center;">
+          <img src="ArbU3PE.jpg" alt="Árbol del problema del proyecto" style="max-width:100%; border-radius:18px; border:1px solid rgba(255,255,255,.12); box-shadow:var(--shadow);">
+        </div>
+      </div>
+    </section>
+
+    <section id="p2">
+      <div class="section-head">
+        <div class="section-title">
+          <div class="number">2</div>
+          <h2>Reto ético</h2>
+        </div>
+      </div>
+      <div class="section-body">
+        <p>
+          Si una solución técnica logra resolver el problema del uso ineficiente del agua en minería, pero resulta demasiado costosa para la comunidad o empresa que la necesita, entonces en la práctica el problema no se soluciona realmente. Además, cuando el costo es demasiado alto, se introduce una nueva causa dentro del problema original: la inaccesibilidad económica de la tecnología.
+        </p>
+        <p>
+          Desde el punto de vista social, esto también genera consecuencias negativas. Solo las grandes empresas podrían acceder a este tipo de soluciones, mientras que pequeñas operaciones o comunidades quedarían excluidas. Esto puede aumentar la desigualdad, generar conflictos sociales y crear desconfianza hacia la tecnología, especialmente si las personas perciben que existen soluciones, pero no están a su alcance.
+        </p>
+      </div>
+    </section>
+
+    <section id="p3">
+      <div class="section-head">
+        <div class="section-title">
+          <div class="number">3</div>
+          <h2>Requerimientos funcionales: entradas, procesamiento y salidas</h2>
+        </div>
+      </div>
+      <div class="section-body">
+        <h3>Entradas: variables físicas que mide el sistema</h3>
+        <p>
+          En este sistema orientado al uso eficiente del agua en minería, se pueden medir distintas variables físicas y químicas que permiten supervisar el estado del recurso hídrico, la operación de tuberías y tanques, y la calidad del agua reutilizada. Entre las principales variables se encuentran la humedad, el flujo o caudal, la altura o nivel de agua, la presión, el pH, la turbidez y el estado de bombas o válvulas.
+        </p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Variable a medir</th>
+                <th>Sensor posible</th>
+                <th>Funcionamiento básico</th>
+                <th>Aplicación en el sistema</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Humedad / presencia de agua</td>
+                <td>Sensor de humedad o sensor de fuga por conductividad</td>
+                <td>Detecta la presencia de agua porque cambia la conductividad eléctrica entre dos electrodos o superficies sensibles.</td>
+                <td>Identificar filtraciones, fugas localizadas o acumulación de agua en zonas no deseadas.</td>
+              </tr>
+              <tr>
+                <td>Caudal o flujo de agua</td>
+                <td>Caudalímetro / sensor de flujo</td>
+                <td>Mide la cantidad de agua que circula por una tubería, normalmente contando pulsos generados por una turbina, efecto Hall o tecnología electromagnética.</td>
+                <td>Controlar consumo, comparar entrada y salida, detectar pérdidas.</td>
+              </tr>
+              <tr>
+                <td>Nivel o altura del agua en tanques</td>
+                <td>Sensor ultrasónico, sensor de presión hidrostática o sensor de flotador</td>
+                <td>El ultrasónico mide la distancia hasta la superficie del agua; el hidrostático mide la presión causada por la columna de agua; el flotador cambia de posición según el nivel.</td>
+                <td>Monitorear llenado y vaciado de tanques, evitar desbordes o falta de agua.</td>
+              </tr>
+              <tr>
+                <td>Presión en tuberías</td>
+                <td>Sensor de presión</td>
+                <td>Convierte la presión del fluido en una señal eléctrica proporcional.</td>
+                <td>Verificar estado de la red, detectar caídas anormales y apoyar en la detección de fugas.</td>
+              </tr>
+              <tr>
+                <td>pH del agua</td>
+                <td>Sensor o sonda de pH</td>
+                <td>Mide la actividad de iones de hidrógeno en el agua para determinar si es ácida, neutra o básica.</td>
+                <td>Evaluar calidad del agua y decidir si puede reutilizarse o necesita tratamiento.</td>
+              </tr>
+              <tr>
+                <td>Turbidez del agua</td>
+                <td>Sensor de turbidez óptico</td>
+                <td>Emite luz a través del agua y mide cuánto se dispersa o se atenúa por la presencia de partículas suspendidas.</td>
+                <td>Determinar si el agua está limpia o contiene demasiados sólidos para su reutilización.</td>
+              </tr>
+              <tr>
+                <td>Estado de bombas o válvulas</td>
+                <td>Sensor de corriente, finales de carrera o sensores de posición</td>
+                <td>Verifican si la bomba está operando o si una válvula está abierta o cerrada.</td>
+                <td>Confirmar que las acciones del sistema realmente se ejecutan.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 style="margin-top:22px;">Procesamiento</h3>
+        <p>
+          En la etapa de procesamiento, el firmware recibe los datos de los sensores y se encarga de analizarlos para tomar decisiones automáticas dentro del sistema. Primero realiza la lectura y conversión de las señales medidas, luego puede aplicar filtrado o promedios para reducir errores o ruido en las mediciones. Después compara los valores obtenidos con umbrales establecidos, por ejemplo, niveles máximos y mínimos de agua, rangos aceptables de pH o límites de turbidez.
+        </p>
+        <p>
+          A partir de estas comparaciones, el sistema puede detectar anomalías como fugas, sobreconsumo, baja eficiencia de recirculación o mala calidad del agua. Además, el firmware puede calcular variables derivadas, como el consumo acumulado, el porcentaje de agua reutilizada o la diferencia entre caudales de entrada y salida. Luego organiza la información para enviarla mediante protocolos de comunicación como UART, I2C o modbus.
+        </p>
+
+        <h3>Salidas</h3>
+        <p>
+          En la etapa de salida, el sistema ejecuta acciones a partir de las decisiones tomadas por el firmware. Entre las principales acciones se encuentran la activación o desactivación de bombas para regular el paso del agua, la apertura o cierre de válvulas mediante relés o actuadores, y la activación de alarmas visuales o sonoras cuando se detectan fugas, valores anormales de pH, alta turbidez o niveles críticos en los tanques.
+        </p>
+        <p>
+          Además, el sistema puede mostrar información en una pantalla o HMI, como el caudal, nivel, pH y estado de los equipos, y también enviar datos a un sistema externo o a la nube en formatos como JSON, usando protocolos de comunicación para monitoreo remoto y registro histórico. De esta manera, las salidas no solo actúan físicamente sobre el proceso, sino que también permiten supervisión, alerta y trazabilidad de la operación.
+        </p>
+      </div>
+    </section>
+
+    <section id="p4">
+      <div class="section-head">
+        <div class="section-title">
+          <div class="number">4</div>
+          <h2>Cuadrante de limitaciones</h2>
+        </div>
+      </div>
+      <div class="section-body">
+        <p>
+          Cada grupo debe completar la tabla de requerimientos no funcionales para su propuesta, siendo lo más específicos posible en categorías como consumo, seguridad, dimensiones y normativa.
+        </p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Categoría</th>
+                <th>Especificación Técnica (métrica)</th>
+                <th>Justificación</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Consumo</td>
+                <td>El sistema electrónico de monitoreo y control debe operar con alimentación industrial de 24 V DC, con un consumo propio máximo de 50 W. Además, debe ser capaz de supervisar y comandar bombas de agua industriales de hasta 50 kW, mediante contactores, relés industriales o variadores de frecuencia.</td>
+                <td>En minería se utilizan bombas de alta potencia para recirculación, impulsión y distribución de agua. Por ello, aunque la electrónica consume poca energía, el sistema debe estar preparado para interactuar con equipos de gran demanda energética.</td>
+              </tr>
+              <tr>
+                <td>Seguridad</td>
+                <td>El sistema debe contar con protección contra sobrecorriente, sobrevoltaje, cortocircuito y humedad, además de aislamiento entre la etapa de control y la etapa de potencia. Los gabinetes deben tener un grado de protección mínimo IP65, e incluir alarmas ante fugas, sobrepresión, nivel crítico, pH fuera de rango o alta turbidez.</td>
+                <td>El ambiente minero presenta polvo, humedad, vibraciones y operación continua, por lo que la seguridad eléctrica y la protección de los equipos son fundamentales para evitar fallas, daños al sistema y riesgos al personal.</td>
+              </tr>
+              <tr>
+                <td>Dimensiones</td>
+                <td>El módulo principal de control debe tener dimensiones máximas aproximadas de 40 cm × 30 cm × 20 cm, mientras que los módulos de medición en campo deben ser compactos, con dimensiones menores a 20 cm × 15 cm × 10 cm, según el punto de instalación.</td>
+                <td>En minería, los equipos deben instalarse cerca de tuberías, tanques o estaciones de bombeo, por lo que se requiere un diseño compacto que facilite el montaje, mantenimiento e integración con la infraestructura existente.</td>
+              </tr>
+              <tr>
+                <td>Normativa</td>
+                <td>El sistema debe diseñarse considerando normas industriales y de protección ambiental, como IEC 60529 para grado de protección IP, criterios de seguridad eléctrica industrial, compatibilidad electromagnética y buenas prácticas de instrumentación en ambientes húmedos y de trabajo pesado. También debe respetar los límites operativos definidos por la gestión del recurso hídrico de la operación minera.</td>
+                <td>Esto garantiza que la solución sea adecuada para operación en campo minero, con resistencia ambiental, confiabilidad eléctrica y compatibilidad con estándares técnicos usados en automatización e instrumentación industrial.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="highlight">
+          <p><strong>IP65</strong> es un grado de protección del gabinete o carcasa de un equipo. El primer dígito, 6, indica que el equipo está totalmente protegido contra el ingreso de polvo; el segundo dígito, 5, indica que está protegido contra chorros de agua proyectados desde cualquier dirección. En la práctica, esto significa que un equipo con IP65 puede trabajar en ambientes con polvo y salpicaduras o limpieza con agua a presión moderada, aunque no está diseñado para inmersión en agua.</p>
+          <p><strong>La norma IEC 60529</strong> es el estándar internacional que define el sistema IP (Ingress Protection), es decir, la clasificación de los grados de protección que ofrecen las envolventes de equipos eléctricos y electrónicos frente al ingreso de cuerpos sólidos y agua. Esta norma se aplica a envolventes de equipos eléctricos con tensiones nominales de hasta 72,5 kV y establece el significado de cada código IP, así como los criterios generales para su clasificación.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="p5">
+      <div class="section-head">
+        <div class="section-title">
+          <div class="number">5</div>
+          <h2>Proyecto en una frase</h2>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="quote">
+          "Nuestro proyecto soluciona el uso inadecuado del agua en minería impactando positivamente en las comunidades cercanas y el medio ambiente, operando bajo restricciones de infraestructura obsoleta y cumpliendo la función de monitoreo y control inteligente del recurso en tiempo real."
+        </div>
+      </div>
+    </section>
+
+    <section id="p6">
+      <div class="section-head">
+        <div class="section-title">
+          <div class="number">6</div>
+          <h2>Caza de componentes en tiempo real</h2>
+        </div>
+      </div>
+      <div class="section-body">
+        <p>
+          Cada grupo toma su BOM (Bill of Materials) preliminar y utiliza computadoras para investigar en distribuidores globales. La siguiente tabla recoge los componentes planteados para el sistema.
+        </p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Modelo</th>
+                <th>Especificación corta</th>
+                <th>Protección</th>
+                <th>Proveedor</th>
+                <th>Disponibilidad</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Sensor de nivel de agua</td>
+                <td>SLS300-5</td>
+                <td>Sensor sumergible de nivel, rango 0–5 m, salida 4–20 mA</td>
+                <td>IP68</td>
+                <td>Kusitest Perú</td>
+                <td>Vigente con stock (Kusitest)</td>
+              </tr>
+              <tr>
+                <td>Sensor de humedad y temperatura</td>
+                <td>HMS80 / HMDW80 Series</td>
+                <td>Rango de humedad 0–100 %RH, con salida 4–20 mA</td>
+                <td>IP65</td>
+                <td>Vaisala</td>
+                <td>Vigente con stock (Vaisala)</td>
+              </tr>
+              <tr>
+                <td>Sensor de nivel ultrasónico</td>
+                <td>SUL802</td>
+                <td>Sensor ultrasónico de nivel, rango 0–6 m, medición sin contacto</td>
+                <td>IP67</td>
+                <td>Kusitest Perú</td>
+                <td>Vigente con stock (Kusitest)</td>
+              </tr>
+              <tr>
+                <td>Sensor de presión en tuberías</td>
+                <td>SS201</td>
+                <td>Transmisor de presión 0–10 / 0–16 bar, salida 4–20 mA, 9–30 VDC</td>
+                <td>IP65</td>
+                <td>Tienda Cloudtec</td>
+                <td>Vigente; con stock (Cloudtec)</td>
+              </tr>
+              <tr>
+                <td>Sensor de pH</td>
+                <td>PH110B</td>
+                <td>Medidor portátil de pH para campo, calibración automática</td>
+                <td>IP65</td>
+                <td>Kusitest Perú</td>
+                <td>Vigente con stock (Kusitest)</td>
+              </tr>
+              <tr>
+                <td>Sensor de turbidez</td>
+                <td>TU200P</td>
+                <td>Turbidímetro portátil LED 850 nm, norma ISO 7027</td>
+                <td>IP65</td>
+                <td>Kusitest Perú</td>
+                <td>Vigente con stock (Kusitest)</td>
+              </tr>
+              <tr>
+                <td>Caudalímetro / sensor de flujo</td>
+                <td>SUL815</td>
+                <td>Flujómetro ultrasónico para canal abierto</td>
+                <td>IP65</td>
+                <td>Kusitest Perú</td>
+                <td>Vigente con stock (Kusitest)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="p7">
+      <div class="section-head">
+        <div class="section-title">
+          <div class="number">7</div>
+          <h2>Evaluación de restricciones normativas</h2>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="mini-card" style="margin-top:18px;">
+          <h3>1. Normativa de seguridad eléctrica</h3>
+          <p>El diseño del sistema de medición, que es el conjunto de distintos sensores, sí garantiza una buena seguridad. Los sensores escogidos funcionan con bajo voltaje, asegurando que los operarios no sufran descargas eléctricas; además, deberán portar equipo de seguridad y el sistema usará una fuente de alimentación certificada, dando aislamiento galvánico necesario respecto a la red eléctrica.</p>
+        </div>
+
+        <div class="mini-card" style="margin-top:18px;">
+          <h3>2. Interferencias (EMI/EMC)</h3>
+          <p>Los componentes utilizados, junto con el uso del microcontrolador correcto, proporcionan una buena transmisión de datos, haciendo que el ruido posible que pueda afectar sea el mínimo posible. El sistema de monitoreo de agua está diseñado para garantizar una robusta compatibilidad electromagnética, así como tampoco emitir radiación electromagnética no deseada.</p>
+          <p>El diseño del circuito impreso de los nodos del sensado cumple con reglas para la mitigación de ruido y sigue la normativa IPC-2152 e IPC-2221 para asegurar que la corriente e impedancias sean las correctas y no existan pérdidas ni añadidos.</p>
+        </div>
+
+        <div class="mini-card" style="margin-top:18px;">
+          <h3>3. Normativa ambiental (RoHS)</h3>
+          <p>Sí, se ha verificado rigurosamente; el diseño contempla componentes electrónicos de grado industrial capaces de operar sin fallos ante los fuertes contrastes de temperatura y las duras condiciones ambientales a las que está expuesta la mina.</p>
+          <p>Para lograr esto de forma segura, y en estricta alineación con la normativa ambiental RoHS, los componentes seleccionados no solo están libres de químicos peligrosos, sino que han sido validados para soportar los perfiles de soldadura sin plomo (Sn-Ag-Cu) más agresivos, lo que, sumado al uso de carcasas herméticas, garantiza la resistencia del hardware frente al polvo abrasivo y la humedad de la operación minera.</p>
+          <p>Además, se indica que todo el sistema cumple los estándares ISO 14001 y ISO 9001.</p>
+        </div>
+
+        <div class="mini-card" style="margin-top:18px;">
+          <h3>4. Factor de forma y estándares de gabinete</h3>
+          <p>El diseño del circuito respeta de manera estricta las restricciones de tamaño y densidad de componentes para poder encajar perfectamente en un riel DIN dentro de los gabinetes industriales de la planta de bombeo. Para lograrlo se emplea tecnología de montaje superficial (SMD) y un enrutamiento multicapa, garantizando el acople mecánico sin comprometer la disipación térmica dentro del espacio confinado del tablero.</p>
+        </div>
+
+        <div class="mini-card" style="margin-top:18px;">
+          <h3>5. Normas de diseño y fabricación</h3>
+          <p>Los protocolos elegidos para transmitir los datos de flujo de agua se basan en normativas IEEE, garantizando la correcta estandarización de los protocolos de comunicación y la terminología técnica del sistema.</p>
+          <p>También se ha considerado el uso de módulos de comunicación inalámbrica pre-certificados para evitar meses de pruebas de laboratorio.</p>
+          <p>El proceso de soldadura de los componentes en la placa se realizará bajo los criterios de la norma IPC J-STD-001 y se apoya adicionalmente en el estándar IPC-A-610 para garantizar la calidad final de la soldadura y del montaje.</p>
+          <p>Finalmente, los módulos de comunicación del sensor de agua cumplen con estándares físicos industriales, específicamente RS-485, para asegurar una transmisión robusta y sin pérdida de información hacia los tableros de control principal.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="p8">
+      <div class="section-head">
+        <div class="section-title">
+          <div class="number">8</div>
+          <h2>Tabla de restricciones, riesgos y plan de mitigación</h2>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Restricción</th>
+                <th>Riesgo Identificado</th>
+                <th>Plan de Mitigación (Solución B)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Costo</td>
+                <td>El sistema puede resultar demasiado costoso debido al uso de sensores industriales (pH, turbidez, caudalímetros ultrasónicos) y equipos certificados, lo que limita su adopción por pequeñas operaciones mineras o comunidades.</td>
+                <td>Realizar un rediseño modular del sistema, donde se implementen versiones escalables: una versión básica con sensores más económicos (por ejemplo, sensores analógicos o de menor precisión) y una versión avanzada. También se puede priorizar variables críticas (nivel y caudal) en una primera etapa y dejar otras (pH, turbidez) como expansión futura.</td>
+              </tr>
+              <tr>
+                <td>Tiempo</td>
+                <td>Retrasos en la implementación debido a componentes con lead time alto o en estado out of stock, como sensores de presión o caudalímetros especializados. Esto puede afectar el desarrollo del prototipo y pruebas en campo.</td>
+                <td>Buscar componentes equivalentes con disponibilidad inmediata en proveedores alternativos (Digi-Key, Mouser, LCSC). Además, diseñar el sistema con interfaces estándar (4–20 mA, RS-485) para permitir reemplazos rápidos sin rediseñar todo el hardware. También se puede usar simulación o sensores provisionales durante el desarrollo.</td>
+              </tr>
+              <tr>
+                <td>Normativa</td>
+                <td>Riesgo de que el sistema no cumpla completamente con normativas industriales (IEC 60529, IEC 62368, EMC, RoHS), lo que puede impedir su implementación en entornos mineros reales o generar problemas de seguridad eléctrica y confiabilidad.</td>
+                <td>Diseñar desde el inicio bajo estándares industriales: uso de gabinetes IP65 certificados, módulos de comunicación pre-certificados, aislamiento eléctrico adecuado y buenas prácticas de PCB (puesta a tierra, filtrado EMI). Además, realizar validaciones progresivas y considerar asesoría técnica o documentación de cumplimiento normativo desde etapas tempranas del proyecto.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">
+      Página en HTML elaborada a partir del contenido del documento del taller.
+    </div>
+  </main>
+</body>
+</html>
