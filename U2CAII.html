@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>U2CAII - Lógica Difusa</title>
+  <style>
+    :root{
+      --bg:#070b14;
+      --bg2:#0f1727;
+      --card:#141d31;
+      --card2:#19253e;
+      --text:#f4f7ff;
+      --muted:#c7d2e6;
+      --muted2:#9fb1d1;
+      --red:#ff4d5a;
+      --red2:#b9142a;
+      --blue:#41a5ff;
+      --blue2:#114fa7;
+      --cyan:#57d4ff;
+      --line:rgba(255,255,255,.10);
+      --ok:#41e39e;
+      --warn:#ffd166;
+      --bad:#ff7b7b;
+      --shadow:0 16px 35px rgba(0,0,0,.35);
+      --glass:rgba(255,255,255,.04);
+    }
+
+    body.light{
+      --bg:#eef4fb;
+      --bg2:#ffffff;
+      --card:#ffffff;
+      --card2:#f8fbff;
+      --text:#0f172a;
+      --muted:#334155;
+      --muted2:#475569;
+      --line:rgba(15,23,42,.10);
+      --shadow:0 12px 30px rgba(15,23,42,.10);
+      --glass:rgba(15,23,42,.03);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Inter,Segoe UI,Arial,sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(255,77,90,.18), transparent 22%),
+        radial-gradient(circle at top right, rgba(65,165,255,.18), transparent 24%),
+        linear-gradient(180deg,var(--bg),var(--bg2));
+      color:var(--text);
+    }
+    a{text-decoration:none;color:inherit}
+    .container{width:min(1200px,92%);margin:auto}
+
+    .topbar{
+      position:sticky;top:0;z-index:50;
+      backdrop-filter:blur(12px);
+      background:rgba(8,12,22,.82);
+      border-bottom:1px solid var(--line);
+    }
+    body.light .topbar{background:rgba(255,255,255,.88)}
+    .nav{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:14px;padding:14px 0;
+    }
+    .brand{
+      display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.3px;
+    }
+    .logo{
+      width:46px;height:46px;border-radius:15px;
+      background:linear-gradient(135deg,var(--red),var(--blue));
+      display:grid;place-items:center;font-weight:900;box-shadow:var(--shadow);
+      color:#fff;
+    }
+    .brand small{
+      display:block;color:var(--muted2);font-weight:600;margin-top:3px
+    }
+
+    .nav-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{
+      border:none;cursor:pointer;color:white;
+      padding:11px 16px;border-radius:14px;font-weight:800;
+      background:linear-gradient(135deg,var(--red2),var(--red));
+      box-shadow:var(--shadow);
+      transition:.25s transform,.25s filter,.25s opacity;
+    }
+    .btn:hover{transform:translateY(-2px);filter:brightness(1.05)}
+    .btn.secondary{background:linear-gradient(135deg,var(--blue2),var(--blue))}
+    .btn.ghost{
+      color:var(--text);
+      background:transparent;border:1px solid var(--line);box-shadow:none;
+    }
+
+    .hero{padding:56px 0 28px}
+    .hero-card{
+      border:1px solid var(--line);border-radius:30px;padding:30px;
+      background:
+        linear-gradient(135deg, rgba(255,77,90,.12), rgba(65,165,255,.12)),
+        rgba(255,255,255,.02);
+      box-shadow:var(--shadow);
+      position:relative;overflow:hidden;
+    }
+    .hero-card::after{
+      content:"";
+      position:absolute;inset:auto -80px -80px auto;
+      width:220px;height:220px;border-radius:50%;
+      background:radial-gradient(circle, rgba(87,212,255,.18), transparent 65%);
+      pointer-events:none;
+    }
+
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 14px;border-radius:999px;
+      border:1px solid var(--line);font-size:.92rem;color:var(--muted);
+      background:var(--glass);
+    }
+
+    h1{font-size:clamp(2rem,4vw,3.6rem);margin:16px 0 10px;line-height:1.05}
+    .gradient-text{
+      background:linear-gradient(90deg,var(--red),var(--cyan),var(--blue));
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+    }
+    .subtitle{
+      color:var(--muted);font-size:1.07rem;line-height:1.8;max-width:950px
+    }
+
+    .quick-links{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+    .quick-links a{
+      padding:10px 14px;border:1px solid var(--line);border-radius:14px;background:var(--glass);
+      color:var(--text);font-weight:700;
+    }
+    .quick-links a:hover{transform:translateY(-1px)}
+
+    section{padding:18px 0 30px}
+    .section-title{font-size:1.9rem;margin:0 0 10px}
+    .section-text{color:var(--muted);line-height:1.82;margin-bottom:20px}
+
+    .grid{display:grid;gap:18px}
+    .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    @media (max-width:1000px){.grid-4,.grid-3,.grid-2{grid-template-columns:1fr}}
+
+    .card{
+      background:linear-gradient(180deg,var(--card),var(--card2));
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:22px;
+      box-shadow:var(--shadow);
+    }
+    body.light .card{
+      background:linear-gradient(180deg,var(--card),var(--card2));
+    }
+    .card h3{margin:0 0 10px;font-size:1.2rem}
+    .card p,.card li{color:var(--muted);line-height:1.8}
+    .card ul{padding-left:18px;margin:0}
+    .bar{
+      height:7px;border-radius:999px;
+      background:linear-gradient(90deg,var(--red),var(--cyan),var(--blue));
+      margin-bottom:14px
+    }
+
+    .study-box{
+      border-left:4px solid var(--blue);
+      padding:18px 18px;
+      border-radius:0 18px 18px 0;
+      background:rgba(65,165,255,.09);
+      color:var(--text);
+      line-height:1.8;
+      border:1px solid rgba(65,165,255,.16);
+    }
+
+    .flow{
+      display:grid;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:14px;
+      margin-top:16px;
+    }
+    @media (max-width:1000px){.flow{grid-template-columns:1fr}}
+    .flow-step{
+      padding:18px;
+      border-radius:20px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,var(--card),var(--card2));
+      box-shadow:var(--shadow);
+      position:relative;
+    }
+    .flow-step .num{
+      width:34px;height:34px;border-radius:50%;
+      display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--red),var(--blue));
+      color:#fff;font-weight:900;margin-bottom:12px;
+    }
+
+    .flashcards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+    @media (max-width:900px){.flashcards{grid-template-columns:1fr}}
+    .flashcard{perspective:1000px;height:260px}
+    .flash-inner{
+      position:relative;width:100%;height:100%;transition:transform .7s;transform-style:preserve-3d;
+    }
+    .flashcard.flip .flash-inner{transform:rotateY(180deg)}
+    .flash-face{
+      position:absolute;inset:0;backface-visibility:hidden;border-radius:24px;padding:22px;
+      border:1px solid var(--line);box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:center;
+    }
+    .flash-front{
+      background:linear-gradient(135deg, rgba(185,20,42,.88), rgba(65,165,255,.18));
+    }
+    .flash-back{
+      background:linear-gradient(135deg, rgba(22,72,150,.92), rgba(185,20,42,.25));
+      transform:rotateY(180deg)
+    }
+    .flash-tag{
+      font-size:.8rem;color:#eef6ff;opacity:.95;text-transform:uppercase;letter-spacing:.13em;font-weight:800
+    }
+    .flash-face h4{font-size:1.22rem;margin:10px 0}
+    .flash-face p{margin:0;color:#f8fbff;line-height:1.72}
+
+    .mini-tag{
+      display:inline-block;
+      margin-top:10px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.12);
+      color:#fff;
+      font-size:.82rem;
+      font-weight:700;
+    }
+
+    .write-q{margin-bottom:18px}
+    .write-q h4{margin:0 0 10px;font-size:1.08rem}
+    textarea{
+      width:100%;min-height:115px;resize:vertical;padding:14px 16px;
+      border-radius:16px;border:1px solid var(--line);outline:none;
+      background:rgba(255,255,255,.05);color:var(--text);font:inherit;line-height:1.7;
+    }
+    textarea::placeholder{color:var(--muted2)}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .feedback{
+      margin-top:12px;padding:14px 16px;border-radius:16px;border:1px solid var(--line);
+      background:rgba(255,255,255,.04);line-height:1.8;color:var(--text)
+    }
+    .score{
+      display:inline-block;padding:6px 12px;border-radius:999px;font-weight:900;margin-bottom:8px
+    }
+    .score.good{background:rgba(65,227,158,.14);color:var(--ok)}
+    .score.mid{background:rgba(255,209,102,.14);color:var(--warn)}
+    .score.bad{background:rgba(255,123,123,.14);color:var(--bad)}
+
+    .mcq{display:grid;gap:16px}
+    .mcq-card{
+      padding:20px;border-radius:22px;border:1px solid var(--line);
+      background:linear-gradient(180deg,var(--card),var(--card2));
+      box-shadow:var(--shadow);
+    }
+    .options{display:grid;gap:10px;margin-top:12px}
+    .option{
+      padding:12px 14px;border:1px solid var(--line);border-radius:14px;cursor:pointer;
+      background:rgba(255,255,255,.04);transition:.2s;color:var(--text);text-align:left;font-weight:600
+    }
+    .option:hover{transform:translateY(-1px);background:rgba(255,255,255,.07)}
+    .option.correct{border-color:rgba(65,227,158,.5);background:rgba(65,227,158,.11)}
+    .option.wrong{border-color:rgba(255,123,123,.55);background:rgba(255,123,123,.10)}
+    .option.locked{pointer-events:none}
+    .mcq-result{margin-top:10px;color:var(--muted);line-height:1.7}
+
+    .footer{padding:30px 0 60px;color:var(--muted)}
+    .tiny{font-size:.95rem;color:var(--muted)}
+    .hl{color:var(--cyan);font-weight:800}
+    strong{color:var(--text)}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container nav">
+      <div class="brand">
+        <div class="logo">U2</div>
+        <div>
+          <div>Control Avanzado II</div>
+          <small>Unidad 2 - Lógica difusa, funciones de pertenencia y método Mamdani</small>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <a class="btn ghost" href="ContAva.html">⬅ Atrás</a>
+        <button class="btn secondary" id="themeBtn">☀️ Modo claro</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-card">
+          <span class="pill">U2CAII.html · teoría + flashcards + práctica + autoevaluación</span>
+          <h1><span class="gradient-text">Lógica difusa</span>, funciones de pertenencia y Mamdani</h1>
+          <p class="subtitle">
+            Esta página está pensada para estudiar mejor el tema de lógica difusa en Control Avanzado II.
+            Aquí no solo vas a ver definiciones rápidas, sino una explicación más clara de <strong>variables lingüísticas</strong>,
+            <strong>funciones de pertenencia</strong>, <strong>tipos de membership functions</strong> y el flujo completo del
+            <strong>método Mamdani</strong>. También tienes flashcards, preguntas para escribir y preguntas para marcar,
+            todo en una sola página para que puedas estudiar de forma más ordenada.
+          </p>
+          <div class="quick-links">
+            <a href="#teoria">Teoría</a>
+            <a href="#tipos">Tipos de funciones</a>
+            <a href="#mamdani">Mamdani</a>
+            <a href="#flashcards">Flashcards</a>
+            <a href="#escribir">Preguntas para escribir</a>
+            <a href="#marcar">Preguntas para marcar</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="teoria">
+      <div class="container">
+        <h2 class="section-title">Marco teórico didáctico</h2>
+        <p class="section-text">
+          Acá está la parte importante que normalmente te pueden preguntar en laboratorio o en la explicación del sistema.
+          La idea es entender el concepto, saber para qué sirve y poder decirlo con tus propias palabras.
+        </p>
+
+        <div class="grid grid-2">
+          <article class="card">
+            <div class="bar"></div>
+            <h3>1. ¿Qué es la lógica difusa?</h3>
+            <p>
+              La lógica difusa es una técnica de razonamiento que permite trabajar con valores intermedios entre 0 y 1.
+              A diferencia de la lógica clásica, donde algo solo puede ser verdadero o falso, en la lógica difusa
+              una condición puede cumplirse parcialmente. Eso hace que el sistema represente mejor situaciones reales,
+              ya que muchas veces un proceso no está solamente “encendido o apagado”, sino que puede estar un poco bajo,
+              medio, alto o muy alto.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>2. Variable lingüística</h3>
+            <p>
+              Una variable lingüística es una variable que se describe con palabras en lugar de trabajar solo con valores numéricos.
+              Por ejemplo, en vez de decir únicamente “temperatura = 45 °C”, un sistema difuso puede interpretar esa temperatura como
+              <span class="hl">fría</span>, <span class="hl">templada</span>, <span class="hl">caliente</span> o <span class="hl">muy caliente</span>.
+              Lo mismo ocurre con otras variables como error, velocidad, humedad, nivel o presión.
+            </p>
+            <p>
+              Lo importante es entender que una variable lingüística no se limita a “bajo, medio y alto”.
+              Puede tener muchos términos según el problema, por ejemplo:
+              <strong>error muy negativo, error negativo, error pequeño, error cero, error positivo, error muy positivo</strong>.
+              Eso hace que el control sea más fino y más parecido al razonamiento humano.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>3. Función de pertenencia</h3>
+            <p>
+              Una función de pertenencia es una curva que indica qué tan perteneciente es un valor a un conjunto difuso.
+              El resultado siempre está entre 0 y 1. Si el valor es 0, no pertenece al conjunto; si es 1, pertenece totalmente;
+              y si está entre ambos, la pertenencia es parcial.
+            </p>
+            <p>
+              Por ejemplo, un valor de entrada puede pertenecer al conjunto “medio” con 0.6 y al conjunto “alto” con 0.4 al mismo tiempo.
+              Esa es justamente una de las ideas más importantes de la lógica difusa.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>4. ¿Por qué son importantes?</h3>
+            <p>
+              Las funciones de pertenencia permiten convertir datos numéricos en información lingüística que el sistema difuso puede usar.
+              Gracias a ellas, una entrada real como temperatura, error o cambio del error puede pasar a interpretarse como
+              “baja”, “normal”, “alta”, “rápida”, “casi cero”, etc. En pocas palabras, hacen posible la etapa de <strong>fusificación</strong>.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>5. Reglas difusas</h3>
+            <p>
+              Son reglas del tipo <strong>SI ... ENTONCES ...</strong>. Estas reglas expresan la lógica del diseñador o del experto.
+              Por ejemplo:
+              <em>Si el error es positivo grande y la rapidez del error también es positiva, entonces la salida debe disminuir con fuerza.</em>
+            </p>
+            <p>
+              En otras palabras, las reglas relacionan el estado de las entradas con una acción de salida.
+              Cuantas mejor definidas estén las reglas, mejor responderá el sistema.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>6. Base de conocimiento</h3>
+            <p>
+              La base de conocimiento de un sistema difuso está formada por las funciones de pertenencia y por las reglas.
+              Ahí se guarda la “inteligencia” del controlador. Si las funciones están mal ubicadas o las reglas no representan bien el proceso,
+              el sistema no va a responder como se espera.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>7. Fusificación</h3>
+            <p>
+              La fusificación es la etapa donde una entrada numérica se transforma en grados de pertenencia.
+              Por ejemplo, si el error vale 0.3, el sistema puede indicar que pertenece en cierto grado al conjunto
+              “error pequeño” y también, en menor grado, al conjunto “error medio”.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>8. Agregación y defusificación</h3>
+            <p>
+              Después de evaluar todas las reglas, las salidas difusas producidas por cada una se combinan.
+              Esa combinación recibe el nombre de <strong>agregación</strong>.
+              Luego, la <strong>defusificación</strong> convierte esa salida difusa en un único valor numérico real,
+              que es el que finalmente puede usar el actuador o el bloque de control.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>9. Fuzzy Logic Designer</h3>
+            <p>
+              El diseñador difuso de MATLAB sirve para crear el sistema difuso completo:
+              entradas, salidas, funciones de pertenencia, reglas y herramientas de análisis.
+              También permite observar superficies 3D, reglas activadas y comportamiento general del controlador.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>10. Idea clave que sí o sí debes recordar</h3>
+            <p>
+              El flujo general del sistema es:
+              <strong>entrada numérica → fusificación → evaluación de reglas → agregación → defusificación → salida real</strong>.
+              Si recuerdas ese orden y sabes explicar qué hace cada etapa, ya tienes gran parte del tema dominado.
+            </p>
+          </article>
+        </div>
+
+        <div class="study-box" style="margin-top:18px">
+          <strong>Tip para responder en el pasito:</strong> cuando te pregunten algo, responde así:
+          <strong>qué es</strong> + <strong>para qué sirve</strong> + <strong>ejemplo corto</strong>.
+          Esa estructura te ayuda bastante a no quedarte en blanco.
+        </div>
+      </div>
+    </section>
+
+    <section id="tipos">
+      <div class="container">
+        <h2 class="section-title">Tipos de funciones de pertenencia</h2>
+        <p class="section-text">
+          En el Fuzzy Logic Designer aparecen varios tipos de membership functions. Algunas son más simples y otras más suaves.
+          Las más comunes son las triangulares y trapezoidales, pero hay varias más. Acá te explico las principales.
+        </p>
+
+        <div class="grid grid-3">
+          <article class="card">
+            <div class="bar"></div>
+            <h3>trimf (Triangular)</h3>
+            <p>
+              Tiene forma de triángulo y se define con tres parámetros. Es una de las más usadas porque es simple,
+              rápida y fácil de interpretar. Suele usarse para regiones intermedias como <strong>bajo, medio, alto</strong>.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>trapmf (Trapezoidal)</h3>
+            <p>
+              Tiene forma de trapecio y se define con cuatro parámetros. Se utiliza mucho en los extremos del rango,
+              porque puede mantener una pertenencia máxima durante una zona más amplia. Es útil para representar
+              estados claramente bajos o claramente altos.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>gaussmf (Gaussiana)</h3>
+            <p>
+              Tiene forma suave, redondeada y sin esquinas. Se usa cuando se quiere una transición más natural entre conjuntos.
+              Es buena para sistemas donde no conviene tener cambios bruscos entre una región y otra.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>gauss2mf</h3>
+            <p>
+              Es una función formada por dos curvas gaussianas. Permite generar una región más amplia en la parte central,
+              combinando suavidad con una zona de pertenencia más extendida.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>gbellmf (Campana generalizada)</h3>
+            <p>
+              Tiene forma de campana y permite ajustar mejor el ancho y la pendiente de la curva.
+              Es bastante flexible y por eso se usa cuando se quiere un control más fino sobre la forma de la función.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>sigmf (Sigmoidal)</h3>
+            <p>
+              Tiene forma de curva “S”. Sirve para representar transiciones continuas de crecimiento o decrecimiento.
+              Es útil cuando una variable empieza a activarse gradualmente a partir de cierto punto.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>dsigmf</h3>
+            <p>
+              Es la diferencia de dos funciones sigmoidales. Permite formar una región central más controlada,
+              combinando el crecimiento de una sigmoide con la disminución de otra.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>psigmf</h3>
+            <p>
+              Es el producto de dos sigmoidales. Se usa para construir funciones con una forma cerrada y suave,
+              donde tanto el lado izquierdo como el derecho se ajustan de manera progresiva.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>smf</h3>
+            <p>
+              También tiene forma de “S”. Normalmente representa una transición creciente,
+              desde baja pertenencia hasta alta pertenencia de manera suave.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>zmf</h3>
+            <p>
+              Es como la versión opuesta de la S. Representa una transición decreciente:
+              empieza alta y luego baja suavemente. Se usa mucho en regiones del extremo izquierdo.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>pimf</h3>
+            <p>
+              Tiene una forma parecida a la letra π, combinando un crecimiento suave, una región alta y luego una caída suave.
+              Es útil cuando se necesita una zona central amplia con transiciones suaves en ambos lados.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>¿Cuál conviene usar?</h3>
+            <p>
+              No existe una sola “mejor” función. Todo depende del problema. Si quieres simplicidad, triangular o trapezoidal.
+              Si quieres transiciones suaves, gaussiana, campana o sigmoidal. La elección depende del comportamiento que quieras modelar.
+            </p>
+          </article>
+        </div>
+
+        <div class="grid grid-3" style="margin-top:18px">
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Explicación más clara de 3 tipos importantes</h3>
+            <p>
+              <strong>Triangular:</strong> es la más sencilla. Se entiende rápido y por eso se usa mucho en ejemplos, prácticas y sistemas básicos.
+              Va subiendo linealmente hasta un máximo y luego baja linealmente.
+            </p>
+            <p>
+              <strong>Trapezoidal:</strong> se parece a la triangular, pero en vez de tener un solo pico, puede quedarse arriba durante un intervalo.
+              Eso ayuda bastante en los extremos, donde quieres decir “esto definitivamente es bajo” o “esto definitivamente es alto”.
+            </p>
+            <p>
+              <strong>Gaussiana:</strong> es más suave y realista en muchas aplicaciones. No tiene puntas bruscas,
+              así que las transiciones entre un conjunto y otro son más naturales.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Relación con la imagen del diseñador</h3>
+            <p>
+              En la imagen se observa que la función seleccionada es <strong>mf1</strong> y el tipo puede cambiarse desde el menú desplegable.
+              Ahí aparecen tipos como <strong>trimf, trapmf, gaussmf, gbellmf, sigmf, smf, zmf</strong> y otros.
+              Eso significa que para una misma variable de entrada puedes elegir distintas formas de pertenencia según el comportamiento deseado.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Idea importante</h3>
+            <p>
+              El tipo de función de pertenencia cambia la forma en que el sistema interpreta la entrada.
+              Si las curvas son muy bruscas, el control puede ser menos suave. Si las curvas son más progresivas,
+              la respuesta puede ser más natural. Por eso elegir bien las membership functions sí afecta el desempeño del sistema difuso.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="mamdani">
+      <div class="container">
+        <h2 class="section-title">Método Mamdani explicado mejor</h2>
+        <p class="section-text">
+          El método Mamdani es uno de los métodos de inferencia difusa más conocidos y más usados.
+          Se utiliza mucho porque es intuitivo, fácil de entender y permite representar las reglas de forma parecida
+          a como razonaría una persona. Su proceso general puede explicarse en cinco etapas.
+        </p>
+
+        <div class="flow">
+          <div class="flow-step">
+            <div class="num">1</div>
+            <h3>Entrada numérica</h3>
+            <p>
+              El sistema recibe un valor real, por ejemplo error, temperatura, nivel o rapidez del error.
+            </p>
+          </div>
+
+          <div class="flow-step">
+            <div class="num">2</div>
+            <h3>Fusificación</h3>
+            <p>
+              Ese valor se compara con las funciones de pertenencia para obtener grados de pertenencia en los conjuntos lingüísticos.
+            </p>
+          </div>
+
+          <div class="flow-step">
+            <div class="num">3</div>
+            <h3>Inferencia</h3>
+            <p>
+              Se evalúan las reglas SI–ENTONCES. Según el grado de activación de las entradas, cada regla produce una salida difusa.
+            </p>
+          </div>
+
+          <div class="flow-step">
+            <div class="num">4</div>
+            <h3>Agregación</h3>
+            <p>
+              Las salidas de todas las reglas activadas se combinan para formar una única salida difusa global.
+            </p>
+          </div>
+
+          <div class="flow-step">
+            <div class="num">5</div>
+            <h3>Defusificación</h3>
+            <p>
+              La salida difusa final se convierte en un único valor numérico real, por ejemplo usando el método del centroide.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:18px">
+          <article class="card">
+            <div class="bar"></div>
+            <h3>¿Por qué Mamdani es tan usado?</h3>
+            <p>
+              Porque sus reglas son fáciles de interpretar, su estructura se parece bastante al razonamiento humano
+              y es muy didáctico para modelar sistemas donde no siempre se conoce una ecuación exacta.
+              En lugar de depender totalmente de un modelo matemático rígido, se puede construir el controlador
+              usando experiencia, observación y criterio del diseñador.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>¿Qué papel cumple en control?</h3>
+            <p>
+              En un sistema de control, Mamdani recibe entradas como el error y la rapidez del error,
+              evalúa qué reglas se activan y genera una salida que puede interpretarse como una acción de control.
+              Por eso se usa bastante en controladores de temperatura, velocidad, nivel, posición y otros procesos no lineales.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Operadores comunes en Mamdani</h3>
+            <p>
+              En la parte de inferencia suelen usarse operadores como <strong>mínimo</strong> para la intersección AND
+              y <strong>máximo</strong> para la unión OR. Luego, durante la agregación, normalmente también se combinan
+              las salidas usando el máximo. Después de eso recién se aplica la defusificación.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Defusificación por centroide</h3>
+            <p>
+              El método del centroide busca el “centro de gravedad” del área de la salida difusa agregada.
+              Es uno de los métodos más usados porque produce una salida equilibrada y continua.
+              Básicamente toma toda la forma final de la salida y calcula un valor representativo único.
+            </p>
+          </article>
+        </div>
+
+        <div class="study-box" style="margin-top:18px">
+          <strong>Frase fácil para memorizar Mamdani:</strong>
+          “Primero convierto la entrada en grados de pertenencia, luego evalúo las reglas, junto las salidas y al final saco un valor real”.
+        </div>
+      </div>
+    </section>
+
+    <section id="flashcards">
+      <div class="container">
+        <h2 class="section-title">Flashcards para memorizar rápido</h2>
+        <p class="section-text">Haz clic en cada tarjeta para voltearla. Les aumenté un poco más de contenido para que sí te sirvan al estudiar.</p>
+        <div class="flashcards" id="flashcardsWrap"></div>
+      </div>
+    </section>
+
+    <section id="escribir">
+      <div class="container">
+        <h2 class="section-title">10 preguntas para escribir</h2>
+        <p class="section-text">
+          Escribe tu respuesta y pulsa <strong>Revisar</strong>. La revisión sigue siendo aproximada,
+          pero ahora está orientada a que pongas definición, función y una idea clave del tema.
+        </p>
+        <div id="writeQuestions"></div>
+      </div>
+    </section>
+
+    <section id="marcar">
+      <div class="container">
+        <h2 class="section-title">Preguntas para marcar</h2>
+        <p class="section-text">Selecciona una alternativa. El sistema te dirá si marcaste bien o mal.</p>
+        <div class="mcq" id="mcqWrap"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="card">
+        <h3>Resumen final</h3>
+        <p>
+          En esta unidad debes recordar principalmente cuatro cosas:
+          <strong>qué es la lógica difusa</strong>, <strong>qué son las variables lingüísticas</strong>,
+          <strong>qué hacen las funciones de pertenencia</strong> y <strong>cómo trabaja el método Mamdani</strong>.
+          Si puedes explicar eso con orden y claridad, ya vas bastante bien para el laboratorio.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const flashcards = [
+      {
+        front:'¿Qué es la lógica difusa?',
+        back:'La lógica difusa es una técnica que permite trabajar con grados de pertenencia entre 0 y 1. Su ventaja es que no obliga a decir que algo es solamente verdadero o falso, sino que puede ser parcialmente cierto. Eso ayuda a modelar mejor situaciones reales.',
+        tag:'Concepto base'
+      },
+      {
+        front:'¿Qué es una variable lingüística?',
+        back:'Es una variable que se expresa con palabras y no solo con números. Por ejemplo, una temperatura puede describirse como fría, tibia, caliente o muy caliente. En control también se usan términos como error negativo, error cero o error positivo grande.',
+        tag:'Definición importante'
+      },
+      {
+        front:'¿Qué es una función de pertenencia?',
+        back:'Es una curva que indica qué tan perteneciente es un valor a un conjunto difuso. El resultado va entre 0 y 1. Gracias a esta función, una entrada numérica puede interpretarse lingüísticamente dentro del sistema difuso.',
+        tag:'Membership function'
+      },
+      {
+        front:'¿Para qué sirve la fusificación?',
+        back:'La fusificación convierte una entrada numérica en grados de pertenencia respecto a varios conjuntos. Es el paso donde un valor real pasa a expresarse en términos lingüísticos como bajo, medio, alto o cualquier otro conjunto definido.',
+        tag:'Etapa 1'
+      },
+      {
+        front:'¿Qué hacen las reglas difusas?',
+        back:'Las reglas difusas relacionan las entradas con la salida usando estructuras del tipo SI–ENTONCES. En ellas se coloca el conocimiento del diseñador o del experto, permitiendo que el sistema decida cómo responder ante distintas condiciones.',
+        tag:'Base de conocimiento'
+      },
+      {
+        front:'¿Qué es el método Mamdani?',
+        back:'Mamdani es un método de inferencia difusa muy usado. Su proceso general es: entrada numérica, fusificación, evaluación de reglas, agregación y defusificación. Es popular porque es intuitivo y se entiende fácilmente al analizar un sistema.',
+        tag:'Inferencia'
+      },
+      {
+        front:'¿Qué es la agregación?',
+        back:'La agregación es la etapa donde se combinan las salidas difusas de todas las reglas activadas. En vez de dejar una salida separada por cada regla, el sistema construye una sola salida difusa global que luego será defusificada.',
+        tag:'Etapa intermedia'
+      },
+      {
+        front:'¿Qué es la defusificación?',
+        back:'Es la etapa final que convierte la salida difusa en un valor numérico real. Ese valor ya puede usarse directamente en el sistema de control, por ejemplo para mover un actuador o ajustar una señal de mando.',
+        tag:'Etapa final'
+      },
+      {
+        front:'¿Por qué usar trimf y trapmf?',
+        back:'La triangular se usa mucho por su simplicidad y porque es fácil de ajustar. La trapezoidal se usa bastante en los extremos, ya que permite una región de pertenencia máxima más amplia. Ambas son muy comunes en prácticas y ejemplos de laboratorio.',
+        tag:'Tipos comunes'
+      },
+      {
+        front:'¿Qué ventaja tiene una gaussiana?',
+        back:'La función gaussiana tiene transiciones suaves y no presenta cambios bruscos en sus bordes. Por eso resulta útil cuando se desea una interpretación más natural de la entrada y una respuesta más continua entre conjuntos vecinos.',
+        tag:'Curva suave'
+      },
+      {
+        front:'¿Qué es el centroide?',
+        back:'El centroide es uno de los métodos de defusificación más usados. Busca el centro de gravedad del área de la salida difusa agregada y entrega un único valor numérico representativo de toda la información de salida.',
+        tag:'Método importante'
+      },
+      {
+        front:'¿Para qué sirve el Fuzzy Logic Designer?',
+        back:'Sirve para construir y analizar sistemas difusos. En esa herramienta puedes crear entradas, salidas, funciones de pertenencia y reglas, además de observar cómo cambia la respuesta del sistema según los parámetros que definas.',
+        tag:'Herramienta'
+      }
+    ];
+
+    const writeQuestions = [
+      {
+        q:'1. Explica con tus palabras qué es la lógica difusa y por qué es diferente de la lógica clásica.',
+        keywords:['grado','pertenencia','0','1','intermedio','verdadero','falso','difusa','clasica'],
+        ideal:'La lógica difusa permite trabajar con grados de pertenencia entre 0 y 1, mientras que la lógica clásica solo maneja valores totalmente verdaderos o totalmente falsos.'
+      },
+      {
+        q:'2. Explica qué es una variable lingüística y menciona más de un ejemplo.',
+        keywords:['variable','linguistica','palabras','error','temperatura','velocidad','humedad','alto','bajo','medio'],
+        ideal:'Una variable lingüística es una variable expresada con palabras. Por ejemplo, temperatura fría, tibia o caliente; error negativo, cero o positivo; velocidad baja, media o alta.'
+      },
+      {
+        q:'3. ¿Qué es una función de pertenencia y qué representa su valor entre 0 y 1?',
+        keywords:['funcion','pertenencia','curva','0','1','conjunto','grado'],
+        ideal:'Una función de pertenencia es una curva que indica qué tanto pertenece un valor a un conjunto difuso. El valor entre 0 y 1 representa el grado de pertenencia.'
+      },
+      {
+        q:'4. Explica tres tipos de funciones de pertenencia que aparecen en MATLAB.',
+        keywords:['triangular','trapezoidal','gaussiana','trimf','trapmf','gaussmf','campana','sigmoidal'],
+        ideal:'Por ejemplo, la triangular es simple y muy usada, la trapezoidal sirve bastante en los extremos y la gaussiana ofrece transiciones suaves entre conjuntos.'
+      },
+      {
+        q:'5. Explica qué ocurre en la fusificación.',
+        keywords:['fusificacion','entrada','numerica','grados','pertenencia','conjuntos'],
+        ideal:'En la fusificación, la entrada numérica se convierte en grados de pertenencia respecto a distintos conjuntos difusos.'
+      },
+      {
+        q:'6. ¿Qué función cumplen las reglas SI–ENTONCES en un sistema difuso?',
+        keywords:['reglas','si','entonces','entrada','salida','decision','conocimiento'],
+        ideal:'Las reglas SI–ENTONCES relacionan las entradas con la salida y representan el conocimiento del diseñador para que el sistema tome decisiones.'
+      },
+      {
+        q:'7. Explica el método Mamdani de forma ordenada.',
+        keywords:['mamdani','fusificacion','reglas','agregacion','defusificacion','entrada','salida','inferencia'],
+        ideal:'El método Mamdani recibe una entrada numérica, la fusifica, evalúa las reglas, agrega las salidas difusas y luego aplica defusificación para obtener una salida real.'
+      },
+      {
+        q:'8. ¿Qué es la agregación y para qué sirve?',
+        keywords:['agregacion','combina','salidas','reglas','difusa'],
+        ideal:'La agregación combina las salidas difusas de todas las reglas activadas para formar una sola salida difusa global.'
+      },
+      {
+        q:'9. Explica para qué sirve la defusificación y menciona un método conocido.',
+        keywords:['defusificacion','valor','real','numerico','centroide','salida'],
+        ideal:'La defusificación convierte la salida difusa en un valor real o numérico. Un método muy conocido es el centroide.'
+      },
+      {
+        q:'10. ¿Para qué sirve el Fuzzy Logic Designer y qué cosas se configuran ahí?',
+        keywords:['designer','entrada','salida','reglas','pertenencia','analizar','matlab','fuzzy'],
+        ideal:'El Fuzzy Logic Designer sirve para definir entradas, salidas, funciones de pertenencia y reglas, además de analizar cómo responde el sistema difuso.'
+      }
+    ];
+
+    const mcqs = [
+      {
+        q:'1. La lógica difusa se diferencia de la lógica clásica porque:',
+        options:[
+          'Solo usa números enteros.',
+          'Permite grados de pertenencia entre 0 y 1.',
+          'No necesita reglas.',
+          'Trabaja sin entradas.'
+        ],
+        answer:1,
+        exp:'Correcto. La lógica difusa permite valores intermedios de pertenencia.'
+      },
+      {
+        q:'2. Una variable lingüística se expresa principalmente con:',
+        options:[
+          'Solamente ecuaciones diferenciales.',
+          'Palabras o términos lingüísticos.',
+          'Solo datos binarios.',
+          'Unidades del SI.'
+        ],
+        answer:1,
+        exp:'Correcto. Una variable lingüística se representa con palabras como bajo, medio, alto, frío, caliente, etc.'
+      },
+      {
+        q:'3. ¿Cuál de estas sí puede ser una variable lingüística?',
+        options:[
+          'Error muy negativo',
+          '4.732 exacto',
+          '12.001 V exactos',
+          '0.0001 s'
+        ],
+        answer:0,
+        exp:'Correcto. “Error muy negativo” es un término lingüístico.'
+      },
+      {
+        q:'4. La función trimf corresponde a una función:',
+        options:[
+          'Triangular',
+          'Gaussiana',
+          'Sigmoidal',
+          'En forma Z'
+        ],
+        answer:0,
+        exp:'Correcto. trimf significa triangular membership function.'
+      },
+      {
+        q:'5. La trapmf suele ser útil especialmente:',
+        options:[
+          'En los extremos del rango',
+          'Solo en valores negativos',
+          'Cuando no hay salida',
+          'Solo en sistemas discretos'
+        ],
+        answer:0,
+        exp:'Correcto. La trapezoidal se usa bastante en los extremos.'
+      },
+      {
+        q:'6. Una gaussiana se caracteriza porque:',
+        options:[
+          'Tiene bordes muy bruscos',
+          'Tiene una transición suave',
+          'Solo vale 0 o 1',
+          'No puede usarse en MATLAB'
+        ],
+        answer:1,
+        exp:'Correcto. La gaussiana se usa bastante por su suavidad.'
+      },
+      {
+        q:'7. En Mamdani, después de la fusificación viene normalmente:',
+        options:[
+          'La eliminación del error',
+          'La evaluación de reglas',
+          'La derivación de la entrada',
+          'La linealización exacta'
+        ],
+        answer:1,
+        exp:'Correcto. Luego de fusificar, se evalúan las reglas.'
+      },
+      {
+        q:'8. La agregación consiste en:',
+        options:[
+          'Borrar las reglas repetidas',
+          'Combinar las salidas de las reglas',
+          'Cambiar la entrada por una constante',
+          'Quitar las funciones de pertenencia'
+        ],
+        answer:1,
+        exp:'Correcto. La agregación junta las salidas difusas de todas las reglas activadas.'
+      },
+      {
+        q:'9. La defusificación convierte:',
+        options:[
+          'Una salida difusa en un valor real',
+          'Una regla en un sensor',
+          'Una entrada real en otra entrada',
+          'Una curva en una tabla'
+        ],
+        answer:0,
+        exp:'Correcto. Esa es la función de la defusificación.'
+      },
+      {
+        q:'10. El centroide es un método de:',
+        options:[
+          'Fusificación',
+          'Defusificación',
+          'Normalización de entradas',
+          'Muestreo'
+        ],
+        answer:1,
+        exp:'Correcto. El centroide es uno de los métodos más usados de defusificación.'
+      }
+    ];
+
+    const flashWrap = document.getElementById('flashcardsWrap');
+    flashcards.forEach((item, i) => {
+      const card = document.createElement('div');
+      card.className = 'flashcard';
+      card.innerHTML = `
+        <div class="flash-inner">
+          <div class="flash-face flash-front">
+            <div class="flash-tag">Flashcard ${i+1}</div>
+            <h4>${item.front}</h4>
+            <p>Toca para ver la explicación.</p>
+            <span class="mini-tag">${item.tag}</span>
+          </div>
+          <div class="flash-face flash-back">
+            <div class="flash-tag">Respuesta</div>
+            <h4>${item.front}</h4>
+            <p>${item.back}</p>
+          </div>
+        </div>`;
+      card.addEventListener('click', () => card.classList.toggle('flip'));
+      flashWrap.appendChild(card);
+    });
+
+    const normalize = str => str
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .replace(/[^a-z0-9ñ\s]/g,' ')
+      .replace(/\s+/g,' ')
+      .trim();
+
+    const writeWrap = document.getElementById('writeQuestions');
+    writeQuestions.forEach((item, idx) => {
+      const box = document.createElement('article');
+      box.className = 'card write-q';
+      box.innerHTML = `
+        <div class="bar"></div>
+        <h4>${item.q}</h4>
+        <textarea id="answer-${idx}" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <div class="actions">
+          <button class="btn" onclick="reviewAnswer(${idx})">Revisar</button>
+          <button class="btn ghost" onclick="showGuide(${idx})">Ver idea clave</button>
+        </div>
+        <div class="feedback" id="feedback-${idx}">Aún no has revisado esta respuesta.</div>
+      `;
+      writeWrap.appendChild(box);
+    });
+
+    window.showGuide = function(idx){
+      const item = writeQuestions[idx];
+      const fb = document.getElementById(`feedback-${idx}`);
+      fb.innerHTML = `<strong>Idea clave:</strong> ${item.ideal}`;
+    }
+
+    window.reviewAnswer = function(idx){
+      const item = writeQuestions[idx];
+      const text = normalize(document.getElementById(`answer-${idx}`).value);
+      const fb = document.getElementById(`feedback-${idx}`);
+
+      if(!text){
+        fb.innerHTML = '<span class="score bad">0%</span><br>Escribe algo primero para poder revisarlo.';
+        return;
+      }
+
+      let hits = 0;
+      item.keywords.forEach(k => {
+        if(text.includes(normalize(k))) hits++;
+      });
+
+      const score = Math.round((hits / item.keywords.length) * 100);
+
+      let cls = 'bad', msg = 'Te falta reforzar varios conceptos importantes.';
+      if(score >= 75){
+        cls = 'good';
+        msg = 'Muy bien, tu respuesta está bastante correcta y toca ideas clave del tema.';
+      }else if(score >= 45){
+        cls = 'mid';
+        msg = 'Vas bien, pero todavía te falta completar mejor algunos puntos importantes.';
+      }
+
+      fb.innerHTML = `
+        <span class="score ${cls}">${score}% aprox.</span><br>
+        ${msg}<br><br>
+        <strong>Idea esperada:</strong> ${item.ideal}<br><br>
+        <strong>Sugerencia:</strong> Trata de incluir siempre definición, función y una idea breve de ejemplo o aplicación.
+      `;
+    }
+
+    const mcqWrap = document.getElementById('mcqWrap');
+    mcqs.forEach((item, idx) => {
+      const card = document.createElement('article');
+      card.className = 'mcq-card';
+      card.innerHTML = `
+        <h4>${item.q}</h4>
+        <div class="options">
+          ${item.options.map((opt, j) => `<button class="option" data-q="${idx}" data-i="${j}">${String.fromCharCode(65+j)}. ${opt}</button>`).join('')}
+        </div>
+        <div class="mcq-result" id="mcq-result-${idx}">Sin responder.</div>
+      `;
+      mcqWrap.appendChild(card);
+    });
+
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.option');
+      if(!btn) return;
+
+      const q = Number(btn.dataset.q);
+      const i = Number(btn.dataset.i);
+      const card = btn.closest('.mcq-card');
+      const opts = card.querySelectorAll('.option');
+      const result = document.getElementById(`mcq-result-${q}`);
+      const correct = mcqs[q].answer;
+
+      if([...opts].some(op => op.classList.contains('locked'))) return;
+
+      opts.forEach((op, idx) => {
+        op.classList.add('locked');
+        if(idx === correct) op.classList.add('correct');
+        if(idx === i && idx !== correct) op.classList.add('wrong');
+      });
+
+      result.textContent = i === correct
+        ? `✅ Correcto. ${mcqs[q].exp}`
+        : `❌ Incorrecto. ${mcqs[q].exp}`;
+    });
+
+    const themeBtn = document.getElementById('themeBtn');
+    const savedTheme = localStorage.getItem('u2caii-theme');
+    if(savedTheme === 'light') document.body.classList.add('light');
+    updateThemeText();
+
+    themeBtn.addEventListener('click', () => {
+      document.body.classList.toggle('light');
+      localStorage.setItem('u2caii-theme', document.body.classList.contains('light') ? 'light' : 'dark');
+      updateThemeText();
+    });
+
+    function updateThemeText(){
+      themeBtn.textContent = document.body.classList.contains('light') ? '🌙 Modo oscuro' : '☀️ Modo claro';
+    }
+  </script>
+</body>
+</html>
