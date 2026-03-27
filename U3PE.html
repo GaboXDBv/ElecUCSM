@@ -96,14 +96,6 @@
       z-index:1;
     }
 
-    .hero p{
-      max-width:860px;
-      color:var(--muted);
-      font-size:1.05rem;
-      position:relative;
-      z-index:1;
-    }
-
     nav{
       position:sticky;
       top:0;
@@ -260,6 +252,20 @@
       margin-top:16px;
     }
 
+    .img-box{
+      margin-top:20px;
+      text-align:center;
+    }
+
+    .img-box img{
+      width:min(100%, 760px);
+      border-radius:20px;
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:var(--shadow);
+      display:block;
+      margin:auto;
+    }
+
     .footer{
       text-align:center;
       color:var(--muted);
@@ -308,7 +314,10 @@
       </div>
       <div class="section-body">
         <p>
-          El sector elegido es <strong>Minería</strong>. El problema central del proyecto es la <strong>ineficiencia en el uso del agua en minería</strong>. A partir del árbol desarrollado en el documento, se identifican causas técnicas en las raíces, el problema principal en el tronco y los impactos sociales y ambientales en las ramas.
+          El sector elegido es <strong>Minería</strong>. El problema central del proyecto es la
+          <strong>ineficiencia en el uso del agua en minería</strong>. A partir del árbol desarrollado,
+          se identifican causas técnicas en las raíces, el problema principal en el tronco y los
+          impactos sociales y ambientales en las ramas.
         </p>
 
         <div class="grid-2">
@@ -338,8 +347,8 @@
           <strong>Problema central:</strong> uso ineficiente del recurso hídrico en operaciones mineras.
         </div>
 
-        <div style="margin-top:20px; text-align:center;">
-          <img src="ArbU3PE.jpg" alt="Árbol del problema del proyecto" style="max-width:100%; border-radius:18px; border:1px solid rgba(255,255,255,.12); box-shadow:var(--shadow);">
+        <div class="img-box">
+          <img src="ArbU3PE.jpg" alt="Árbol del problema del proyecto" />
         </div>
       </div>
     </section>
@@ -353,10 +362,18 @@
       </div>
       <div class="section-body">
         <p>
-          Si una solución técnica logra resolver el problema del uso ineficiente del agua en minería, pero resulta demasiado costosa para la comunidad o empresa que la necesita, entonces en la práctica el problema no se soluciona realmente. Además, cuando el costo es demasiado alto, se introduce una nueva causa dentro del problema original: la inaccesibilidad económica de la tecnología.
+          Si una solución técnica logra resolver el problema del uso ineficiente del agua en minería,
+          pero resulta demasiado costosa para la comunidad o empresa que la necesita, entonces en la
+          práctica el problema no se soluciona realmente. Además, cuando el costo es demasiado alto,
+          se introduce una nueva causa dentro del problema original: la inaccesibilidad económica de
+          la tecnología.
         </p>
         <p>
-          Desde el punto de vista social, esto también genera consecuencias negativas. Solo las grandes empresas podrían acceder a este tipo de soluciones, mientras que pequeñas operaciones o comunidades quedarían excluidas. Esto puede aumentar la desigualdad, generar conflictos sociales y crear desconfianza hacia la tecnología, especialmente si las personas perciben que existen soluciones, pero no están a su alcance.
+          Desde el punto de vista social, esto también genera consecuencias negativas. Solo las grandes
+          empresas podrían acceder a este tipo de soluciones, mientras que pequeñas operaciones o
+          comunidades quedarían excluidas. Esto puede aumentar la desigualdad, generar conflictos
+          sociales y crear desconfianza hacia la tecnología, especialmente si las personas perciben
+          que existen soluciones, pero no están a su alcance.
         </p>
       </div>
     </section>
@@ -371,7 +388,11 @@
       <div class="section-body">
         <h3>Entradas: variables físicas que mide el sistema</h3>
         <p>
-          En este sistema orientado al uso eficiente del agua en minería, se pueden medir distintas variables físicas y químicas que permiten supervisar el estado del recurso hídrico, la operación de tuberías y tanques, y la calidad del agua reutilizada. Entre las principales variables se encuentran la humedad, el flujo o caudal, la altura o nivel de agua, la presión, el pH, la turbidez y el estado de bombas o válvulas.
+          En este sistema orientado al uso eficiente del agua en minería, se pueden medir distintas
+          variables físicas y químicas que permiten supervisar el estado del recurso hídrico, la
+          operación de tuberías y tanques, y la calidad del agua reutilizada. Entre las principales
+          variables se encuentran la humedad, el flujo o caudal, la altura o nivel de agua, la presión,
+          el pH, la turbidez y el estado de bombas o válvulas.
         </p>
 
         <div class="table-wrap">
@@ -433,18 +454,35 @@
 
         <h3 style="margin-top:22px;">Procesamiento</h3>
         <p>
-          En la etapa de procesamiento, el firmware recibe los datos de los sensores y se encarga de analizarlos para tomar decisiones automáticas dentro del sistema. Primero realiza la lectura y conversión de las señales medidas, luego puede aplicar filtrado o promedios para reducir errores o ruido en las mediciones. Después compara los valores obtenidos con umbrales establecidos, por ejemplo, niveles máximos y mínimos de agua, rangos aceptables de pH o límites de turbidez.
+          En la etapa de procesamiento, el firmware recibe los datos de los sensores y se encarga de
+          analizarlos para tomar decisiones automáticas dentro del sistema. Primero realiza la lectura
+          y conversión de las señales medidas, luego puede aplicar filtrado o promedios para reducir
+          errores o ruido en las mediciones. Después compara los valores obtenidos con umbrales
+          establecidos, por ejemplo, niveles máximos y mínimos de agua, rangos aceptables de pH o
+          límites de turbidez.
         </p>
         <p>
-          A partir de estas comparaciones, el sistema puede detectar anomalías como fugas, sobreconsumo, baja eficiencia de recirculación o mala calidad del agua. Además, el firmware puede calcular variables derivadas, como el consumo acumulado, el porcentaje de agua reutilizada o la diferencia entre caudales de entrada y salida. Luego organiza la información para enviarla mediante protocolos de comunicación como UART, I2C o modbus.
+          A partir de estas comparaciones, el sistema puede detectar anomalías como fugas, sobreconsumo,
+          baja eficiencia de recirculación o mala calidad del agua. Además, el firmware puede calcular
+          variables derivadas, como el consumo acumulado, el porcentaje de agua reutilizada o la
+          diferencia entre caudales de entrada y salida. Luego organiza la información para enviarla
+          mediante protocolos de comunicación como UART, I2C o modbus.
         </p>
 
         <h3>Salidas</h3>
         <p>
-          En la etapa de salida, el sistema ejecuta acciones a partir de las decisiones tomadas por el firmware. Entre las principales acciones se encuentran la activación o desactivación de bombas para regular el paso del agua, la apertura o cierre de válvulas mediante relés o actuadores, y la activación de alarmas visuales o sonoras cuando se detectan fugas, valores anormales de pH, alta turbidez o niveles críticos en los tanques.
+          En la etapa de salida, el sistema ejecuta acciones a partir de las decisiones tomadas por el
+          firmware. Entre las principales acciones se encuentran la activación o desactivación de bombas
+          para regular el paso del agua, la apertura o cierre de válvulas mediante relés o actuadores,
+          y la activación de alarmas visuales o sonoras cuando se detectan fugas, valores anormales de
+          pH, alta turbidez o niveles críticos en los tanques.
         </p>
         <p>
-          Además, el sistema puede mostrar información en una pantalla o HMI, como el caudal, nivel, pH y estado de los equipos, y también enviar datos a un sistema externo o a la nube en formatos como JSON, usando protocolos de comunicación para monitoreo remoto y registro histórico. De esta manera, las salidas no solo actúan físicamente sobre el proceso, sino que también permiten supervisión, alerta y trazabilidad de la operación.
+          Además, el sistema puede mostrar información en una pantalla o HMI, como el caudal, nivel,
+          pH y estado de los equipos, y también enviar datos a un sistema externo o a la nube en
+          formatos como JSON, usando protocolos de comunicación para monitoreo remoto y registro
+          histórico. De esta manera, las salidas no solo actúan físicamente sobre el proceso, sino
+          que también permiten supervisión, alerta y trazabilidad de la operación.
         </p>
       </div>
     </section>
@@ -458,7 +496,8 @@
       </div>
       <div class="section-body">
         <p>
-          Cada grupo debe completar la tabla de requerimientos no funcionales para su propuesta, siendo lo más específicos posible en categorías como consumo, seguridad, dimensiones y normativa.
+          Cada grupo debe completar la tabla de requerimientos no funcionales para su propuesta,
+          siendo lo más específicos posible en categorías como consumo, seguridad, dimensiones y normativa.
         </p>
 
         <div class="table-wrap">
@@ -496,8 +535,8 @@
         </div>
 
         <div class="highlight">
-          <p><strong>IP65</strong> es un grado de protección del gabinete o carcasa de un equipo. El primer dígito, 6, indica que el equipo está totalmente protegido contra el ingreso de polvo; el segundo dígito, 5, indica que está protegido contra chorros de agua proyectados desde cualquier dirección. En la práctica, esto significa que un equipo con IP65 puede trabajar en ambientes con polvo y salpicaduras o limpieza con agua a presión moderada, aunque no está diseñado para inmersión en agua.</p>
-          <p><strong>La norma IEC 60529</strong> es el estándar internacional que define el sistema IP (Ingress Protection), es decir, la clasificación de los grados de protección que ofrecen las envolventes de equipos eléctricos y electrónicos frente al ingreso de cuerpos sólidos y agua. Esta norma se aplica a envolventes de equipos eléctricos con tensiones nominales de hasta 72,5 kV y establece el significado de cada código IP, así como los criterios generales para su clasificación.</p>
+          <p><strong>IP65</strong> es un grado de protección del gabinete o carcasa de un equipo. El primer dígito, 6, indica que el equipo está totalmente protegido contra el ingreso de polvo; el segundo dígito, 5, indica que está protegido contra chorros de agua proyectados desde cualquier dirección.</p>
+          <p><strong>La norma IEC 60529</strong> define el sistema IP, es decir, la clasificación de los grados de protección que ofrecen las envolventes de equipos eléctricos y electrónicos frente al ingreso de cuerpos sólidos y agua.</p>
         </div>
       </div>
     </section>
@@ -525,7 +564,8 @@
       </div>
       <div class="section-body">
         <p>
-          Cada grupo toma su BOM (Bill of Materials) preliminar y utiliza computadoras para investigar en distribuidores globales. La siguiente tabla recoge los componentes planteados para el sistema.
+          Cada grupo toma su BOM (Bill of Materials) preliminar y utiliza computadoras para investigar
+          en distribuidores globales. La siguiente tabla recoge los componentes planteados para el sistema.
         </p>
 
         <div class="table-wrap">
@@ -613,33 +653,122 @@
       <div class="section-body">
         <div class="mini-card" style="margin-top:18px;">
           <h3>1. Normativa de seguridad eléctrica</h3>
-          <p>El diseño del sistema de medición, que es el conjunto de distintos sensores, sí garantiza una buena seguridad. Los sensores escogidos funcionan con bajo voltaje, asegurando que los operarios no sufran descargas eléctricas; además, deberán portar equipo de seguridad y el sistema usará una fuente de alimentación certificada, dando aislamiento galvánico necesario respecto a la red eléctrica.</p>
+          <p>
+            El diseño del sistema de medición garantiza una buena seguridad porque los sensores
+            escogidos funcionan con bajo voltaje. Además, el sistema utilizará una fuente de
+            alimentación certificada y aislamiento galvánico respecto a la red eléctrica.
+          </p>
         </div>
 
         <div class="mini-card" style="margin-top:18px;">
           <h3>2. Interferencias (EMI/EMC)</h3>
-          <p>Los componentes utilizados, junto con el uso del microcontrolador correcto, proporcionan una buena transmisión de datos, haciendo que el ruido posible que pueda afectar sea el mínimo posible. El sistema de monitoreo de agua está diseñado para garantizar una robusta compatibilidad electromagnética, así como tampoco emitir radiación electromagnética no deseada.</p>
-          <p>El diseño del circuito impreso de los nodos del sensado cumple con reglas para la mitigación de ruido y sigue la normativa IPC-2152 e IPC-2221 para asegurar que la corriente e impedancias sean las correctas y no existan pérdidas ni añadidos.</p>
+          <p>
+            Los componentes utilizados y el microcontrolador permiten una buena transmisión de datos,
+            minimizando el ruido posible. El sistema está planteado para tener compatibilidad
+            electromagnética y no emitir radiación no deseada.
+          </p>
+          <p>
+            También se menciona que el circuito impreso sigue criterios para mitigación de ruido y
+            normas como IPC-2152 e IPC-2221.
+          </p>
         </div>
 
         <div class="mini-card" style="margin-top:18px;">
           <h3>3. Normativa ambiental (RoHS)</h3>
-          <p>Sí, se ha verificado rigurosamente; el diseño contempla componentes electrónicos de grado industrial capaces de operar sin fallos ante los fuertes contrastes de temperatura y las duras condiciones ambientales a las que está expuesta la mina.</p>
-          <p>Para lograr esto de forma segura, y en estricta alineación con la normativa ambiental RoHS, los componentes seleccionados no solo están libres de químicos peligrosos, sino que han sido validados para soportar los perfiles de soldadura sin plomo (Sn-Ag-Cu) más agresivos, lo que, sumado al uso de carcasas herméticas, garantiza la resistencia del hardware frente al polvo abrasivo y la humedad de la operación minera.</p>
-          <p>Además, se indica que todo el sistema cumple los estándares ISO 14001 y ISO 9001.</p>
+          <p>
+            Se consideran componentes electrónicos de grado industrial capaces de operar frente a
+            contrastes de temperatura y condiciones ambientales exigentes. Además, se menciona el uso
+            de materiales alineados con RoHS y carcasas herméticas para resistir polvo y humedad.
+          </p>
+          <p>
+            También se indica cumplimiento de estándares ISO 14001 e ISO 9001.
+          </p>
         </div>
 
         <div class="mini-card" style="margin-top:18px;">
           <h3>4. Factor de forma y estándares de gabinete</h3>
-          <p>El diseño del circuito respeta de manera estricta las restricciones de tamaño y densidad de componentes para poder encajar perfectamente en un riel DIN dentro de los gabinetes industriales de la planta de bombeo. Para lograrlo se emplea tecnología de montaje superficial (SMD) y un enrutamiento multicapa, garantizando el acople mecánico sin comprometer la disipación térmica dentro del espacio confinado del tablero.</p>
+          <p>
+            El diseño respeta las restricciones de tamaño para encajar en riel DIN dentro de gabinetes
+            industriales. Para ello se plantea el uso de componentes SMD y enrutamiento multicapa.
+          </p>
         </div>
 
         <div class="mini-card" style="margin-top:18px;">
           <h3>5. Normas de diseño y fabricación</h3>
-          <p>Los protocolos elegidos para transmitir los datos de flujo de agua se basan en normativas IEEE, garantizando la correcta estandarización de los protocolos de comunicación y la terminología técnica del sistema.</p>
-          <p>También se ha considerado el uso de módulos de comunicación inalámbrica pre-certificados para evitar meses de pruebas de laboratorio.</p>
-          <p>El proceso de soldadura de los componentes en la placa se realizará bajo los criterios de la norma IPC J-STD-001 y se apoya adicionalmente en el estándar IPC-A-610 para garantizar la calidad final de la soldadura y del montaje.</p>
-          <p>Finalmente, los módulos de comunicación del sensor de agua cumplen con estándares físicos industriales, específicamente RS-485, para asegurar una transmisión robusta y sin pérdida de información hacia los tableros de control principal.</p>
+          <p>
+            Los protocolos de comunicación se basan en normativas IEEE. También se considera el uso de
+            módulos inalámbricos pre-certificados, soldadura bajo IPC J-STD-001, verificación con
+            IPC-A-610 y uso de RS-485 para transmisión robusta de datos.
+          </p>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Regla / Norma</th>
+                <th>¿Qué controla?</th>
+                <th>Explicación breve</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>IEC 60950 / IEC 62368</td>
+                <td>Seguridad eléctrica</td>
+                <td>Ayudan a que los equipos electrónicos trabajen de forma segura y reduzcan riesgos de descarga eléctrica o incendio.</td>
+              </tr>
+              <tr>
+                <td>FCC / CE</td>
+                <td>EMI / EMC</td>
+                <td>Verifican que el dispositivo no genere interferencias excesivas y que también soporte interferencias externas.</td>
+              </tr>
+              <tr>
+                <td>IPC-2152 / IPC-2221</td>
+                <td>Diseño de PCB</td>
+                <td>Sirven como guía para pistas, corrientes, separación e impedancias en la placa electrónica.</td>
+              </tr>
+              <tr>
+                <td>RoHS</td>
+                <td>Materiales peligrosos</td>
+                <td>Restringe el uso de sustancias peligrosas en componentes electrónicos y favorece un diseño más seguro para el ambiente.</td>
+              </tr>
+              <tr>
+                <td>ISO 14001</td>
+                <td>Gestión ambiental</td>
+                <td>Orienta a trabajar con control ambiental y buenas prácticas relacionadas con el impacto del proyecto.</td>
+              </tr>
+              <tr>
+                <td>ISO 9001</td>
+                <td>Calidad</td>
+                <td>Se relaciona con procesos ordenados y control de calidad para lograr un sistema más confiable.</td>
+              </tr>
+              <tr>
+                <td>Riel DIN</td>
+                <td>Montaje físico</td>
+                <td>Es un estándar de instalación en tableros industriales que permite montar módulos de forma práctica y segura.</td>
+              </tr>
+              <tr>
+                <td>IEEE</td>
+                <td>Comunicación</td>
+                <td>Define estándares usados en protocolos y transmisión de datos para asegurar compatibilidad entre equipos.</td>
+              </tr>
+              <tr>
+                <td>IPC J-STD-001</td>
+                <td>Soldadura</td>
+                <td>Establece criterios para realizar soldaduras confiables en tarjetas electrónicas.</td>
+              </tr>
+              <tr>
+                <td>IPC-A-610</td>
+                <td>Inspección de ensamblaje</td>
+                <td>Permite evaluar si la tarjeta ensamblada cumple con condiciones aceptables de calidad.</td>
+              </tr>
+              <tr>
+                <td>RS-485</td>
+                <td>Transmisión física industrial</td>
+                <td>Es una interfaz robusta para enviar datos en ambientes industriales con ruido eléctrico y largas distancias.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -665,17 +794,17 @@
               <tr>
                 <td>Costo</td>
                 <td>El sistema puede resultar demasiado costoso debido al uso de sensores industriales (pH, turbidez, caudalímetros ultrasónicos) y equipos certificados, lo que limita su adopción por pequeñas operaciones mineras o comunidades.</td>
-                <td>Realizar un rediseño modular del sistema, donde se implementen versiones escalables: una versión básica con sensores más económicos (por ejemplo, sensores analógicos o de menor precisión) y una versión avanzada. También se puede priorizar variables críticas (nivel y caudal) en una primera etapa y dejar otras (pH, turbidez) como expansión futura.</td>
+                <td>Realizar un rediseño modular del sistema, donde se implementen versiones escalables: una versión básica con sensores más económicos y una versión avanzada. También se puede priorizar variables críticas como nivel y caudal en una primera etapa.</td>
               </tr>
               <tr>
                 <td>Tiempo</td>
-                <td>Retrasos en la implementación debido a componentes con lead time alto o en estado out of stock, como sensores de presión o caudalímetros especializados. Esto puede afectar el desarrollo del prototipo y pruebas en campo.</td>
-                <td>Buscar componentes equivalentes con disponibilidad inmediata en proveedores alternativos (Digi-Key, Mouser, LCSC). Además, diseñar el sistema con interfaces estándar (4–20 mA, RS-485) para permitir reemplazos rápidos sin rediseñar todo el hardware. También se puede usar simulación o sensores provisionales durante el desarrollo.</td>
+                <td>Retrasos en la implementación debido a componentes con lead time alto o en estado out of stock, como sensores de presión o caudalímetros especializados.</td>
+                <td>Buscar componentes equivalentes con disponibilidad inmediata en proveedores alternativos. Además, diseñar el sistema con interfaces estándar como 4–20 mA y RS-485 para permitir reemplazos rápidos sin rediseñar todo el hardware.</td>
               </tr>
               <tr>
                 <td>Normativa</td>
-                <td>Riesgo de que el sistema no cumpla completamente con normativas industriales (IEC 60529, IEC 62368, EMC, RoHS), lo que puede impedir su implementación en entornos mineros reales o generar problemas de seguridad eléctrica y confiabilidad.</td>
-                <td>Diseñar desde el inicio bajo estándares industriales: uso de gabinetes IP65 certificados, módulos de comunicación pre-certificados, aislamiento eléctrico adecuado y buenas prácticas de PCB (puesta a tierra, filtrado EMI). Además, realizar validaciones progresivas y considerar asesoría técnica o documentación de cumplimiento normativo desde etapas tempranas del proyecto.</td>
+                <td>Riesgo de que el sistema no cumpla completamente con normativas industriales como IEC 60529, IEC 62368, EMC y RoHS, lo que puede impedir su implementación real.</td>
+                <td>Diseñar desde el inicio bajo estándares industriales: gabinetes IP65 certificados, módulos pre-certificados, aislamiento eléctrico adecuado y buenas prácticas de PCB. También realizar validaciones progresivas desde etapas tempranas.</td>
               </tr>
             </tbody>
           </table>
