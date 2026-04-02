@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Horario de Internado Xiao</title>
+  <style>
+    :root {
+      --bg: #04070d;
+      --bg-2: #09111b;
+      --panel: rgba(12, 17, 28, 0.88);
+      --panel-2: rgba(17, 23, 36, 0.95);
+      --panel-3: rgba(22, 29, 45, 0.92);
+      --line: rgba(107, 239, 239, 0.16);
+      --line-strong: rgba(107, 239, 239, 0.28);
+      --text: #f2fbff;
+      --muted: #9db2c6;
+      --soft: #cfe6f0;
+      --cyan: #74f1f3;
+      --aqua: #3fd4e6;
+      --jade: #4bc6c6;
+      --deep-blue: #12243d;
+      --indigo: #273b7a;
+      --violet: #7e59ff;
+      --violet-soft: rgba(126, 89, 255, 0.18);
+      --gold: #f0c46b;
+      --gold-soft: rgba(240, 196, 107, 0.18);
+      --success: #89f3bf;
+      --danger: #ff8e9e;
+      --shadow: 0 18px 40px rgba(0, 0, 0, 0.38);
+      --radius: 26px;
+      --sala: linear-gradient(135deg, #ffd86a, #ffb144);
+      --ppff: linear-gradient(135deg, #72f3ff, #2e9bff);
+      --materno: linear-gradient(135deg, #bd7cff, #7e59ff);
+      --apoyo: linear-gradient(135deg, #7bf1da, #3bc8b2);
+      --turno-manana: linear-gradient(135deg, #ffe68d, #f0c46b);
+      --turno-tarde: linear-gradient(135deg, #7cf6ff, #37bcff);
+      --turno-noche: linear-gradient(135deg, #9f84ff, #5a4bde);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100%;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 8% 0%, rgba(116,241,243,0.14), transparent 22%),
+        radial-gradient(circle at 90% 14%, rgba(126,89,255,0.12), transparent 24%),
+        radial-gradient(circle at 75% 85%, rgba(240,196,107,0.08), transparent 18%),
+        linear-gradient(135deg, #02050a 0%, #07111b 50%, #03060b 100%);
+    }
+
+    body { padding: 24px; }
+
+    .shell {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 28px;
+      border-radius: 34px;
+      background:
+        linear-gradient(180deg, rgba(8, 12, 22, 0.96), rgba(5, 8, 14, 0.98)),
+        radial-gradient(circle at top left, rgba(116,241,243,0.09), transparent 24%);
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .shell::before,
+    .shell::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      pointer-events: none;
+      filter: blur(4px);
+    }
+
+    .shell::before {
+      width: 280px;
+      height: 280px;
+      top: -120px;
+      left: -90px;
+      background: radial-gradient(circle, rgba(116,241,243,0.16), transparent 70%);
+    }
+
+    .shell::after {
+      width: 260px;
+      height: 260px;
+      right: -80px;
+      bottom: -90px;
+      background: radial-gradient(circle, rgba(126,89,255,0.12), transparent 70%);
+    }
+
+    .hero, .tabs, .panel, .footer-note, .tips-grid { position: relative; z-index: 1; }
+
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .title-wrap h1 {
+      margin: 0 0 8px;
+      font-size: clamp(2rem, 3vw, 3.2rem);
+      line-height: 1.03;
+      letter-spacing: -0.03em;
+    }
+
+    .title-wrap p {
+      margin: 0;
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .glow-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 18px;
+      border-radius: 999px;
+      background: rgba(12, 19, 31, 0.92);
+      border: 1px solid rgba(116,241,243,0.24);
+      box-shadow: inset 0 0 0 1px rgba(116,241,243,0.05), 0 0 28px rgba(63,212,230,0.10);
+      font-weight: 700;
+    }
+
+    .glow-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--cyan);
+      box-shadow: 0 0 16px var(--cyan);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 22px 0 26px;
+    }
+
+    .tab-btn {
+      appearance: none;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(20, 26, 39, 0.82);
+      color: var(--text);
+      padding: 13px 20px;
+      border-radius: 18px;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: .22s ease;
+    }
+
+    .tab-btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(116,241,243,0.26);
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(116,241,243,0.95), rgba(63,212,230,0.95));
+      color: #041219;
+      border-color: transparent;
+      box-shadow: 0 12px 28px rgba(63,212,230,0.22);
+    }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.28fr 0.92fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(17, 23, 36, 0.92), rgba(13, 18, 29, 0.96));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .status-card {
+      padding: 26px;
+      border: 1px solid rgba(116,241,243,0.24);
+      background:
+        linear-gradient(180deg, rgba(12, 19, 31, 0.96), rgba(10, 15, 24, 0.98)),
+        radial-gradient(circle at top left, rgba(116,241,243,0.14), transparent 26%),
+        radial-gradient(circle at 88% 8%, rgba(126,89,255,0.10), transparent 18%);
+    }
+
+    .eyebrow {
+      margin-bottom: 12px;
+      color: var(--cyan);
+      text-transform: uppercase;
+      font-weight: 900;
+      letter-spacing: 0.18em;
+      font-size: 0.82rem;
+    }
+
+    .status-headline {
+      margin: 0 0 12px;
+      font-size: clamp(1.45rem, 2.2vw, 2.35rem);
+      line-height: 1.14;
+    }
+
+    .status-text {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.65;
+      max-width: 900px;
+    }
+
+    .meta-line {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: var(--text);
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .area-chip, .turn-chip {
+      color: #061117;
+      border: none;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.18);
+    }
+
+    .turn-summary {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+      gap: 16px;
+      margin-top: 20px;
+      align-items: stretch;
+    }
+
+    .turn-focus {
+      padding: 20px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .turn-focus small {
+      display: block;
+      color: var(--muted);
+      font-size: 0.86rem;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-weight: 800;
+    }
+
+    .focus-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .turn-big {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 190px;
+      padding: 16px 20px;
+      border-radius: 20px;
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: #041017;
+      box-shadow: 0 14px 30px rgba(0,0,0,0.22);
+      text-align: center;
+    }
+
+    .turn-helper {
+      color: var(--soft);
+      font-size: 0.98rem;
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    .shift-rail {
+      display: grid;
+      gap: 10px;
+    }
+
+    .shift-rail h3 {
+      margin: 0 0 2px;
+      font-size: 1rem;
+    }
+
+    .shift-track {
+      display: grid;
+      gap: 10px;
+    }
+
+    .shift-box {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.03);
+      opacity: 0.62;
+      transform: scale(0.985);
+      transition: .25s ease;
+    }
+
+    .shift-box strong {
+      font-size: 1rem;
+    }
+
+    .shift-box span,
+    .shift-box small {
+      color: var(--muted);
+    }
+
+    .shift-box.active {
+      opacity: 1;
+      transform: scale(1);
+      border-color: rgba(255,255,255,0.10);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04), 0 14px 28px rgba(0,0,0,0.20);
+    }
+
+    .shift-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      color: #061117;
+      font-weight: 900;
+    }
+
+    .shift-status {
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #061117;
+    }
+
+    .countdown {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .count-item {
+      padding: 16px 12px;
+      border-radius: 20px;
+      text-align: center;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .count-item strong {
+      display: block;
+      font-size: 1.65rem;
+      margin-bottom: 4px;
+    }
+
+    .count-item span { color: var(--muted); font-size: .9rem; }
+
+    .mini-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .stat-box {
+      padding: 15px 12px;
+      text-align: center;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .stat-box strong {
+      display: block;
+      font-size: 1.35rem;
+      margin-bottom: 4px;
+    }
+
+    .stat-box span { color: var(--muted); font-size: .9rem; }
+
+    .accent-bar {
+      margin-top: 18px;
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      overflow: hidden;
+    }
+
+    .accent-bar > div {
+      width: 0%;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--aqua), var(--cyan), var(--gold), var(--violet));
+      transition: width .5s ease;
+    }
+
+    .subgrid { display: grid; gap: 18px; }
+
+    .section-title {
+      margin: 0 0 14px;
+      font-size: 1.38rem;
+    }
+
+    .schedule-list, .simple-stack { display: grid; gap: 14px; }
+
+    .schedule-item {
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.07);
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .schedule-item h3 {
+      margin: 0 0 8px;
+      font-size: 1.16rem;
+    }
+
+    .schedule-item p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.58;
+    }
+
+    .time-tag {
+      font-weight: 900;
+      color: var(--cyan);
+      font-size: 1rem;
+      white-space: nowrap;
+    }
+
+    .advice-list {
+      margin: 10px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.68;
+    }
+
+    .advice-list li + li { margin-top: 4px; }
+
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(188px, 1fr));
+      gap: 14px;
+    }
+
+    .day-card {
+      min-height: 168px;
+      padding: 16px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.07);
+      background: rgba(255,255,255,0.03);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .day-card.current {
+      border-color: rgba(116,241,243,0.34);
+      box-shadow: 0 0 0 1px rgba(116,241,243,0.08) inset, 0 0 24px rgba(116,241,243,0.10);
+    }
+
+    .day-card .num {
+      font-size: 1.4rem;
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+
+    .day-card .dow {
+      color: var(--muted);
+      font-size: .92rem;
+      margin-bottom: 12px;
+    }
+
+    .day-card .tag,
+    .day-card .shift-pill {
+      display: inline-flex;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: .8rem;
+      font-weight: 900;
+      color: #041017;
+      margin-right: 8px;
+      margin-bottom: 10px;
+    }
+
+    .day-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.48;
+      font-size: .92rem;
+    }
+
+    .rest-card .tag {
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+    }
+
+    .legend {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .legend i {
+      width: 13px;
+      height: 13px;
+      border-radius: 999px;
+      display: inline-block;
+      background-size: cover;
+    }
+
+    .tips-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 26px;
+    }
+
+    .tip-card {
+      padding: 20px;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.07);
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.018));
+    }
+
+    .tip-card h3 {
+      margin: 0 0 8px;
+      font-size: 1.14rem;
+    }
+
+    .tip-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .small-note, .footer-note {
+      color: var(--muted);
+      font-size: .92rem;
+      line-height: 1.55;
+    }
+
+    .footer-note { margin-top: 22px; }
+
+    @media (max-width: 1020px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .turn-summary { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 760px) {
+      body { padding: 14px; }
+      .shell { padding: 18px; border-radius: 24px; }
+      .countdown, .mini-stats { grid-template-columns: repeat(2, 1fr); }
+      .turn-big { min-width: 100%; }
+      .shift-box { grid-template-columns: auto 1fr; }
+      .shift-box > .shift-status { grid-column: 1 / -1; justify-self: start; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="title-wrap">
+        <h1>Horario de internado</h1>
+        <p>Versión más digerible, con más colores inspirados en Xiao: aqua, jade, azul profundo, violeta y dorado. También resalta clarito si te toca <strong>mañana</strong>, <strong>tarde</strong> o <strong>noche</strong>.</p>
+      </div>
+      <div class="glow-badge">
+        <span class="glow-dot"></span>
+        <span id="clockText">Cargando hora actual...</span>
+      </div>
+    </section>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="resumen">Resumen</button>
+      <button class="tab-btn" data-tab="hoy">Hoy</button>
+      <button class="tab-btn" data-tab="manana">Mañana</button>
+      <button class="tab-btn" data-tab="mes">Mes completo</button>
+    </div>
+
+    <section class="panel active" id="panel-resumen">
+      <div class="main-grid">
+        <article class="card status-card">
+          <div class="eyebrow">Estado en tiempo real</div>
+          <h2 class="status-headline" id="statusHeadline">Analizando tu turno...</h2>
+          <p class="status-text" id="statusText">Esperando datos del horario.</p>
+
+          <div class="meta-line" id="statusMeta"></div>
+
+          <div class="turn-summary">
+            <div class="turn-focus">
+              <small>Turno protagonista</small>
+              <div class="focus-row">
+                <div class="turn-big" id="turnBigBadge">Sin turno</div>
+                <div class="pill area-chip" id="areaBigBadge">Área</div>
+              </div>
+              <p class="turn-helper" id="turnHelper">Aquí verás clarito cuál es el turno activo o el siguiente que se viene.</p>
+            </div>
+
+            <div class="shift-rail">
+              <h3>Lectura rápida de turnos</h3>
+              <div class="shift-track" id="shiftTrack">
+                <div class="shift-box" data-shift-box="M">
+                  <div class="shift-icon" style="background: var(--turno-manana)">☀️</div>
+                  <div>
+                    <strong>Mañana</strong><br>
+                    <small>07:30 a. m. - 01:30 p. m.</small>
+                  </div>
+                  <div class="shift-status" style="background: var(--turno-manana)">Disponible</div>
+                </div>
+                <div class="shift-box" data-shift-box="T">
+                  <div class="shift-icon" style="background: var(--turno-tarde)">🌤️</div>
+                  <div>
+                    <strong>Tarde</strong><br>
+                    <small>01:30 p. m. - 07:30 p. m.</small>
+                  </div>
+                  <div class="shift-status" style="background: var(--turno-tarde)">Disponible</div>
+                </div>
+                <div class="shift-box" data-shift-box="N">
+                  <div class="shift-icon" style="background: var(--turno-noche)">🌙</div>
+                  <div>
+                    <strong>Noche</strong><br>
+                    <small>07:30 p. m. - 07:30 a. m.</small>
+                  </div>
+                  <div class="shift-status" style="background: var(--turno-noche)">Disponible</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="countdown" id="countdownBoxes">
+            <div class="count-item"><strong id="daysBox">00</strong><span>Días</span></div>
+            <div class="count-item"><strong id="hoursBox">00</strong><span>Horas</span></div>
+            <div class="count-item"><strong id="minutesBox">00</strong><span>Minutos</span></div>
+            <div class="count-item"><strong id="secondsBox">00</strong><span>Segundos</span></div>
+          </div>
+
+          <div class="accent-bar"><div id="progressBar"></div></div>
+
+          <div class="mini-stats">
+            <div class="stat-box">
+              <strong id="monthLabel">Abril</strong>
+              <span>Mes configurado</span>
+            </div>
+            <div class="stat-box">
+              <strong>07:30</strong>
+              <span>Inicio mañana</span>
+            </div>
+            <div class="stat-box">
+              <strong>13:30</strong>
+              <span>Inicio tarde</span>
+            </div>
+            <div class="stat-box">
+              <strong>19:30</strong>
+              <span>Inicio noche</span>
+            </div>
+          </div>
+        </article>
+
+        <div class="subgrid">
+          <article class="card">
+            <h2 class="section-title">Próximo movimiento</h2>
+            <div class="schedule-list" id="nextMoveBox"></div>
+          </article>
+
+          <article class="card">
+            <h2 class="section-title">Consejo del momento</h2>
+            <div id="liveAdvice"></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-hoy">
+      <article class="card">
+        <h2 class="section-title">Tu día de hoy</h2>
+        <div id="todayBox"></div>
+      </article>
+    </section>
+
+    <section class="panel" id="panel-manana">
+      <article class="card">
+        <h2 class="section-title">Tu día de mañana</h2>
+        <div id="tomorrowBox"></div>
+      </article>
+    </section>
+
+    <section class="panel" id="panel-mes">
+      <article class="card">
+        <h2 class="section-title">Calendario del mes</h2>
+        <div class="legend">
+          <span><i style="background: var(--sala)"></i>Sala</span>
+          <span><i style="background: var(--ppff)"></i>PPFF</span>
+          <span><i style="background: var(--materno)"></i>Materno</span>
+          <span><i style="background: var(--apoyo)"></i>Apoyo nocturno</span>
+          <span><i style="background: var(--turno-manana)"></i>Mañana</span>
+          <span><i style="background: var(--turno-tarde)"></i>Tarde</span>
+          <span><i style="background: var(--turno-noche)"></i>Noche</span>
+        </div>
+        <p class="small-note">Nota: como el color verde de tu cuadro no tenía nombre visible, lo dejé como <strong>Apoyo nocturno</strong>. Si me das el nombre exacto, te lo cambio en una.</p>
+        <div class="month-grid" id="monthGrid" style="margin-top:16px;"></div>
+      </article>
+    </section>
+
+    <section class="tips-grid">
+      <article class="tip-card">
+        <h3>💛 Sala</h3>
+        <p>Prioriza monitoreo fetal, deja material listo y vigila signos maternos con registro claro y ordenado.</p>
+      </article>
+      <article class="tip-card">
+        <h3>💙 PPFF</h3>
+        <p>Haz consejería simple, confirma criterios del método y recalca signos de alarma y seguimiento.</p>
+      </article>
+      <article class="tip-card">
+        <h3>💜 Materno</h3>
+        <p>Controla signos vitales, detecta riesgos temprano y acompaña con calma a la gestante y su familia.</p>
+      </article>
+      <article class="tip-card">
+        <h3>💚 Apoyo nocturno</h3>
+        <p>Durante la noche hidrátate, prioriza urgencias, mantén registros al día y reporta cambios sin demora.</p>
+      </article>
+    </section>
+
+    <p class="footer-note">Este horario está configurado para <strong>abril 2026</strong> y se actualiza en tiempo real usando la hora del dispositivo.</p>
+  </main>
+
+  <script>
+    const scheduleYear = 2026;
+    const scheduleMonth = 3; // Abril
+
+    const SHIFT_INFO = {
+      M: { name: 'Mañana', start: '07:30', end: '13:30', overnight: false, color: 'var(--turno-manana)', emoji: '☀️' },
+      T: { name: 'Tarde', start: '13:30', end: '19:30', overnight: false, color: 'var(--turno-tarde)', emoji: '🌤️' },
+      N: { name: 'Noche', start: '19:30', end: '07:30', overnight: true, color: 'var(--turno-noche)', emoji: '🌙' }
+    };
+
+    const AREAS = {
+      sala: {
+        name: 'Sala',
+        color: 'var(--sala)',
+        advice: [
+          'Deja listo el material antes de empezar y verifica insumos.',
+          'Controla signos maternos y bienestar fetal con orden.',
+          'Reporta a tiempo cualquier cambio durante el trabajo de parto.'
+        ]
+      },
+      ppff: {
+        name: 'PPFF',
+        color: 'var(--ppff)',
+        advice: [
+          'Escucha primero y adapta la consejería a la necesidad real.',
+          'Explica método, efectos esperados y signos de alarma claro.',
+          'Deja indicaciones simples y confirma seguimiento.'
+        ]
+      },
+      materno: {
+        name: 'Materno',
+        color: 'var(--materno)',
+        advice: [
+          'Haz revisión clínica completa y detecta factores de riesgo.',
+          'Ordena notas y signos vitales sin saltarte pasos.',
+          'Acompaña con calma: el apoyo emocional también cuenta.'
+        ]
+      },
+      apoyo: {
+        name: 'Apoyo nocturno',
+        color: 'var(--apoyo)',
+        advice: [
+          'Mantén vigilancia continua y prioriza urgencias reales.',
+          'Ten agua, snack ligero y registros clínicos al día.',
+          'Si algo se complica, avisa temprano y no esperes demasiado.'
+        ]
+      }
+    };
+
+    const MONTH_SCHEDULE = {
+      1:  { area: 'sala',    shift: 'M' },
+      2:  { area: 'ppff',    shift: 'T' },
+      3:  { area: 'apoyo',   shift: 'N' },
+      4:  { rest: true },
+      5:  { area: 'materno', shift: 'M' },
+      6:  { area: 'sala',    shift: 'M' },
+      7:  { area: 'ppff',    shift: 'T' },
+      8:  { area: 'apoyo',   shift: 'N' },
+      9:  { rest: true },
+      10: { area: 'materno', shift: 'T' },
+      11: { area: 'sala',    shift: 'T' },
+      12: { area: 'ppff',    shift: 'M' },
+      13: { area: 'apoyo',   shift: 'N' },
+      14: { rest: true },
+      15: { area: 'materno', shift: 'T' },
+      16: { area: 'sala',    shift: 'M' },
+      17: { area: 'ppff',    shift: 'T' },
+      18: { area: 'apoyo',   shift: 'N' },
+      19: { rest: true },
+      20: { area: 'materno', shift: 'M' },
+      21: { area: 'sala',    shift: 'M' },
+      22: { area: 'ppff',    shift: 'T' },
+      23: { area: 'apoyo',   shift: 'N' },
+      24: { rest: true },
+      25: { area: 'materno', shift: 'T' },
+      26: { area: 'sala',    shift: 'T' },
+      27: { area: 'ppff',    shift: 'M' },
+      28: { area: 'apoyo',   shift: 'N' },
+      29: { rest: true },
+      30: { area: 'materno', shift: 'M' }
+    };
+
+    const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    const weekdayNames = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+
+    const events = Object.entries(MONTH_SCHEDULE)
+      .map(([day, info]) => createEvent(Number(day), info))
+      .filter(Boolean)
+      .sort((a, b) => a.start - b.start);
+
+    function timeToParts(str) {
+      const [h, m] = str.split(':').map(Number);
+      return { h, m };
+    }
+
+    function createEvent(day, info) {
+      if (!info || info.rest) return null;
+      const shift = SHIFT_INFO[info.shift];
+      const startParts = timeToParts(shift.start);
+      const endParts = timeToParts(shift.end);
+      const start = new Date(scheduleYear, scheduleMonth, day, startParts.h, startParts.m, 0, 0);
+      const end = shift.overnight
+        ? new Date(scheduleYear, scheduleMonth, day + 1, endParts.h, endParts.m, 0, 0)
+        : new Date(scheduleYear, scheduleMonth, day, endParts.h, endParts.m, 0, 0);
+
+      return {
+        day,
+        area: info.area,
+        areaName: AREAS[info.area].name,
+        shiftKey: info.shift,
+        shiftName: shift.name,
+        shiftColor: shift.color,
+        shiftEmoji: shift.emoji,
+        start,
+        end,
+        label: `${AREAS[info.area].name} · ${shift.name}`,
+        color: AREAS[info.area].color,
+        advice: AREAS[info.area].advice
+      };
+    }
+
+    function formatDateLong(date) {
+      return `${weekdayNames[date.getDay()]} ${String(date.getDate()).padStart(2, '0')} de ${monthNames[date.getMonth()]}`;
+    }
+
+    function formatTime(date) {
+      return date.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+
+    function formatHourMinute(date) {
+      return date.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function formatHourMinuteAmPmFromText(str) {
+      const [hour, minute] = str.split(':').map(Number);
+      const date = new Date(2000, 0, 1, hour, minute);
+      return date.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function getRemainingParts(ms) {
+      const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+      const days = Math.floor(totalSeconds / 86400);
+      const hours = Math.floor((totalSeconds % 86400) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      return { days, hours, minutes, seconds };
+    }
+
+    function diffInCalendarDays(a, b) {
+      const d1 = new Date(a.getFullYear(), a.getMonth(), a.getDate());
+      const d2 = new Date(b.getFullYear(), b.getMonth(), b.getDate());
+      return Math.round((d2 - d1) / 86400000);
+    }
+
+    function getCurrentEvent(now) {
+      return events.find(ev => now >= ev.start && now < ev.end) || null;
+    }
+
+    function getNextEvent(now) {
+      return events.find(ev => ev.start > now) || null;
+    }
+
+    function getPreviousEvent(now) {
+      return [...events].reverse().find(ev => ev.end <= now) || null;
+    }
+
+    function getDayEntry(day) {
+      return MONTH_SCHEDULE[day] || null;
+    }
+
+    function clearShiftRail() {
+      document.querySelectorAll('[data-shift-box]').forEach(box => box.classList.remove('active'));
+    }
+
+    function highlightShift(shiftKey, modeText) {
+      clearShiftRail();
+      if (!shiftKey) return;
+      const box = document.querySelector(`[data-shift-box="${shiftKey}"]`);
+      if (!box) return;
+      box.classList.add('active');
+      const status = box.querySelector('.shift-status');
+      if (status) status.textContent = modeText;
+      document.querySelectorAll('[data-shift-box]').forEach(other => {
+        if (other !== box) {
+          const otherStatus = other.querySelector('.shift-status');
+          if (otherStatus) otherStatus.textContent = 'No toca';
+        }
+      });
+    }
+
+    function setBigTurn(target, text, helper) {
+      const turnBigBadge = document.getElementById('turnBigBadge');
+      const areaBigBadge = document.getElementById('areaBigBadge');
+      const turnHelper = document.getElementById('turnHelper');
+
+      if (!target) {
+        turnBigBadge.textContent = 'Sin turno';
+        turnBigBadge.style.background = 'rgba(255,255,255,0.08)';
+        turnBigBadge.style.color = 'var(--text)';
+        areaBigBadge.textContent = 'Descanso';
+        areaBigBadge.style.background = 'rgba(255,255,255,0.08)';
+        areaBigBadge.style.color = 'var(--text)';
+        turnHelper.textContent = helper;
+        clearShiftRail();
+        return;
+      }
+
+      turnBigBadge.textContent = `${target.shiftEmoji} ${target.shiftName}`;
+      turnBigBadge.style.background = target.shiftColor;
+      turnBigBadge.style.color = '#041017';
+      areaBigBadge.textContent = target.areaName;
+      areaBigBadge.style.background = target.color;
+      areaBigBadge.style.color = '#041017';
+      turnHelper.textContent = helper;
+    }
+
+    function getDayCardHtml(day, dateObj, entry, currentDay) {
+      if (!entry || entry.rest) {
+        return `
+          <article class="day-card rest-card ${day === currentDay ? 'current' : ''}">
+            <div class="num">${day}</div>
+            <div class="dow">${weekdayNames[dateObj.getDay()]}</div>
+            <div class="tag">Descanso</div>
+            <p>Recarga energía, duerme mejor y deja tus cosas listas para el siguiente turno.</p>
+          </article>
+        `;
+      }
+
+      const area = AREAS[entry.area];
+      const shift = SHIFT_INFO[entry.shift];
+      return `
+        <article class="day-card ${day === currentDay ? 'current' : ''}">
+          <div class="num">${day}</div>
+          <div class="dow">${weekdayNames[dateObj.getDay()]}</div>
+          <div class="tag" style="background:${area.color}">${area.name}</div>
+          <div class="shift-pill" style="background:${shift.color}">${shift.emoji} ${shift.name}</div>
+          <p>${formatHourMinuteAmPmFromText(shift.start)} - ${formatHourMinuteAmPmFromText(shift.end)}${shift.overnight ? ' del día siguiente' : ''}</p>
+        </article>
+      `;
+    }
+
+    function renderMonthGrid(now) {
+      const currentDay = now.getMonth() === scheduleMonth && now.getFullYear() === scheduleYear ? now.getDate() : -1;
+      const grid = document.getElementById('monthGrid');
+      const daysInMonth = new Date(scheduleYear, scheduleMonth + 1, 0).getDate();
+      let html = '';
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateObj = new Date(scheduleYear, scheduleMonth, day);
+        html += getDayCardHtml(day, dateObj, getDayEntry(day), currentDay);
+      }
+      grid.innerHTML = html;
+    }
+
+    function renderDailyBox(containerId, dateObj, titlePrefix = 'Hoy') {
+      const box = document.getElementById(containerId);
+      const withinMonth = dateObj.getFullYear() === scheduleYear && dateObj.getMonth() === scheduleMonth;
+
+      if (!withinMonth) {
+        box.innerHTML = `
+          <div class="schedule-item">
+            <div>
+              <h3>${titlePrefix} no está dentro del mes cargado</h3>
+              <p>Este archivo está configurado para ${monthNames[scheduleMonth]} ${scheduleYear}. Si quieres, luego te lo adapto para que cambie automáticamente de mes.</p>
+            </div>
+            <div class="time-tag">Sin datos</div>
+          </div>
+        `;
+        return;
+      }
+
+      const entry = getDayEntry(dateObj.getDate());
+      if (!entry || entry.rest) {
+        box.innerHTML = `
+          <div class="schedule-item">
+            <div>
+              <h3>${titlePrefix}: descanso</h3>
+              <p>${formatDateLong(dateObj)}. Aprovecha para dormir mejor, ordenar tus cosas y dejar lista tu bata, lapiceros y materiales.</p>
+            </div>
+            <div class="pill">Libre</div>
+          </div>
+        `;
+        return;
+      }
+
+      const area = AREAS[entry.area];
+      const shift = SHIFT_INFO[entry.shift];
+      box.innerHTML = `
+        <div class="schedule-item">
+          <div>
+            <h3>${formatDateLong(dateObj)}</h3>
+            <p><strong>Área:</strong> ${area.name}<br><strong>Turno:</strong> ${shift.emoji} ${shift.name}<br><strong>Horario:</strong> ${formatHourMinuteAmPmFromText(shift.start)} - ${formatHourMinuteAmPmFromText(shift.end)}${shift.overnight ? ' del día siguiente' : ''}</p>
+            <ul class="advice-list">
+              ${area.advice.map(item => `<li>${item}</li>`).join('')}
+            </ul>
+          </div>
+          <div class="simple-stack">
+            <div class="pill area-chip" style="background:${area.color}">${area.name}</div>
+            <div class="pill turn-chip" style="background:${shift.color}">${shift.name}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderNextMove(now, currentEvent, nextEvent) {
+      const box = document.getElementById('nextMoveBox');
+      if (currentEvent) {
+        box.innerHTML = `
+          <div class="schedule-item">
+            <div>
+              <h3>Estás en pleno turno</h3>
+              <p><strong>${currentEvent.areaName}</strong> · <strong>${currentEvent.shiftEmoji} ${currentEvent.shiftName}</strong><br>Termina a las ${formatHourMinute(currentEvent.end)}. Ve cerrando pendientes y deja el relevo claro.</p>
+            </div>
+            <div class="simple-stack">
+              <div class="pill area-chip" style="background:${currentEvent.color}">${currentEvent.areaName}</div>
+              <div class="pill turn-chip" style="background:${currentEvent.shiftColor}">${currentEvent.shiftName}</div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      if (nextEvent) {
+        const diffDays = diffInCalendarDays(now, nextEvent.start);
+        const when = diffDays === 0 ? 'Hoy' : diffDays === 1 ? 'Mañana' : formatDateLong(nextEvent.start);
+        box.innerHTML = `
+          <div class="schedule-item">
+            <div>
+              <h3>${when} tienes ${nextEvent.areaName}</h3>
+              <p><strong>Turno:</strong> ${nextEvent.shiftEmoji} ${nextEvent.shiftName}<br><strong>Horario:</strong> ${formatHourMinute(nextEvent.start)} - ${formatHourMinute(nextEvent.end)}${nextEvent.shiftKey === 'N' ? ' del día siguiente' : ''}</p>
+            </div>
+            <div class="simple-stack">
+              <div class="pill area-chip" style="background:${nextEvent.color}">${nextEvent.areaName}</div>
+              <div class="pill turn-chip" style="background:${nextEvent.shiftColor}">${nextEvent.shiftName}</div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      box.innerHTML = `
+        <div class="schedule-item">
+          <div>
+            <h3>No hay más turnos cargados</h3>
+            <p>Este horario termina al cierre del mes. Si quieres, te lo adapto para el siguiente mes con el mismo estilo.</p>
+          </div>
+          <div class="pill">Fin</div>
+        </div>
+      `;
+    }
+
+    function renderLiveAdvice(currentEvent, nextEvent) {
+      const box = document.getElementById('liveAdvice');
+      const target = currentEvent || nextEvent;
+
+      if (!target) {
+        box.innerHTML = `
+          <div class="schedule-item">
+            <div>
+              <h3>Mes completado</h3>
+              <p>Buen trabajo. Ya no hay más turnos cargados en este archivo.</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      box.innerHTML = `
+        <div class="schedule-item">
+          <div>
+            <h3>${currentEvent ? 'Consejos para este turno' : 'Consejos para tu siguiente turno'}</h3>
+            <p><strong>Área:</strong> ${target.areaName} · <strong>Turno:</strong> ${target.shiftName}</p>
+            <ul class="advice-list">
+              ${target.advice.map(item => `<li>${item}</li>`).join('')}
+            </ul>
+          </div>
+          <div class="simple-stack">
+            <div class="pill area-chip" style="background:${target.color}">${target.areaName}</div>
+            <div class="pill turn-chip" style="background:${target.shiftColor}">${target.shiftName}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function updateStatus() {
+      const now = new Date();
+      document.getElementById('clockText').textContent = `${formatDateLong(now)} · ${formatTime(now)}`;
+      document.getElementById('monthLabel').textContent = monthNames[scheduleMonth];
+
+      const currentEvent = getCurrentEvent(now);
+      const nextEvent = getNextEvent(now);
+      const prevEvent = getPreviousEvent(now);
+
+      const statusHeadline = document.getElementById('statusHeadline');
+      const statusText = document.getElementById('statusText');
+      const statusMeta = document.getElementById('statusMeta');
+      const progressBar = document.getElementById('progressBar');
+
+      let targetDate = now;
+      let progressPercent = 0;
+      let metaHtml = '';
+
+      if (currentEvent) {
+        targetDate = currentEvent.end;
+        const total = currentEvent.end - currentEvent.start;
+        const elapsed = now - currentEvent.start;
+        progressPercent = Math.max(0, Math.min(100, (elapsed / total) * 100));
+
+        statusHeadline.textContent = `Ahora te toca ${currentEvent.shiftEmoji} ${currentEvent.shiftName} en ${currentEvent.areaName}`;
+        statusText.textContent = `Estás en pleno turno. Termina a las ${formatHourMinute(currentEvent.end)}. Mantén registros claros, prioriza seguridad y deja el relevo ordenado.`;
+        metaHtml = `
+          <div class="pill">${formatDateLong(currentEvent.start)}</div>
+          <div class="pill">Horario: ${formatHourMinute(currentEvent.start)} - ${formatHourMinute(currentEvent.end)}${currentEvent.shiftKey === 'N' ? ' del día siguiente' : ''}</div>
+          <div class="pill area-chip" style="background:${currentEvent.color}">${currentEvent.areaName}</div>
+          <div class="pill turn-chip" style="background:${currentEvent.shiftColor}">${currentEvent.shiftName}</div>
+        `;
+        setBigTurn(currentEvent, `${currentEvent.shiftName}`, 'Ese es tu turno activo ahorita mismo.');
+        highlightShift(currentEvent.shiftKey, 'Activo');
+      } else if (nextEvent) {
+        targetDate = nextEvent.start;
+        progressPercent = 0;
+        const diffDays = diffInCalendarDays(now, nextEvent.start);
+
+        if (diffDays === 0) {
+          statusHeadline.textContent = `Prepárate: hoy te toca ${nextEvent.shiftEmoji} ${nextEvent.shiftName}`;
+          statusText.textContent = `Tu siguiente área es ${nextEvent.areaName} y el turno empieza a las ${formatHourMinute(nextEvent.start)}. Anda dejando todo listo con calma.`;
+        } else if (diffDays === 1) {
+          statusHeadline.textContent = 'Te toca tu merecido descanso 🌙';
+          statusText.textContent = `Mañana tienes ${nextEvent.areaName} en turno ${nextEvent.shiftName}. Más abajo ves cuánto falta exacto para que empiece.`;
+        } else {
+          statusHeadline.textContent = 'Ahora toca recargar energías';
+          statusText.textContent = `Tu siguiente turno será ${nextEvent.shiftEmoji} ${nextEvent.shiftName} en ${nextEvent.areaName}, el ${formatDateLong(nextEvent.start)}.`;
+        }
+
+        const restLabel = prevEvent ? `Último turno cerrado: ${prevEvent.areaName} · ${prevEvent.shiftName}` : 'Aún no inicia el primer turno';
+        metaHtml = `
+          <div class="pill">${restLabel}</div>
+          <div class="pill">Siguiente: ${formatDateLong(nextEvent.start)}</div>
+          <div class="pill area-chip" style="background:${nextEvent.color}">${nextEvent.areaName}</div>
+          <div class="pill turn-chip" style="background:${nextEvent.shiftColor}">${nextEvent.shiftName}</div>
+        `;
+        setBigTurn(nextEvent, `${nextEvent.shiftName}`, 'Ese es el próximo turno que se viene.');
+        highlightShift(nextEvent.shiftKey, 'Sigue');
+      } else {
+        statusHeadline.textContent = 'Mes completado ✨';
+        statusText.textContent = 'Ya no hay más turnos configurados en este archivo. Si quieres, te adapto el siguiente mes con esta misma vibra.';
+        metaHtml = `<div class="pill">Fin del calendario cargado</div>`;
+        progressPercent = 100;
+        setBigTurn(null, '', 'Ya acabaste lo cargado en este mes.');
+      }
+
+      statusMeta.innerHTML = metaHtml;
+      progressBar.style.width = `${progressPercent}%`;
+
+      const remaining = getRemainingParts(targetDate - now);
+      document.getElementById('daysBox').textContent = String(remaining.days).padStart(2, '0');
+      document.getElementById('hoursBox').textContent = String(remaining.hours).padStart(2, '0');
+      document.getElementById('minutesBox').textContent = String(remaining.minutes).padStart(2, '0');
+      document.getElementById('secondsBox').textContent = String(remaining.seconds).padStart(2, '0');
+
+      renderNextMove(now, currentEvent, nextEvent);
+      renderLiveAdvice(currentEvent, nextEvent);
+      renderDailyBox('todayBox', now, 'Hoy');
+      renderDailyBox('tomorrowBox', new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1), 'Mañana');
+      renderMonthGrid(now);
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(`panel-${btn.dataset.tab}`).classList.add('active');
+      });
+    });
+
+    updateStatus();
+    setInterval(updateStatus, 1000);
+  </script>
+</body>
+</html>
