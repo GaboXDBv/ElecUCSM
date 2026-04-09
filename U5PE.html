@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Metodologías ágiles para hardware</title>
+  <style>
+    :root{
+      --bg:#08060d;
+      --bg2:#120d1c;
+      --card:#171122;
+      --card2:#211730;
+      --soft:#f3ecff;
+      --text:#f8f4ff;
+      --muted:#d9c8f3;
+      --purple:#c8a2ff;
+      --purple2:#b388eb;
+      --purple3:#e7d8ff;
+      --line:rgba(200,162,255,.22);
+      --shadow:0 20px 45px rgba(0,0,0,.35);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+
+    body{
+      margin:0;
+      font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(200,162,255,.14), transparent 28%),
+        radial-gradient(circle at top right, rgba(179,136,235,.14), transparent 26%),
+        linear-gradient(135deg, var(--bg), var(--bg2));
+      line-height:1.7;
+    }
+
+    .container{
+      width:min(1200px, 92%);
+      margin:auto;
+    }
+
+    header{
+      padding:56px 0 28px;
+    }
+
+    .hero{
+      background:linear-gradient(145deg, rgba(33,23,48,.95), rgba(23,17,34,.96));
+      border:1px solid var(--line);
+      border-radius:28px;
+      padding:34px;
+      box-shadow:var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero::before,
+    .hero::after{
+      content:"";
+      position:absolute;
+      border-radius:50%;
+      filter:blur(10px);
+      opacity:.25;
+    }
+
+    .hero::before{
+      width:220px;
+      height:220px;
+      background:var(--purple);
+      right:-60px;
+      top:-60px;
+    }
+
+    .hero::after{
+      width:240px;
+      height:240px;
+      background:var(--purple2);
+      left:-80px;
+      bottom:-120px;
+    }
+
+    .badge{
+      display:inline-block;
+      padding:8px 14px;
+      border-radius:999px;
+      background:linear-gradient(90deg, rgba(200,162,255,.18), rgba(179,136,235,.18));
+      border:1px solid rgba(200,162,255,.28);
+      color:var(--purple3);
+      font-weight:700;
+      letter-spacing:.3px;
+      margin-bottom:14px;
+      position:relative;
+      z-index:1;
+    }
+
+    h1,h2,h3{
+      margin:0 0 14px;
+    }
+
+    h1{
+      font-size:clamp(2rem, 4vw, 3.2rem);
+      line-height:1.12;
+      position:relative;
+      z-index:1;
+    }
+
+    .subtitle{
+      font-size:1.05rem;
+      color:var(--muted);
+      max-width:860px;
+      position:relative;
+      z-index:1;
+      margin:0;
+    }
+
+    nav{
+      position:sticky;
+      top:0;
+      z-index:20;
+      backdrop-filter: blur(10px);
+      background:rgba(8,6,13,.82);
+      border-bottom:1px solid rgba(200,162,255,.14);
+    }
+
+    .nav-wrap{
+      width:min(1200px, 92%);
+      margin:auto;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      padding:14px 0;
+    }
+
+    nav a{
+      text-decoration:none;
+      color:var(--text);
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(200,162,255,.12);
+      font-size:.94rem;
+      transition:.22s ease;
+    }
+
+    nav a:hover{
+      transform:translateY(-2px);
+      background:linear-gradient(90deg, rgba(200,162,255,.18), rgba(179,136,235,.18));
+      border-color:rgba(200,162,255,.28);
+    }
+
+    main{
+      padding:28px 0 60px;
+    }
+
+    section{
+      margin:26px 0;
+      background:linear-gradient(180deg, rgba(23,17,34,.96), rgba(18,13,28,.96));
+      border:1px solid var(--line);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .section-head{
+      padding:24px 24px 0;
+    }
+
+    .section-body{
+      padding:0 24px 26px;
+    }
+
+    .section-title{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .number{
+      width:46px;
+      height:46px;
+      display:grid;
+      place-items:center;
+      border-radius:14px;
+      font-weight:800;
+      background:linear-gradient(135deg, var(--purple), var(--purple2));
+      color:#140c1d;
+      box-shadow:0 8px 20px rgba(0,0,0,.28);
+      flex:0 0 auto;
+    }
+
+    .section-title h2{
+      font-size:clamp(1.3rem, 2vw, 1.9rem);
+    }
+
+    .highlight{
+      margin-top:16px;
+      padding:16px 18px;
+      border-left:4px solid var(--purple);
+      background:rgba(255,255,255,.04);
+      border-radius:16px;
+      color:var(--soft);
+    }
+
+    .grid-2{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:18px;
+      margin-top:18px;
+    }
+
+    .mini-card{
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(200,162,255,.14);
+      border-radius:18px;
+      padding:18px;
+    }
+
+    .mini-card h3{
+      color:var(--purple3);
+      font-size:1.05rem;
+      margin-bottom:10px;
+    }
+
+    ul{
+      margin:10px 0 0 18px;
+      padding:0;
+    }
+
+    li{
+      margin-bottom:8px;
+    }
+
+    .table-wrap{
+      margin-top:18px;
+      overflow-x:auto;
+      border-radius:18px;
+      border:1px solid rgba(200,162,255,.14);
+    }
+
+    table{
+      width:100%;
+      min-width:760px;
+      border-collapse:collapse;
+      background:rgba(255,255,255,.025);
+    }
+
+    th,td{
+      border:1px solid rgba(200,162,255,.12);
+      padding:14px 13px;
+      text-align:left;
+      vertical-align:top;
+    }
+
+    th{
+      background:linear-gradient(135deg, #a97fff, #c8a2ff);
+      color:#120a1b;
+      font-size:.96rem;
+    }
+
+    tr:nth-child(even) td{
+      background:rgba(255,255,255,.03);
+    }
+
+    .quote{
+      font-size:1.08rem;
+      font-weight:700;
+      color:var(--soft);
+      padding:18px 20px;
+      background:linear-gradient(135deg, rgba(200,162,255,.14), rgba(179,136,235,.14));
+      border:1px solid rgba(200,162,255,.18);
+      border-radius:20px;
+      margin-top:16px;
+    }
+
+    .img-box{
+      margin-top:22px;
+      text-align:center;
+    }
+
+    .img-box img{
+      width:min(100%, 760px);
+      border-radius:20px;
+      border:1px solid rgba(200,162,255,.18);
+      box-shadow:var(--shadow);
+      display:block;
+      margin:0 auto 18px auto;
+    }
+
+    .img-caption{
+      color:var(--muted);
+      font-size:.95rem;
+      margin-top:-6px;
+      margin-bottom:12px;
+    }
+
+    .footer{
+      text-align:center;
+      color:var(--muted);
+      padding:16px 0 34px;
+      font-size:.95rem;
+    }
+
+    @media (max-width: 900px){
+      .grid-2{
+        grid-template-columns:1fr;
+      }
+
+      .hero{
+        padding:26px;
+      }
+
+      .section-head{
+        padding:20px 18px 0;
+      }
+
+      .section-body{
+        padding:0 18px 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <div class="hero">
+        <span class="badge">Proyecto Electrónico I · Hardware Ágil</span>
+        <h1>Metodologías ágiles para hardware: uso de Kanban y gestión de hitos</h1>
+        <p class="subtitle">
+          Página web elaborada a partir del informe sobre metodologías ágiles aplicadas al desarrollo de hardware,
+          explicando cómo Kanban y la gestión de hitos ayudan a organizar tareas, monitorear avances,
+          detectar errores a tiempo y mejorar la ejecución del proyecto.
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <nav>
+    <div class="nav-wrap">
+      <a href="#p1">Metodologías ágiles</a>
+      <a href="#p2">Aplicación en hardware</a>
+      <a href="#p3">Kanban</a>
+      <a href="#p4">Organización</a>
+      <a href="#p5">Hitos</a>
+      <a href="#p6">Seguimiento</a>
+      <a href="#p7">Ejemplo práctico</a>
+      <a href="#p8">Ventajas y desventajas</a>
+    </div>
+  </nav>
+
+  <main class="container">
+
+    <section id="p1">
+      <div class="section-head">
+        <div class="section-title">
+          <div class="number">1</div>
+          <h2>¿Qué son las metodologías ágiles?</h2>
+        </div>
+      </div>
+      <div class="section-body">
+        <p>
+          Cuando hablamos de metodologías ágiles no debemos limitarnos a pensar en una simple herramienta,
+          sino en una estrategia integral que impulsa a las organizaciones a gestionar proyectos con rapidez
+          y flexibilidad. Este enfoque permite adaptar la forma de trabajo a las condiciones reales del proyecto,
+          consiguiendo una respuesta más inmediata frente a los cambios del entorno.
+        </p>
+        <p>
+          A diferencia de la gestión tradicional, las metodologías ágiles no necesitan definir desde el inicio
+          la totalidad del alcance. El proyecto se fragmenta en partes que pueden resolverse, complementarse
+          y ajustarse sobre la marcha. De ese modo, el desarrollo se va definiendo progresivamente mediante
+          retroalimentación constante.
+        </p>
+        <p>
+          Además, se trabaja por períodos de tiempo en los que cada integrante ejecuta tareas concretas,
+          presenta avances, recibe observaciones y vuelve a iterar para aplicar las mejoras necesarias.
+          Esto hace que el proyecto sea más dinámico y adaptable.
+        </p>
+
+        <div class="highlight">
+          La esencia del enfoque ágil es que el proyecto evoluciona durante su desarrollo, en lugar de permanecer
+          rígido desde el principio.
+        </div>
+
+        <div class="img-box">
+          <img src="met.jpg" alt="Imagen sobre metodologías ágiles">
+          <div class="img-caption">Figura referencial del enfoque de metodologías ágiles.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="p2">
+      <div class="section-head">
+        <div class="section-title">
+          <div class="number">2</div>
+          <h2>¿Cómo se aplican en hardware?</h2>
+        </div>
+      </div>
+      <div class="section-body">
+        <p>
+          Las metodologías ágiles también pueden aplicarse al desarrollo de hardware, siempre que sus principios
+          se adapten al trabajo físico del producto. En vez de seguir un esquema completamente rígido, el proyecto
+          se organiza en etapas cortas y claras, donde se definen tareas específicas como el diseño del circuito,
+          la selección de componentes, la simulación, la fabricación de prototipos, el ensamblaje y las pruebas.
+        </p>
+        <p>
+          En este tipo de proyectos, Kanban se utiliza como una herramienta para organizar el trabajo mediante
+          tableros con columnas como pendiente, en proceso, en prueba y terminado. Esto facilita detectar atrasos,
+          coordinar mejor al equipo y mantener una visión constante del avance.
+        </p>
+        <p>
+          Por su parte, la gestión de hitos permite señalar avances importantes dentro del proyecto, como la conclusión
+          del diseño, la validación del prototipo o la aprobación de las pruebas funcionales. En conjunto, ambos enfoques
+          ayudan a detectar errores desde etapas tempranas y a realizar ajustes antes de llegar a la versión final del producto.
+        </p>
+      </div>
+    </section>
+
+    <section id="p3">
+      <div class="section-head">
+        <div class="section-title">
+          <div class="number">3</div>
+          <h2>¿Qué es Kanban y cómo funciona?</h2>
+        </div>
+      </div>
+      <div class="section-body">
+        <p>
+          Kanban es un método visual de gestión del trabajo que ayuda a los equipos a equilibrar la carga de tareas
+          con la capacidad disponible. Se basa en un tablero con columnas que representan etapas del flujo de trabajo,
+          donde las tareas avanzan de izquierda a derecha hasta completarse.
+        </p>
+        <p>
+          Su filosofía se centra en la mejora continua y en “extraer” trabajo de una lista de pendientes según la
+          disponibilidad real del equipo. La metodología se implementa mediante tableros Kanban, herramientas visuales
+          que muestran claramente el trabajo organizado por columnas.
+        </p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Elemento</th>
+                <th>Descripción</th>
+                <th>Función</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Columnas</td>
+                <td>Representan etapas reales del proceso.</td>
+                <td>Permiten ver cuándo una tarea entra en una fase y cuándo está lista para avanzar.</td>
+              </tr>
+              <tr>
+                <td>Tarjetas</td>
+                <td>Representan unidades de trabajo concretas.</td>
+                <td>Incluyen información como responsable, prioridad, fecha límite o archivos adjuntos.</td>
+              </tr>
+              <tr>
+                <td>Límites del trabajo en curso</td>
+                <td>Restringen la cantidad de tareas activas al mismo tiempo.</td>
+                <td>Evitan sobrecarga y ayudan a visualizar cuellos de botella.</td>
+              </tr>
+              <tr>
+                <td>Políticas explícitas y carriles</td>
+                <td>Definen reglas del flujo y separan tipos de trabajo.</td>
+                <td>Mejoran claridad, orden y gestión de prioridades.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="quote">
+          “Stop starting, start finishing” es el lema principal de Kanban: se debe priorizar terminar
+          el trabajo en curso antes de abrir nuevas tareas.
+        </div>
+
+        <p>
+          Para implantar esta metodología, es necesario definir el flujo de trabajo, visualizar las fases
+          del ciclo de producción, establecer límites de tareas por etapa y controlar continuamente el flujo.
+          Esto permite una organización más eficiente y un mejor seguimiento del trabajo realizado.
+        </p>
+      </div>
+    </section>
+
+    <section id="p4">
+      <div class="section-head">
+        <div class="section-title">
+          <div class="number">4</div>
+          <h2>Organización del trabajo</h2>
+        </div>
+      </div>
+      <div class="section-body">
+        <p>
+          En hardware, la organización debe lidiar con la fricción del mundo físico: tiempos de espera
+          de componentes, manufactura de placas y pruebas destructivas. Por eso, el trabajo se organiza
+          en torno a equipos multidisciplinares y concurrentes, donde distintos grupos pueden avanzar
+          en paralelo sobre diferentes partes del proyecto.
+        </p>
+
+        <div class="grid-2">
+          <div class="mini-card">
+            <h3>Desglose del trabajo</h3>
+            <ul>
+              <li>Selección y validación teórica de componentes</li>
+              <li>Simulación esquemática del circuito</li>
+              <li>Diseño y ruteo de la placa del circuito impreso</li>
+              <li>Revisión de normativas de seguridad aplicables al diseño</li>
+            </ul>
+
+            <div class="img-box">
+              <img src="tabkan.jpg" alt="Tablero Kanban">
+              <div class="img-caption">Figura referencial de un tablero Kanban aplicado a la organización del trabajo.</div>
+            </div>
+          </div>
+
+          <div class="mini-card">
+            <h3>Aspectos organizativos clave</h3>
+            <ul>
+              <li>Gestión de la cadena de suministro</li>
+              <li>Priorización de tareas con dependencias externas largas</li>
+              <li>Reuniones de sincronización y cadencia</li>
+              <li>Detección de cuellos de botella</li>
+              <li>Reasignación de recursos cuando sea necesario</li>
+            </ul>
+          </div>
+        </div>
+
+        <p>
+          Para agilizar el trabajo de manera eficiente, el proyecto debe organizarse en iteraciones granulares.
+          Esto ayuda a que las tareas puedan fluir por el tablero Kanban sin perder de vista las dependencias
+          físicas del desarrollo.
+        </p>
+        <p>
+          También es importante integrar los tiempos de entrega de componentes y la fabricación externa dentro
+          del flujo diario. Así, el equipo puede priorizar las actividades correctas y anticiparse a retrasos
+          de suministro o prototipado.
+        </p>
+      </div>
+    </section>
+
+    <section id="p5">
+      <div class="section-head">
+        <div class="section-title">
+          <div class="number">5</div>
+          <h2>¿Qué son los hitos?</h2>
+        </div>
+      </div>
+      <div class="section-body">
+        <p>
+          Los hitos son puntos clave del proyecto que representan logros importantes y verificables,
+          como tener un prototipo ensamblado o una PCB funcionando correctamente.
+        </p>
+        <p>
+          A diferencia de las tareas, que son actividades específicas dentro del flujo de trabajo,
+          los hitos marcan el cumplimiento de objetivos mayores y permiten evaluar el progreso real del desarrollo.
+          Cuando se usa Kanban, los hitos se gestionan agrupando varias tareas dentro del tablero, de modo que un hito
+          se alcanza cuando todas las actividades asociadas han sido completadas.
+        </p>
+        <p>
+          Esto facilita el control del proyecto, la identificación de cuellos de botella y la validación por etapas,
+          algo especialmente importante en hardware debido a la complejidad y al costo de los errores físicos.
+        </p>
+      </div>
+    </section>
+
+    <section id="p6">
+      <div class="section-head">
+        <div class="section-title">
+          <div class="number">6</div>
+          <h2>Seguimiento del proyecto</h2>
+        </div>
+      </div>
+      <div class="section-body">
+        <p>
+          El seguimiento del proyecto es el proceso continuo de monitorear, evaluar y controlar el avance
+          para asegurarse de que se están cumpliendo los objetivos, los hitos y los entregables previstos.
+        </p>
+        <p>
+          Esto implica revisar constantemente qué tareas ya se completaron, cuáles están en progreso y si existen
+          retrasos o problemas como cuellos de botella. Gracias a ello, el equipo puede tomar decisiones a tiempo
+          para corregir desviaciones y mantener el proyecto encaminado.
+        </p>
+        <p>
+          En el enfoque Kanban, este seguimiento se realiza de forma visual mediante el tablero, donde las tareas
+          se mueven entre diferentes estados. Esto facilita ver el flujo de trabajo en tiempo real, identificar bloqueos
+          y medir el rendimiento, por ejemplo observando cuánto tarda una tarea en completarse.
+        </p>
+        <p>
+          En proyectos de hardware, este seguimiento es especialmente importante porque ayuda a detectar fallas tempranas,
+          coordinar etapas críticas como pruebas o ensamblaje, y asegurar que cada hito se alcance correctamente sin generar
+          retrasos costosos.
+        </p>
+
+        <div class="img-box">
+          <img src="segimg.jpg" alt="Imagen de seguimiento del proyecto">
+          <div class="img-caption">Figura referencial del seguimiento del proyecto y control del avance.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="p7">
+      <div class="section-head">
+        <div class="section-title">
+          <div class="number">7</div>
+          <h2>Ejemplo práctico</h2>
+        </div>
+      </div>
+      <div class="section-body">
+        <p>
+          Como ejemplo de aplicación, se plantea un brazo robótico de 4 grados de libertad capaz de detectar
+          y recoger objetos utilizando un sensor ultrasónico, aplicando metodologías ágiles con Kanban
+          y gestión de hitos.
+        </p>
+
+        <div class="grid-2">
+          <div class="mini-card">
+            <h3>Columnas del tablero</h3>
+            <ul>
+              <li>Por hacer</li>
+              <li>En proceso</li>
+              <li>En prueba</li>
+              <li>Terminado</li>
+            </ul>
+          </div>
+
+          <div class="mini-card">
+            <h3>Tareas del proyecto</h3>
+            <ul>
+              <li>Selección de servos</li>
+              <li>Diseño del circuito</li>
+              <li>Prueba de movimiento</li>
+              <li>Código base Arduino</li>
+              <li>Elección del sensor</li>
+              <li>Programación inicial</li>
+              <li>Calibración</li>
+              <li>Ensamblaje inicial</li>
+              <li>Diseño de estructura</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Hitos del proyecto</th>
+                <th>Descripción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Hito 1</td>
+                <td>Diseño del circuito completo</td>
+              </tr>
+              <tr>
+                <td>Hito 2</td>
+                <td>Brazo ensamblado físicamente</td>
+              </tr>
+              <tr>
+                <td>Hito 3</td>
+                <td>Control de servos funcional</td>
+              </tr>
+              <tr>
+                <td>Hito 4</td>
+                <td>Sensor ultrasónico integrado</td>
+              </tr>
+              <tr>
+                <td>Hito 5</td>
+                <td>Sistema completo operativo</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          El proyecto se divide en iteraciones cortas. En la primera se desarrolla el diseño del circuito
+          y la selección de componentes; en la segunda, la programación de servos y el movimiento básico del brazo;
+          y en la tercera, la integración del sensor y la detección de objetos.
+        </p>
+        <p>
+          Durante el seguimiento, se revisa constantemente el tablero Kanban, se identifican retrasos
+          y se redistribuyen tareas cuando es necesario. Esto permite organizar mejor el trabajo,
+          detectar errores a tiempo y avanzar de manera progresiva hasta lograr un sistema funcional.
+        </p>
+      </div>
+    </section>
+
+    <section id="p8">
+      <div class="section-head">
+        <div class="section-title">
+          <div class="number">8</div>
+          <h2>Ventajas y desventajas</h2>
+        </div>
+      </div>
+      <div class="section-body">
+
+        <div class="grid-2">
+          <div class="mini-card">
+            <h3>Ventajas de Kanban</h3>
+            <ul>
+              <li>
+                <strong>Visualización:</strong> una de las principales características de Kanban es su enfoque visual.
+                El uso de un tablero donde se representan las tareas a través de columnas como pendiente,
+                en proceso y completado permite una visión clara del flujo de trabajo.
+              </li>
+              <li>
+                <strong>Flexibilidad:</strong> Kanban no obliga a seguir un marco de tiempo específico.
+                Las tareas se gestionan de manera continua, adaptándose al ritmo real y a las necesidades
+                de cada proyecto.
+              </li>
+              <li>
+                <strong>Trabajo en proceso controlado:</strong> una de sus reglas centrales es limitar la cantidad
+                máxima de tareas que pueden estar activas al mismo tiempo. Esto ayuda a evitar la sobrecarga
+                y a concentrarse en completar trabajo antes de iniciar nuevas actividades.
+              </li>
+              <li>
+                <strong>Adaptación constante:</strong> Kanban promueve una cultura de mejora continua.
+                La optimización de procesos se puede realizar en cualquier momento, tan pronto como se
+                identifique una oportunidad de mejora.
+              </li>
+              <li>
+                <strong>Menos reuniones:</strong> a diferencia de otras metodologías ágiles, Kanban no exige
+                tantas reuniones periódicas. Los encuentros se realizan solo cuando son necesarios,
+                reduciendo interrupciones en el trabajo del equipo.
+              </li>
+            </ul>
+          </div>
+
+          <div class="mini-card">
+            <h3>Ventajas de los hitos</h3>
+            <ul>
+              <li>
+                <strong>Seguimiento del avance:</strong> permiten identificar con claridad el progreso del proyecto.
+                El equipo puede verificar qué etapas ya fueron cumplidas y cuáles aún siguen pendientes.
+              </li>
+              <li>
+                <strong>Mejor organización:</strong> ayudan a estructurar el proyecto de manera más ordenada,
+                ya que marcan objetivos importantes en momentos específicos y facilitan la planificación.
+              </li>
+              <li>
+                <strong>Control del proyecto:</strong> funcionan como puntos de control que permiten evaluar
+                si el desarrollo avanza conforme a lo esperado y detectar retrasos o problemas antes de que
+                afecten fases posteriores.
+              </li>
+              <li>
+                <strong>Facilitan la toma de decisiones:</strong> cuando se alcanza un hito, es posible revisar
+                los resultados obtenidos y decidir si se continúa con la siguiente fase o si es necesario
+                realizar ajustes.
+              </li>
+              <li>
+                <strong>Mejor comunicación:</strong> también sirven para comunicar con claridad el estado del proyecto
+                tanto al equipo de trabajo como a otras personas involucradas, ya que representan avances importantes
+                de forma simple.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="mini-card">
+            <h3>Desventajas de Kanban</h3>
+            <ul>
+              <li>
+                <strong>Trampa de la granularidad y la fragmentación:</strong> en hardware no siempre es sencillo
+                dividir tareas complejas en subtareas pequeñas sin perder sentido técnico. Forzar esa fragmentación
+                puede generar microgestión y tableros saturados de tarjetas que no representan valor real por sí solas.
+              </li>
+              <li>
+                <strong>Estancamiento del tablero por dependencias externas:</strong> el flujo continuo puede verse afectado
+                por factores físicos como la fabricación de una PCB, la llegada de componentes o simulaciones complejas.
+                Esto puede hacer que una tarjeta quede semanas en “En proceso”, dando una falsa sensación de ineficiencia
+                cuando en realidad el problema es logístico o material.
+              </li>
+              <li>
+                <strong>Incapacidad para visualizar el acoplamiento físico:</strong> Kanban maneja tareas de forma lineal,
+                pero en hardware muchas decisiones están interconectadas. Un cambio en un componente puede obligar
+                a rediseñar pistas, modificar dimensiones de la placa e incluso cambiar la carcasa mecánica,
+                y ese efecto dominó no siempre se refleja claramente en el tablero.
+              </li>
+            </ul>
+          </div>
+
+          <div class="mini-card">
+            <h3>Desventajas de los hitos</h3>
+            <ul>
+              <li>
+                <strong>Congelamiento prematuro del diseño:</strong> los hitos suelen estar ligados a presupuestos
+                y plazos inflexibles. Si aparece una mejora de diseño en una etapa tardía, la presión por cumplir
+                el siguiente hito puede hacer que esa optimización se descarte para no retrasar el calendario.
+              </li>
+              <li>
+                <strong>Alto costo de corrección tras un hito fallido:</strong> aunque el enfoque ágil asume que
+                los errores forman parte del aprendizaje, en hardware fallar un hito importante puede ser muy costoso.
+                Puede implicar descartar material, rehacer esquemas, repetir pruebas y retroceder en etapas críticas
+                del proyecto.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="highlight">
+          En hardware, Kanban y la gestión de hitos son herramientas muy útiles para organizar, visualizar y controlar
+          el trabajo, pero deben adaptarse a la realidad física del proyecto y a las limitaciones de fabricación,
+          suministro y rediseño.
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <div class="footer">
+    Página web elaborada a partir del informe sobre metodologías ágiles para hardware, uso de Kanban y gestión de hitos.
+  </div>
+
+</body>
+</html>
