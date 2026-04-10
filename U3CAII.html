@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>U2CAII - Método Sugeno</title>
+  <style>
+    :root{
+      --bg:#08111f;
+      --bg2:#101a2e;
+      --card:#15233d;
+      --card2:#1a2b48;
+      --text:#f5f8ff;
+      --muted:#c2cde2;
+      --muted2:#93a6c9;
+      --red:#ff5364;
+      --red2:#b71832;
+      --blue:#49a8ff;
+      --blue2:#185ab4;
+      --cyan:#63ddff;
+      --line:rgba(255,255,255,.10);
+      --ok:#42e39f;
+      --warn:#ffd166;
+      --bad:#ff8a8a;
+      --glass:rgba(255,255,255,.05);
+      --shadow:0 18px 40px rgba(0,0,0,.35);
+    }
+
+    body.light{
+      --bg:#eef4fb;
+      --bg2:#ffffff;
+      --card:#ffffff;
+      --card2:#f8fbff;
+      --text:#0f172a;
+      --muted:#334155;
+      --muted2:#5b6b84;
+      --line:rgba(15,23,42,.10);
+      --glass:rgba(15,23,42,.03);
+      --shadow:0 12px 28px rgba(15,23,42,.10);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Inter,Segoe UI,Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255,83,100,.18), transparent 24%),
+        radial-gradient(circle at top right, rgba(73,168,255,.16), transparent 26%),
+        linear-gradient(180deg,var(--bg),var(--bg2));
+    }
+    a{text-decoration:none;color:inherit}
+    .container{width:min(1180px,92%);margin:auto}
+
+    .topbar{
+      position:sticky;top:0;z-index:40;
+      backdrop-filter:blur(12px);
+      background:rgba(8,17,31,.82);
+      border-bottom:1px solid var(--line);
+    }
+    body.light .topbar{background:rgba(255,255,255,.88)}
+
+    .nav{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:14px;padding:14px 0;
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{
+      width:48px;height:48px;border-radius:16px;display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--red),var(--blue));
+      color:#fff;font-weight:900;box-shadow:var(--shadow);
+    }
+    .brand h3{margin:0;font-size:1rem}
+    .brand small{display:block;color:var(--muted2);margin-top:4px}
+
+    .nav-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{
+      border:none;cursor:pointer;padding:11px 16px;border-radius:14px;
+      font-weight:800;color:#fff;box-shadow:var(--shadow);
+      transition:.25s transform,.25s filter;
+      background:linear-gradient(135deg,var(--red2),var(--red));
+    }
+    .btn:hover{transform:translateY(-2px);filter:brightness(1.04)}
+    .btn.secondary{background:linear-gradient(135deg,var(--blue2),var(--blue))}
+    .btn.ghost{background:transparent;border:1px solid var(--line);box-shadow:none;color:var(--text)}
+
+    .hero{padding:52px 0 28px}
+    .hero-card{
+      border:1px solid var(--line);border-radius:30px;padding:30px;
+      background:linear-gradient(135deg, rgba(255,83,100,.12), rgba(73,168,255,.11)), rgba(255,255,255,.02);
+      box-shadow:var(--shadow);position:relative;overflow:hidden;
+    }
+    .hero-card::after{
+      content:"";position:absolute;right:-80px;bottom:-80px;width:230px;height:230px;border-radius:50%;
+      background:radial-gradient(circle, rgba(99,221,255,.18), transparent 65%);
+    }
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;
+      border:1px solid var(--line);background:var(--glass);color:var(--muted);font-size:.92rem;
+    }
+    h1{font-size:clamp(2rem,4vw,3.6rem);margin:16px 0 10px;line-height:1.05}
+    .gradient{
+      background:linear-gradient(90deg,var(--red),var(--cyan),var(--blue));
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+    }
+    .subtitle{max-width:980px;color:var(--muted);line-height:1.85;font-size:1.05rem}
+    .quick-links{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+    .quick-links a{
+      padding:10px 14px;border-radius:14px;border:1px solid var(--line);
+      background:var(--glass);font-weight:700;
+    }
+
+    section{padding:20px 0 32px}
+    .section-title{font-size:1.9rem;margin:0 0 10px}
+    .section-text{color:var(--muted);line-height:1.82;margin:0 0 18px}
+
+    .grid{display:grid;gap:18px}
+    .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    @media (max-width:980px){.grid-4,.grid-3,.grid-2{grid-template-columns:1fr}}
+
+    .card{
+      padding:22px;border-radius:24px;border:1px solid var(--line);
+      background:linear-gradient(180deg,var(--card),var(--card2));box-shadow:var(--shadow);
+    }
+    .bar{height:7px;border-radius:999px;background:linear-gradient(90deg,var(--red),var(--cyan),var(--blue));margin-bottom:14px}
+    .card h3{margin:0 0 10px;font-size:1.16rem}
+    .card p,.card li{color:var(--muted);line-height:1.8}
+    .card ul{padding-left:18px;margin:0}
+
+    .highlight{
+      border-left:4px solid var(--blue);padding:18px;border-radius:0 18px 18px 0;
+      background:rgba(73,168,255,.09);border:1px solid rgba(73,168,255,.18);line-height:1.8;
+    }
+
+    .flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+    @media (max-width:980px){.flow{grid-template-columns:1fr}}
+    .flow-step{
+      padding:18px;border-radius:20px;border:1px solid var(--line);
+      background:linear-gradient(180deg,var(--card),var(--card2));box-shadow:var(--shadow)
+    }
+    .num{
+      width:36px;height:36px;border-radius:50%;display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--red),var(--blue));color:#fff;font-weight:900;margin-bottom:12px;
+    }
+
+    .table-wrap{overflow:auto}
+    table{width:100%;border-collapse:collapse;border-radius:18px;overflow:hidden}
+    th,td{padding:14px;border:1px solid var(--line);text-align:left;vertical-align:top}
+    th{background:rgba(255,255,255,.06)}
+    td{background:rgba(255,255,255,.03);color:var(--muted);line-height:1.7}
+
+    .flashcards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+    @media (max-width:980px){.flashcards{grid-template-columns:1fr}}
+    .flashcard{perspective:1000px;height:265px;cursor:pointer}
+    .flash-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .7s}
+    .flashcard.flip .flash-inner{transform:rotateY(180deg)}
+    .face{
+      position:absolute;inset:0;backface-visibility:hidden;border-radius:24px;padding:22px;
+      border:1px solid var(--line);box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:center;
+    }
+    .front{background:linear-gradient(135deg, rgba(183,24,50,.92), rgba(73,168,255,.18))}
+    .back{background:linear-gradient(135deg, rgba(24,90,180,.94), rgba(183,24,50,.25));transform:rotateY(180deg)}
+    .tag{font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;font-weight:800;opacity:.95}
+    .face h4{margin:10px 0;font-size:1.2rem}
+    .face p{margin:0;line-height:1.75;color:#f8fbff}
+    .mini{display:inline-block;margin-top:10px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.12);font-size:.82rem;font-weight:700}
+
+    .write-q{margin-bottom:18px}
+    .write-q h4{margin:0 0 10px}
+    textarea{
+      width:100%;min-height:120px;resize:vertical;padding:14px 16px;border-radius:16px;
+      border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--text);font:inherit;line-height:1.7;
+    }
+    textarea::placeholder{color:var(--muted2)}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .feedback{margin-top:12px;padding:14px 16px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid var(--line);line-height:1.75}
+    .score{display:inline-block;padding:6px 12px;border-radius:999px;font-weight:900;margin-bottom:8px}
+    .good{background:rgba(66,227,159,.14);color:var(--ok)}
+    .mid{background:rgba(255,209,102,.14);color:var(--warn)}
+    .bad{background:rgba(255,138,138,.14);color:var(--bad)}
+
+    .mcq{display:grid;gap:16px}
+    .mcq-card{padding:20px;border-radius:22px;border:1px solid var(--line);background:linear-gradient(180deg,var(--card),var(--card2));box-shadow:var(--shadow)}
+    .options{display:grid;gap:10px;margin-top:12px}
+    .option{
+      padding:12px 14px;border-radius:14px;border:1px solid var(--line);cursor:pointer;
+      background:rgba(255,255,255,.04);text-align:left;color:var(--text);font-weight:700;transition:.2s;
+    }
+    .option:hover{transform:translateY(-1px);background:rgba(255,255,255,.07)}
+    .option.correct{border-color:rgba(66,227,159,.55);background:rgba(66,227,159,.11)}
+    .option.wrong{border-color:rgba(255,138,138,.55);background:rgba(255,138,138,.10)}
+    .option.locked{pointer-events:none}
+    .mcq-result{margin-top:10px;color:var(--muted);line-height:1.7}
+
+    .footer{padding:26px 0 56px;color:var(--muted)}
+    strong{color:var(--text)}
+    .hl{color:var(--cyan);font-weight:800}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container nav">
+      <div class="brand">
+        <div class="logo">SG</div>
+        <div>
+          <h3>Control Avanzado II</h3>
+          <small>Método Sugeno, comparación con Mamdani y uso en MATLAB</small>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <a class="btn ghost" href="#inicio">⬆ Inicio</a>
+        <button class="btn secondary" id="themeBtn">☀️ Modo claro</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="inicio">
+    <section class="hero">
+      <div class="container">
+        <div class="hero-card">
+          <span class="pill">U2CAII.html · teoría + MATLAB + flashcards + preguntas</span>
+          <h1><span class="gradient">Método Sugeno</span> en lógica difusa</h1>
+          <p class="subtitle">
+            Esta página está hecha para estudiar el sistema difuso de <strong>Sugeno</strong> de forma clara.
+            Aquí se explica <strong>qué es</strong>, <strong>cómo funciona</strong>, <strong>cuáles son sus tipos</strong>,
+            <strong>cómo se desarrolla la inferencia</strong>, <strong>en qué se diferencia de Mamdani</strong> y
+            <strong>cómo se configura en MATLAB Fuzzy Logic Designer</strong>. Al final tienes flashcards,
+            preguntas para desarrollar y preguntas para marcar para reforzar el tema.
+          </p>
+          <div class="quick-links">
+            <a href="#teoria">Teoría</a>
+            <a href="#tipos">Tipos de Sugeno</a>
+            <a href="#proceso">Desarrollo del método</a>
+            <a href="#comparacion">Comparación con Mamdani</a>
+            <a href="#matlab">MATLAB</a>
+            <a href="#flashcards">Flashcards</a>
+            <a href="#preguntas">Preguntas</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="teoria">
+      <div class="container">
+        <h2 class="section-title">¿Qué es Sugeno?</h2>
+        <p class="section-text">
+          El método Sugeno, también llamado <strong>Takagi-Sugeno-Kang (TSK)</strong>, es un tipo de inferencia difusa
+          donde las reglas mantienen la estructura <strong>SI ... ENTONCES ...</strong>, pero el consecuente ya no es
+          un conjunto difuso como en Mamdani, sino una <strong>expresión matemática</strong>, una <strong>constante</strong>
+          o una <strong>función lineal</strong>. Eso hace que el sistema sea más práctico cuando se busca una salida numérica
+          directa, una implementación computacional más eficiente y una integración sencilla con control y modelado.
+        </p>
+
+        <div class="grid grid-2">
+          <article class="card">
+            <div class="bar"></div>
+            <h3>1. Idea central</h3>
+            <p>
+              En Sugeno, la parte difusa está principalmente en el <strong>antecedente</strong> de las reglas.
+              Por ejemplo: <strong>SI error es pequeño Y cambio del error es negativo, ENTONCES salida = 0.4</strong>
+              o <strong>salida = 2x + y + 1</strong>. Eso significa que el sistema usa conjuntos difusos para interpretar las entradas,
+              pero produce una salida numérica calculada a partir de cada regla activada.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>2. ¿Por qué se usa?</h3>
+            <p>
+              Se usa mucho porque es más eficiente cuando el sistema debe calcular rápido, cuando se requiere una salida continua,
+              o cuando se necesita combinar lógica difusa con ecuaciones matemáticas. En control automático y modelado, esto ayuda a obtener
+              respuestas suaves y fáciles de implementar en software.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>3. Estructura de una regla</h3>
+            <p>
+              La forma general de una regla de Sugeno es:
+              <strong>SI x es A Y y es B ENTONCES z = f(x,y)</strong>.
+              En esa expresión, <strong>A</strong> y <strong>B</strong> son conjuntos difusos, mientras que
+              <strong>f(x,y)</strong> puede ser una constante o una función lineal. La activación de la regla depende del grado de pertenencia
+              de las entradas y la salida final se obtiene con una ponderación de todas las reglas activadas.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>4. Rasgo distintivo</h3>
+            <p>
+              Lo que más diferencia a Sugeno es que <strong>no necesita una defusificación clásica</strong> como el centroide de Mamdani.
+              En vez de eso, cada regla produce un valor numérico y luego esos valores se combinan usando un promedio ponderado.
+              Por eso suele decirse que Sugeno es más directo en la salida.
+            </p>
+          </article>
+        </div>
+
+        <div class="highlight" style="margin-top:18px">
+          <strong>Resumen rápido:</strong> Sugeno es un sistema difuso donde las entradas se interpretan con conjuntos difusos,
+          pero la salida de cada regla es una <strong>constante</strong> o una <strong>ecuación</strong>. Luego se hace una ponderación
+          entre las reglas activadas para obtener el valor final.
+        </div>
+      </div>
+    </section>
+
+    <section id="tipos">
+      <div class="container">
+        <h2 class="section-title">Tipos de Sugeno</h2>
+        <p class="section-text">
+          Normalmente, al estudiar Sugeno se habla sobre dos formas principales según el tipo de consecuente que utiliza la regla.
+        </p>
+
+        <div class="grid grid-2">
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Sugeno de orden cero</h3>
+            <p>
+              En este caso, cada regla tiene como salida una <strong>constante</strong>. Por ejemplo:
+              <strong>SI temperatura es alta ENTONCES salida = 0.8</strong>.
+              Es el tipo más simple de Sugeno y es útil cuando quieres que cada situación produzca directamente un valor fijo.
+            </p>
+            <p>
+              En MATLAB, esto se reconoce porque en la variable de salida las funciones de membresía del output pueden configurarse como
+              <strong>constant</strong>. Esta es justamente una de las opciones que se observa en el editor de membership functions.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Sugeno de primer orden</h3>
+            <p>
+              En este caso, el consecuente es una <strong>función lineal</strong> de las entradas. Por ejemplo:
+              <strong>SI error es positivo ENTONCES salida = 0.5x + 0.2y + 1</strong>.
+              Este tipo es más flexible porque la salida se ajusta según el valor de las entradas, en lugar de dar siempre un número fijo.
+            </p>
+            <p>
+              En MATLAB, esto corresponde a la opción <strong>linear</strong> en la variable de salida del sistema Sugeno.
+            </p>
+          </article>
+        </div>
+
+        <div class="grid grid-3" style="margin-top:18px">
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Ventaja del orden cero</h3>
+            <p>
+              Es más simple de diseñar, más fácil de entender y muy útil en ejemplos introductorios, clasificación simple y sistemas donde
+              cada regla representa una acción bien definida.
+            </p>
+          </article>
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Ventaja del primer orden</h3>
+            <p>
+              Puede describir mejor variaciones del sistema y lograr transiciones más suaves, porque la salida cambia en función de las entradas.
+            </p>
+          </article>
+          <article class="card">
+            <div class="bar"></div>
+            <h3>¿Cuál usar?</h3>
+            <p>
+              Si buscas simplicidad, usa orden cero. Si quieres una representación más fina y adaptable, usa primer orden.
+              La elección depende del proceso, la precisión requerida y la facilidad de implementación.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="proceso">
+      <div class="container">
+        <h2 class="section-title">¿Cómo se desarrolla la inferencia Sugeno?</h2>
+        <p class="section-text">
+          Aunque Sugeno y Mamdani comparten la idea general de reglas difusas, el desarrollo interno cambia en la etapa final.
+          Este es el flujo más claro para explicarlo en clase o en un informe.
+        </p>
+
+        <div class="flow">
+          <div class="flow-step">
+            <div class="num">1</div>
+            <h3>Entradas</h3>
+            <p>El sistema recibe valores reales como error, temperatura, nivel, rapidez o cualquier variable del proceso.</p>
+          </div>
+          <div class="flow-step">
+            <div class="num">2</div>
+            <h3>Fusificación</h3>
+            <p>Se evalúa el grado de pertenencia de cada entrada en sus conjuntos difusos, por ejemplo bajo, medio, alto.</p>
+          </div>
+          <div class="flow-step">
+            <div class="num">3</div>
+            <h3>Evaluación de reglas</h3>
+            <p>Se calcula la activación de cada regla usando operadores como AND o OR, normalmente min, max o producto.</p>
+          </div>
+          <div class="flow-step">
+            <div class="num">4</div>
+            <h3>Salida de cada regla</h3>
+            <p>Cada regla produce una constante o una función lineal. Aquí está la gran diferencia frente a Mamdani.</p>
+          </div>
+          <div class="flow-step">
+            <div class="num">5</div>
+            <h3>Ponderación final</h3>
+            <p>Las salidas de las reglas se combinan con un promedio ponderado según la fuerza de activación de cada regla.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:18px">
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Promedio ponderado</h3>
+            <p>
+              Si varias reglas se activan al mismo tiempo, no se elige una sola. Cada una aporta según su nivel de activación.
+              Entonces, si una regla tiene más peso, influye más en la salida final. Esa es la razón por la cual Sugeno suele dar
+              resultados continuos y suaves.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>¿Hay defusificación?</h3>
+            <p>
+              En la práctica, no se usa una defusificación clásica como centroide, MOM, SOM o LOM. La salida final se obtiene directamente
+              del promedio ponderado de los consecuentes numéricos. Por eso se dice que en Sugeno esa etapa se reemplaza por un cálculo matemático.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="comparacion">
+      <div class="container">
+        <h2 class="section-title">Comparación entre Sugeno y Mamdani</h2>
+        <p class="section-text">
+          Esta comparación es clave porque normalmente en clase te preguntan por qué elegir uno u otro.
+        </p>
+
+        <div class="table-wrap card">
+          <table>
+            <thead>
+              <tr>
+                <th>Aspecto</th>
+                <th>Mamdani</th>
+                <th>Sugeno</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Consecuente de la regla</strong></td>
+                <td>Es un conjunto difuso, por ejemplo: salida es alta.</td>
+                <td>Es un valor numérico o función, por ejemplo: salida = 0.8 o salida = 2x + y + 1.</td>
+              </tr>
+              <tr>
+                <td><strong>Salida final</strong></td>
+                <td>Se obtiene luego de agregar y defusificar.</td>
+                <td>Se obtiene por promedio ponderado de las reglas activadas.</td>
+              </tr>
+              <tr>
+                <td><strong>Defusificación</strong></td>
+                <td>Sí, normalmente centroide.</td>
+                <td>No en el sentido clásico; se reemplaza por una ponderación matemática.</td>
+              </tr>
+              <tr>
+                <td><strong>Interpretación lingüística</strong></td>
+                <td>Muy intuitiva y fácil de explicar verbalmente.</td>
+                <td>Menos lingüística en la salida, pero más práctica para cálculo y modelado.</td>
+              </tr>
+              <tr>
+                <td><strong>Costo computacional</strong></td>
+                <td>Generalmente mayor.</td>
+                <td>Generalmente menor y más eficiente.</td>
+              </tr>
+              <tr>
+                <td><strong>Uso típico</strong></td>
+                <td>Sistemas didácticos, control interpretativo, decisiones lingüísticas.</td>
+                <td>Modelado, control adaptable, optimización y aplicaciones con salida numérica directa.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="highlight" style="margin-top:18px">
+          <strong>Idea para recordar:</strong> Mamdani es más fácil de explicar con palabras; Sugeno es más fácil de implementar cuando
+          se necesita una salida numérica directa y un cálculo más eficiente.
+        </div>
+      </div>
+    </section>
+
+    <section id="matlab">
+      <div class="container">
+        <h2 class="section-title">Cómo se configura Sugeno en MATLAB Fuzzy Logic Designer</h2>
+        <p class="section-text">
+          En MATLAB, la configuración de Sugeno tiene una lógica bastante directa. Si ya viste la ventana del Fuzzy Logic Designer,
+          estos son los pasos y detalles importantes que debes saber para explicarlo bien.
+        </p>
+
+        <div class="grid grid-2">
+          <article class="card">
+            <div class="bar"></div>
+            <h3>1. Crear un nuevo FIS Sugeno</h3>
+            <p>
+              En el menú principal del diseñador difuso se elige <strong>File → New FIS → Sugeno</strong>.
+              Ahí MATLAB crea un sistema con estructura Sugeno, que por defecto puede iniciar con una entrada y una salida.
+            </p>
+            <p>
+              En ese momento también cambian las características del sistema respecto a Mamdani, especialmente en el tratamiento de la salida.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>2. Configurar entradas</h3>
+            <p>
+              Las variables de entrada se definen casi igual que en Mamdani: nombre, rango y funciones de pertenencia.
+              Puedes usar triangulares, trapezoidales, gaussianas u otras, dependiendo de cómo quieras representar el comportamiento del proceso.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>3. Configurar la salida</h3>
+            <p>
+              La diferencia importante aparece en la salida. En el <strong>Membership Function Editor</strong>, la variable de salida puede tener
+              funciones del tipo <strong>constant</strong> o <strong>linear</strong>. Eso indica si estás trabajando con Sugeno de orden cero o de primer orden.
+            </p>
+            <p>
+              Si eliges <strong>constant</strong>, cada regla tendrá un valor fijo. Si eliges <strong>linear</strong>, el consecuente dependerá de las entradas.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>4. Definir reglas</h3>
+            <p>
+              Luego se pasa al <strong>Rule Editor</strong>. Allí se escriben reglas del tipo:
+              <strong>SI error es pequeño Y delta es negativo ENTONCES salida = constante o función</strong>.
+              En la práctica, MATLAB maneja la salida de esas reglas de acuerdo con el tipo de membership function del output.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>5. Evaluar el sistema</h3>
+            <p>
+              Después puedes usar las herramientas de análisis como el <strong>Rule Viewer</strong> o el <strong>Surface Viewer</strong> para observar cómo responde el sistema.
+              Esto sirve mucho para revisar si las reglas están coherentes y si la salida responde como se esperaba.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>6. Qué revisar antes de terminar</h3>
+            <ul>
+              <li>Que el rango de las entradas y salidas sea correcto.</li>
+              <li>Que las funciones de pertenencia cubran todo el universo de discurso.</li>
+              <li>Que las reglas no se contradigan demasiado.</li>
+              <li>Que el tipo de salida sea el adecuado: constant o linear.</li>
+              <li>Que la superficie del sistema tenga el comportamiento que buscas.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="flashcards">
+      <div class="container">
+        <h2 class="section-title">Flashcards para estudiar</h2>
+        <p class="section-text">Haz clic en cada tarjeta para voltearla.</p>
+
+        <div class="flashcards">
+          <div class="flashcard" onclick="this.classList.toggle('flip')">
+            <div class="flash-inner">
+              <div class="face front">
+                <span class="tag">Flashcard 1</span>
+                <h4>¿Qué es Sugeno?</h4>
+                <p>Un sistema de inferencia difusa donde el consecuente de la regla es numérico.</p>
+                <span class="mini">Clic para ver</span>
+              </div>
+              <div class="face back">
+                <span class="tag">Respuesta</span>
+                <h4>Sugeno</h4>
+                <p>Es un método de inferencia difusa en el que las entradas se evalúan con conjuntos difusos, pero la salida de cada regla es una constante o una función lineal.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="flashcard" onclick="this.classList.toggle('flip')">
+            <div class="flash-inner">
+              <div class="face front">
+                <span class="tag">Flashcard 2</span>
+                <h4>¿Cuál es la principal diferencia con Mamdani?</h4>
+                <p>La diferencia está en el consecuente y en la salida final.</p>
+                <span class="mini">Clic para ver</span>
+              </div>
+              <div class="face back">
+                <span class="tag">Respuesta</span>
+                <h4>Sugeno vs Mamdani</h4>
+                <p>En Mamdani el consecuente es difuso y luego se defusifica; en Sugeno el consecuente ya es numérico y la salida final se obtiene con promedio ponderado.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="flashcard" onclick="this.classList.toggle('flip')">
+            <div class="flash-inner">
+              <div class="face front">
+                <span class="tag">Flashcard 3</span>
+                <h4>Tipos de Sugeno</h4>
+                <p>Se estudian principalmente dos.</p>
+                <span class="mini">Clic para ver</span>
+              </div>
+              <div class="face back">
+                <span class="tag">Respuesta</span>
+                <h4>Orden cero y primer orden</h4>
+                <p>Orden cero usa constantes en la salida. Primer orden usa funciones lineales de las entradas.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="flashcard" onclick="this.classList.toggle('flip')">
+            <div class="flash-inner">
+              <div class="face front">
+                <span class="tag">Flashcard 4</span>
+                <h4>¿Cómo se configura Sugeno en MATLAB?</h4>
+                <p>Se crea un nuevo FIS específico.</p>
+                <span class="mini">Clic para ver</span>
+              </div>
+              <div class="face back">
+                <span class="tag">Respuesta</span>
+                <h4>Configuración básica</h4>
+                <p>Se usa File → New FIS → Sugeno, luego se definen entradas, salida, reglas y se elige en el output si el tipo será constant o linear.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="flashcard" onclick="this.classList.toggle('flip')">
+            <div class="flash-inner">
+              <div class="face front">
+                <span class="tag">Flashcard 5</span>
+                <h4>¿Hay defusificación clásica en Sugeno?</h4>
+                <p>No exactamente.</p>
+                <span class="mini">Clic para ver</span>
+              </div>
+              <div class="face back">
+                <span class="tag">Respuesta</span>
+                <h4>Salida final</h4>
+                <p>La salida no se obtiene con centroide u otro método clásico, sino con una combinación ponderada de los valores producidos por cada regla.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="flashcard" onclick="this.classList.toggle('flip')">
+            <div class="flash-inner">
+              <div class="face front">
+                <span class="tag">Flashcard 6</span>
+                <h4>¿Por qué Sugeno es útil?</h4>
+                <p>Porque es práctico para cálculo y control.</p>
+                <span class="mini">Clic para ver</span>
+              </div>
+              <div class="face back">
+                <span class="tag">Respuesta</span>
+                <h4>Ventaja</h4>
+                <p>Ofrece una salida numérica directa, menor costo computacional y facilidad para integrarse con modelado matemático y sistemas de control.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="preguntas">
+      <div class="container">
+        <h2 class="section-title">Preguntas para practicar</h2>
+        <p class="section-text">Primero tienes preguntas para desarrollar y luego preguntas para marcar.</p>
+
+        <div class="grid grid-2">
+          <div class="card">
+            <div class="bar"></div>
+            <h3>Preguntas para desarrollar</h3>
+
+            <div class="write-q">
+              <h4>1. Explica con tus palabras qué es el método Sugeno.</h4>
+              <textarea id="q1" placeholder="Escribe tu respuesta aquí..."></textarea>
+              <div class="actions"><button class="btn secondary" onclick="reviewAnswer('q1','f1',1)">Revisar</button></div>
+              <div id="f1"></div>
+            </div>
+
+            <div class="write-q">
+              <h4>2. Menciona dos diferencias entre Mamdani y Sugeno.</h4>
+              <textarea id="q2" placeholder="Escribe tu respuesta aquí..."></textarea>
+              <div class="actions"><button class="btn secondary" onclick="reviewAnswer('q2','f2',2)">Revisar</button></div>
+              <div id="f2"></div>
+            </div>
+
+            <div class="write-q">
+              <h4>3. Explica cómo se configura un sistema Sugeno en MATLAB.</h4>
+              <textarea id="q3" placeholder="Escribe tu respuesta aquí..."></textarea>
+              <div class="actions"><button class="btn secondary" onclick="reviewAnswer('q3','f3',3)">Revisar</button></div>
+              <div id="f3"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="bar"></div>
+            <h3>Preguntas para marcar</h3>
+            <div class="mcq">
+              <div class="mcq-card">
+                <strong>1. En Sugeno, el consecuente de la regla suele ser:</strong>
+                <div class="options">
+                  <button class="option" onclick="checkMCQ(this,false,'r1','En Mamdani suele ser un conjunto difuso.')">Una etiqueta lingüística como alta</button>
+                  <button class="option" onclick="checkMCQ(this,true,'r1','Correcto. En Sugeno el consecuente puede ser constante o lineal.')">Una constante o una función lineal</button>
+                  <button class="option" onclick="checkMCQ(this,false,'r1','Eso no define el consecuente de Sugeno.')">Solo una variable booleana</button>
+                </div>
+                <div class="mcq-result" id="r1"></div>
+              </div>
+
+              <div class="mcq-card">
+                <strong>2. ¿Qué opción aparece en la salida de Sugeno dentro de MATLAB?</strong>
+                <div class="options">
+                  <button class="option" onclick="checkMCQ(this,false,'r2','Eso no corresponde a la opción típica del output Sugeno.')">binary</button>
+                  <button class="option" onclick="checkMCQ(this,true,'r2','Correcto. MATLAB permite constant y linear en la salida Sugeno.')">constant y linear</button>
+                  <button class="option" onclick="checkMCQ(this,false,'r2','No es la opción mostrada para el output de Sugeno.')">strict y soft</button>
+                </div>
+                <div class="mcq-result" id="r2"></div>
+              </div>
+
+              <div class="mcq-card">
+                <strong>3. La salida final de Sugeno normalmente se obtiene mediante:</strong>
+                <div class="options">
+                  <button class="option" onclick="checkMCQ(this,false,'r3','Eso es propio de Mamdani.')">Centroide</button>
+                  <button class="option" onclick="checkMCQ(this,true,'r3','Correcto. Se usa un promedio ponderado de las reglas activadas.')">Promedio ponderado</button>
+                  <button class="option" onclick="checkMCQ(this,false,'r3','No es el método típico de salida en Sugeno.')">Conteo binario</button>
+                </div>
+                <div class="mcq-result" id="r3"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      Página de estudio sobre <strong>Sugeno</strong>, comparación con <strong>Mamdani</strong> y configuración en <strong>MATLAB Fuzzy Logic Designer</strong>.
+    </div>
+  </footer>
+
+  <script>
+    const themeBtn = document.getElementById('themeBtn');
+    themeBtn.addEventListener('click', () => {
+      document.body.classList.toggle('light');
+      themeBtn.textContent = document.body.classList.contains('light') ? '🌙 Modo oscuro' : '☀️ Modo claro';
+    });
+
+    function reviewAnswer(textId, feedbackId, mode){
+      const text = document.getElementById(textId).value.trim().toLowerCase();
+      const box = document.getElementById(feedbackId);
+      if(!text){
+        box.innerHTML = '<div class="feedback"><span class="score bad">Falta responder</span><br>Escribe algo para revisar tu respuesta.</div>';
+        return;
+      }
+
+      let score = 0;
+      let tips = [];
+
+      if(mode === 1){
+        if(text.includes('difus')) score++;
+        if(text.includes('constante') || text.includes('lineal') || text.includes('función')) score++;
+        if(text.includes('regla') || text.includes('si') || text.includes('entonces')) score++;
+        tips = [
+          'Menciona que Sugeno es un sistema de inferencia difusa.',
+          'Explica que el consecuente de la regla es numérico.',
+          'Añade que la salida final se obtiene por ponderación.'
+        ];
+      }
+      if(mode === 2){
+        if(text.includes('mamdani')) score++;
+        if(text.includes('defus') || text.includes('centroide')) score++;
+        if(text.includes('constante') || text.includes('lineal') || text.includes('numéric')) score++;
+        tips = [
+          'Compara el tipo de consecuente.',
+          'Diferencia la salida final de ambos métodos.',
+          'Menciona que Mamdani usa defusificación clásica y Sugeno ponderación.'
+        ];
+      }
+      if(mode === 3){
+        if(text.includes('new fis') || text.includes('sugeno')) score++;
+        if(text.includes('entrada') || text.includes('output') || text.includes('salida')) score++;
+        if(text.includes('constant') || text.includes('linear') || text.includes('regla')) score++;
+        tips = [
+          'Debes indicar la creación del FIS Sugeno.',
+          'Luego define entradas, salida y reglas.',
+          'No olvides mencionar constant o linear en el output.'
+        ];
+      }
+
+      let level = 'bad', label = 'Bajo';
+      if(score === 2){ level = 'mid'; label = 'Regular'; }
+      if(score >= 3){ level = 'good'; label = 'Bien'; }
+
+      box.innerHTML = `
+        <div class="feedback">
+          <span class="score ${level}">${label}</span><br>
+          Tu respuesta tiene <strong>${score}/3</strong> ideas clave detectadas.<br><br>
+          <strong>Qué deberías incluir:</strong>
+          <ul>
+            <li>${tips[0]}</li>
+            <li>${tips[1]}</li>
+            <li>${tips[2]}</li>
+          </ul>
+        </div>`;
+    }
+
+    function checkMCQ(button, correct, resultId, explanation){
+      const card = button.closest('.mcq-card');
+      const options = card.querySelectorAll('.option');
+      options.forEach(opt => opt.classList.add('locked'));
+      button.classList.add(correct ? 'correct' : 'wrong');
+      document.getElementById(resultId).innerHTML = correct
+        ? `<strong style="color:var(--ok)">Correcto.</strong> ${explanation}`
+        : `<strong style="color:var(--bad)">Incorrecto.</strong> ${explanation}`;
+    }
+  </script>
+</body>
+</html>
