@@ -1,391 +1,278 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>U1: Lógica Difusa - Control Avanzado II</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    :root {
-      --bg: #0b0f19;
-      --bg-accent: #161b2a;
-      --card: #1f2937;
-      --text: #f3f4f6;
-      --muted: #9ca3af;
-      --accent-1: #3b82f6; /* Azul */
-      --accent-2: #8b5cf6; /* Violeta */
-      --accent-3: #10b981; /* Esmeralda */
-      --danger: #ef4444;
-      --glass: rgba(255, 255, 255, 0.03);
-      --border: rgba(255, 255, 255, 0.1);
-      --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Difuso - Unidad I: Fundamentos Avanzados</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --bg: #05070a;
+            --surface: #0f121a;
+            --primary: #00e5ff;
+            --secondary: #7000ff;
+            --text: #e0e6ed;
+            --border: #2d343f;
+            --math-bg: #161b22;
+        }
 
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: 'Inter', -apple-system, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      overflow-x: hidden;
-    }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
 
-    /* Fondo animado sutil */
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
-                  radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
-      z-index: -1;
-    }
+        header {
+            background: linear-gradient(135deg, #0f121a 0%, #1a1f2e 100%);
+            padding: 40px 20px;
+            border-bottom: 2px solid var(--primary);
+            text-align: center;
+        }
 
-    .container { width: min(1100px, 92%); margin: auto; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
 
-    /* Header */
-    header {
-      padding: 2rem 0;
-      text-align: center;
-      border-bottom: 1px solid var(--border);
-      background: var(--glass);
-      backdrop-filter: blur(10px);
-      position: sticky; top: 0; z-index: 100;
-    }
+        .section-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
 
-    .pill {
-      background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
+        h2 { color: var(--primary); border-left: 5px solid var(--secondary); padding-left: 15px; margin-bottom: 25px; }
+        h3 { color: var(--secondary); }
 
-    h1 { font-size: 2.5rem; margin: 0.5rem 0; background: linear-gradient(to right, #fff, var(--muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .math-block {
+            background: var(--math-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid var(--primary);
+            font-size: 1.1em;
+            overflow-x: auto;
+        }
 
-    /* Secciones */
-    section { padding: 4rem 0; border-bottom: 1px solid var(--border); }
-    .section-title { font-size: 1.8rem; margin-bottom: 2rem; color: var(--accent-1); display: flex; align-items: center; gap: 10px; }
-    .section-title::before { content: ""; width: 4px; height: 30px; background: var(--accent-1); border-radius: 2px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 25px; }
 
-    /* Cards */
-    .grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
-    .card {
-      background: var(--card);
-      padding: 25px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      transition: transform 0.3s ease;
-    }
-    .card:hover { transform: translateY(-5px); border-color: var(--accent-1); }
+        .chart-box {
+            background: #ffffff05;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            height: 350px;
+        }
 
-    /* Formulas LaTeX style */
-    .formula {
-      background: #000;
-      padding: 15px;
-      border-radius: 10px;
-      font-family: 'Courier New', monospace;
-      color: var(--accent-3);
-      margin: 10px 0;
-      overflow-x: auto;
-      border-left: 3px solid var(--accent-3);
-    }
-
-    /* Gráficos */
-    .chart-container {
-      background: var(--bg-accent);
-      padding: 20px;
-      border-radius: 15px;
-      margin-top: 15px;
-      height: 250px;
-      position: relative;
-    }
-
-    /* Quiz Section */
-    .quiz-container { background: var(--bg-accent); padding: 30px; border-radius: 24px; }
-    .question { margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
-    .options { display: grid; gap: 10px; margin-top: 10px; }
-    .opt-btn {
-      background: var(--card);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 12px 20px;
-      border-radius: 12px;
-      cursor: pointer;
-      text-align: left;
-      transition: 0.2s;
-    }
-    .opt-btn:hover { background: var(--glass); border-color: var(--accent-2); }
-    .opt-btn.correct { background: var(--accent-3) !important; color: white; }
-    .opt-btn.wrong { background: var(--danger) !important; color: white; }
-
-    footer { padding: 3rem; text-align: center; color: var(--muted); font-size: 0.9rem; }
-
-    @media (max-width: 768px) { h1 { font-size: 1.8rem; } }
-  </style>
+        /* Quiz Styles */
+        .quiz-item { background: #1a1f2e; padding: 20px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border); }
+        .btn-opt { 
+            display: block; width: 100%; text-align: left; padding: 12px; margin: 8px 0;
+            background: transparent; border: 1px solid var(--primary); color: white; cursor: pointer; border-radius: 5px;
+        }
+        .btn-opt:hover { background: rgba(0, 229, 255, 0.1); }
+        
+        .badge { background: var(--secondary); padding: 5px 10px; border-radius: 4px; font-size: 0.8em; margin-bottom: 10px; display: inline-block; }
+    </style>
 </head>
 <body>
 
 <header>
-  <div class="container">
-    <span class="pill">Primera Unidad</span>
-    <h1>Fundamentos de Lógica Difusa</h1>
-    <p style="color: var(--muted)">Modelado de la incertidumbre y sistemas no lineales</p>
-  </div>
+    <h1>SISTEMAS DE CONTROL DIFUZO</h1>
+    <p>Teoría de Conjuntos, Operaciones Matemáticas y Funciones de Membresía</p>
 </header>
 
-<main class="container">
-  
-  <section id="intro">
-    <div class="section-title">Historia y Conceptos</div>
-    <div class="grid">
-      <div class="card">
-        <h3>El Origen</h3>
-        <p>Introducida por <strong>Lotfi A. Zadeh (1965)</strong> para formalizar el razonamiento humano. A diferencia de la lógica booleana (0 o 1), la lógica difusa permite grados de veracidad entre ambos valores.</p>
-      </div>
-      <div class="card">
-        <h3>Ventajas Clave</h3>
-        <ul>
-          <li>Flexibilidad y tolerancia a la imprecisión.</li>
-          <li>Capacidad para modelar sistemas altamente no lineales.</li>
-          <li>Basada en lenguaje natural (palabras en lugar de números complejos).</li>
-        </ul>
-      </div>
-    </div>
-  </section>
+<div class="container">
 
-  <section id="math">
-    <div class="section-title">Definiciones Fundamentales</div>
-    <div class="grid">
-      <div class="card">
-        <h3>Universo de Discurso (X)</h3>
-        <p>Es el rango total de valores posibles para una variable de entrada. Por ejemplo, si medimos temperatura, X podría ser [0°C, 100°C].</p>
-      </div>
-      <div class="card">
-        <h3>Conjunto Difuso (A)</h3>
-        <p>Clase de objetos con un grado de pertenencia continuo entre 0 y 1.</p>
-        <div class="formula">f_A(x) : X → [0, 1]</div>
-      </div>
-    </div>
+    <section class="section-card">
+        <h2>1.1. Fundamentos Matemáticos</h2>
+        <p>A diferencia de la lógica booleana clásica, la lógica difusa se rige por el principio de <strong>gradualidad</strong>. Un conjunto difuso \(A\) en un universo de discurso \(X\) se define como:</p>
+        <div class="math-block">
+            \[ A = \{ (x, \mu_A(x)) \mid x \in X \} \]
+            Donde \( \mu_A(x) \) es la <strong>función de pertenencia</strong> que mapea cada elemento \( x \) al intervalo continuo \( [0, 1] \).
+        </div>
+        <div class="grid">
+            <div>
+                <h3>Propiedades Críticas</h3>
+                <ul>
+                    <li><strong>Soporte:</strong> El conjunto de todos los puntos en \( X \) tales que \( \mu_A(x) > 0 \).</li>
+                    <li><strong>Altura:</strong> El valor máximo de la función de pertenencia. Si \( \text{Altura}(A) = 1 \), el conjunto es <strong>Normal</strong>.</li>
+                    <li><strong>Convexidad:</strong> Un conjunto difuso es convexo si cumple:
+                        \[ \mu_A(\lambda x_1 + (1-\lambda)x_2) \geq \min(\mu_A(x_1), \mu_A(x_2)) \]
+                        <em>Nota: Los conjuntos usados en control deben ser convexos para garantizar estabilidad.</em>
+                    </li>
+                </ul>
+            </div>
+            <div class="chart-box">
+                <canvas id="propChart"></canvas>
+            </div>
+        </div>
+    </section>
 
-    <h3 style="margin-top:2rem">Operaciones Lógicas</h3>
-    <div class="grid">
-      <div class="card">
-        <h4>Intersección (AND)</h4>
-        <div class="formula">f_(A ∩ B)(x) = Min[f_A(x), f_B(x)]</div>
-      </div>
-      <div class="card">
-        <h4>Unión (OR)</h4>
-        <div class="formula">f_(A ∪ B)(x) = Max[f_A(x), f_B(x)]</div>
-      </div>
-      <div class="card">
-        <h4>Complemento (NOT)</h4>
-        <div class="formula">f_A'(x) = 1 - f_A(x)</div>
-      </div>
-    </div>
-  </section>
+    <section class="section-card">
+        <h2>1.2. Álgebra de Conjuntos Difusos</h2>
+        <div class="grid">
+            <div>
+                <h3>Leyes de De Morgan</h3>
+                <div class="math-block">
+                    \[ (A \cup B)' = A' \cap B' \]
+                    \[ (A \cap B)' = A' \cup B' \]
+                </div>
+                <h3>Suma y Diferencia</h3>
+                <p><strong>Suma Algebraica:</strong> Requisito \( \mu_A(x) + \mu_B(x) \leq 1 \)</p>
+                <div class="math-block">
+                    \[ \mu_{A+B} = \mu_A + \mu_B \]
+                </div>
+                <p><strong>Diferencia Absoluta:</strong></p>
+                <div class="math-block">
+                    \[ \mu_{|A-B|} = |\mu_A - \mu_B| \]
+                </div>
+            </div>
+            <div>
+                <h3>Modificadores (Hedges)</h3>
+                <p>Son transformaciones que alteran la forma de la MF para representar adverbios lingüísticos:</p>
+                <ul>
+                    <li><strong>Concentración (Muy):</strong> \( \mu_{muy}(x) = [\mu_A(x)]^2 \)</li>
+                    <li><strong>Dilatación (Más o menos):</strong> \( \mu_{poco}(x) = \sqrt{\mu_A(x)} \)</li>
+                </ul>
+            </div>
+        </div>
+    </section>
 
-  <section id="functions">
-    <div class="section-title">Funciones de Pertenencia (MFs)</div>
-    <p>Son curvas que definen cómo cada punto de entrada se mapea a un valor de pertenencia.</p>
-    
-    <div class="grid">
-      <div class="card">
-        <h3>Triangular</h3>
-        <p>Definida por 3 parámetros (a, m, b). Es la más común por su bajo costo computacional.</p>
-        <div class="chart-container"><canvas id="triChart"></canvas></div>
-      </div>
-      
-      <div class="card">
-        <h3>Trapezoidal</h3>
-        <p>Útil cuando existe un rango de valores que tienen pertenencia total (1) al conjunto.</p>
-        <div class="chart-container"><canvas id="trapChart"></canvas></div>
-      </div>
+    <section class="section-card">
+        <h2>1.3. Clases de Funciones de Pertenencia (MFs)</h2>
+        <div class="grid">
+            <div class="chart-box">
+                <span class="badge">Ecuación Triangular</span>
+                <canvas id="triangularChart"></canvas>
+            </div>
+            <div class="chart-box">
+                <span class="badge">Ecuación Sigmoidal (Función S)</span>
+                <canvas id="sChart"></canvas>
+            </div>
+            <div class="chart-box">
+                <span class="badge">Ecuación Gausiana</span>
+                <canvas id="gaussChart"></canvas>
+            </div>
+            <div class="chart-box">
+                <span class="badge">Ecuación Pseudo-Exponencial</span>
+                <canvas id="pseudoChart"></canvas>
+            </div>
+        </div>
+    </section>
 
-      <div class="card">
-        <h3>Gaussiana</h3>
-        <p>Proporciona transiciones muy suaves. Ideal para sistemas de control que requieren alta precisión y suavidad.</p>
-        <div class="chart-container"><canvas id="gaussChart"></canvas></div>
-      </div>
-    </div>
-  </section>
+    <section class="section-card">
+        <h2>1.4. Banco de Preguntas Técnicas (Evaluación)</h2>
+        <div id="quiz-container"></div>
+    </section>
 
-  <section id="params">
-    <div class="section-title">Parámetros de la Función μ</div>
-    <div class="grid">
-      <div class="card">
-        <h4 style="color:var(--accent-2)">Soporte</h4>
-        <p>Intervalo del dominio donde la pertenencia es mayor que cero.</p>
-        <div class="formula">sop(x) = { x ∈ X | μ_A(x) > 0 }</div>
-      </div>
-      <div class="card">
-        <h4 style="color:var(--accent-2)">Altura</h4>
-        <p>Es el valor máximo de pertenencia alcanzado por la función. Si la altura es 1, el conjunto se llama "normal".</p>
-      </div>
-    </div>
-  </section>
-
-  <section id="quiz">
-    <div class="section-title">Evaluación de la Unidad</div>
-    <div class="quiz-container" id="quizBox">
-      </div>
-  </section>
-
-</main>
-
-<footer>
-  <div class="container">
-    <p>© 2026 - Control Avanzado II | Dra. Lucy Delgado Barra</p>
-    <p style="font-size: 0.7rem; opacity: 0.5;">Material de apoyo académico - Ingeniería de Sistemas</p>
-  </div>
-</footer>
+</div>
 
 <script>
-  // --- GRÁFICAS CON CHART.JS ---
-  const commonOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: { 
-      y: { min: 0, max: 1.1, grid: { color: 'rgba(255,255,255,0.05)' } },
-      x: { grid: { display: false } }
-    },
-    plugins: { legend: { display: false } }
-  };
+    // Configuración Global de Charts
+    Chart.defaults.color = '#e0e6ed';
+    Chart.defaults.borderColor = '#2d343f';
 
-  // Triangular
-  new Chart(document.getElementById('triChart'), {
-    type: 'line',
-    data: {
-      labels: [0, 20, 50, 80, 100],
-      datasets: [{
-        label: 'Triangular',
-        data: [0, 0, 1, 0, 0],
-        borderColor: '#3b82f6',
-        backgroundColor: 'rgba(59,130,246,0.2)',
-        fill: true, tension: 0
-      }]
-    },
-    options: commonOptions
-  });
-
-  // Trapezoidal
-  new Chart(document.getElementById('trapChart'), {
-    type: 'line',
-    data: {
-      labels: [0, 20, 40, 60, 80, 100],
-      datasets: [{
-        label: 'Trapezoidal',
-        data: [0, 0, 1, 1, 0, 0],
-        borderColor: '#8b5cf6',
-        backgroundColor: 'rgba(139, 92, 246, 0.2)',
-        fill: true, tension: 0
-      }]
-    },
-    options: commonOptions
-  });
-
-  // Gaussiana
-  const gaussData = [];
-  for(let i=0; i<=100; i+=5) {
-    const val = Math.exp(-Math.pow(i-50, 2) / (2 * Math.pow(15, 2)));
-    gaussData.push({x: i, y: val});
-  }
-  new Chart(document.getElementById('gaussChart'), {
-    type: 'line',
-    data: {
-      datasets: [{
-        data: gaussData,
-        borderColor: '#10b981',
-        backgroundColor: 'rgba(16, 185, 129, 0.2)',
-        fill: true, tension: 0.4
-      }]
-    },
-    options: commonOptions
-  });
-
-  // --- SISTEMA DE PREGUNTAS ---
-  const questions = [
-    {
-      q: "¿Quién introdujo por primera vez la Lógica Difusa en 1965?",
-      options: ["Aristóteles", "Lotfi A. Zadeh", "Ebrahim Mamdani", "Charles Peirce"],
-      correct: 1
-    },
-    {
-      q: "¿Qué define el 'Universo de Discurso'?",
-      options: ["El grado de error", "El rango total de valores posibles de una variable", "La salida del controlador", "El nombre de la función de pertenencia"],
-      correct: 1
-    },
-    {
-      q: "En una operación AND difusa, ¿qué operador matemático se utiliza normalmente?",
-      options: ["Máximo", "Suma", "Mínimo", "Producto escalar"],
-      correct: 2
-    },
-    {
-      q: "¿Qué característica define a un conjunto difuso 'Normal'?",
-      options: ["Que es triangular", "Que su altura es exactamente 1", "Que no tiene soporte", "Que es simétrico"],
-      correct: 1
-    },
-    {
-      q: "¿Cuál es la función del 'Complemento' en lógica difusa?",
-      options: ["μ = 1 - μ", "μ = Max(A, B)", "μ = μ^2", "μ = 0"],
-      correct: 0
-    },
-    {
-      q: "¿Qué función de pertenencia es ideal para transiciones suaves y continuas?",
-      options: ["Triangular", "Trapezoidal", "Gaussiana", "Booleana"],
-      correct: 2
-    },
-    {
-      q: "¿Qué representa el 'Soporte' de una función de pertenencia?",
-      options: ["El valor máximo", "Donde la pertenencia es mayor a 0", "El punto medio", "La intersección con el eje Y"],
-      correct: 1
-    },
-    {
-      q: "¿En qué país se encontró el mayor centro de desarrollo de esta lógica hace 30 años?",
-      options: ["USA", "Alemania", "Japón", "Perú"],
-      correct: 2
-    },
-    {
-      q: "¿Cuál fue la primera aplicación práctica masiva mencionada (1987)?",
-      options: ["Lavadoras", "Subterráneo de Sendai", "Motores de vapor", "Cámaras fotográficas"],
-      correct: 1
-    },
-    {
-      q: "¿Qué es un 'Modificador' en lógica difusa?",
-      options: ["Un sensor", "Una palabra que cambia la función de pertenencia (ej. 'Muy')", "Un tipo de motor", "Un error de sistema"],
-      correct: 1
-    }
-  ];
-
-  const quizBox = document.getElementById('quizBox');
-  questions.forEach((item, index) => {
-    const qDiv = document.createElement('div');
-    qDiv.className = 'question';
-    qDiv.innerHTML = `<h4>${index + 1}. ${item.q}</h4><div class="options" id="opt-${index}"></div>`;
-    quizBox.appendChild(qDiv);
-
-    const optContainer = document.getElementById(`opt-${index}`);
-    item.options.forEach((opt, i) => {
-      const btn = document.createElement('button');
-      btn.className = 'opt-btn';
-      btn.innerText = opt;
-      btn.onclick = () => {
-        const allBtns = optContainer.querySelectorAll('.opt-btn');
-        allBtns.forEach(b => b.style.pointerEvents = 'none');
-        if(i === item.correct) {
-          btn.classList.add('correct');
-        } else {
-          btn.classList.add('wrong');
-          allBtns[item.correct].classList.add('correct');
-        }
-      };
-      optContainer.appendChild(btn);
+    // 1. Chart de Propiedades (Altura y Soporte)
+    new Chart(document.getElementById('propChart'), {
+        type: 'line',
+        data: {
+            labels: Array.from({length: 101}, (_, i) => i),
+            datasets: [{
+                label: 'Conjunto Normal A',
+                data: Array.from({length: 101}, (_, i) => (i >= 20 && i <= 80 ? (i <= 50 ? (i-20)/30 : (80-i)/30) : 0)),
+                borderColor: '#00e5ff', fill: true, backgroundColor: 'rgba(0, 229, 255, 0.1)', tension: 0
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
     });
-  });
 
+    // 2. Chart Triangular (Preciso)
+    new Chart(document.getElementById('triangularChart'), {
+        type: 'line',
+        data: {
+            labels: [0, 20, 50, 80, 100],
+            datasets: [{
+                label: 'Triangular (a=20, m=50, b=80)',
+                data: [0, 0, 1, 0, 0],
+                borderColor: '#ff0055', tension: 0
+            }]
+        },
+        options: { maintainAspectRatio: false }
+    });
+
+    // 3. Función S (Curva de Inflexión)
+    const sData = Array.from({length: 101}, (_, x) => {
+        const a=20, b=80, m=50;
+        if (x <= a) return 0;
+        if (x > a && x <= m) return 2 * Math.pow((x-a)/(b-a), 2);
+        if (x > m && x < b) return 1 - 2 * Math.pow((x-b)/(b-a), 2);
+        return 1;
+    });
+    new Chart(document.getElementById('sChart'), {
+        type: 'line',
+        data: {
+            labels: Array.from({length: 101}, (_, i) => i),
+            datasets: [{ label: 'Función S', data: sData, borderColor: '#7000ff', tension: 0.4 }]
+        },
+        options: { maintainAspectRatio: false }
+    });
+
+    // 4. Gaussiana
+    const gaussData = Array.from({length: 101}, (_, x) => Math.exp(-Math.pow(x-50, 2) / (2 * Math.pow(15, 2))));
+    new Chart(document.getElementById('gaussChart'), {
+        type: 'line',
+        data: {
+            labels: Array.from({length: 101}, (_, i) => i),
+            datasets: [{ label: 'Gaussiana (m=50, k=15)', data: gaussData, borderColor: '#00ff88', tension: 0.4 }]
+        },
+        options: { maintainAspectRatio: false }
+    });
+
+    // 5. Pseudo-Exponencial
+    const pseudoData = Array.from({length: 101}, (_, x) => 1 / (1 + 0.01 * Math.pow(x-50, 2)));
+    new Chart(document.getElementById('pseudoChart'), {
+        type: 'line',
+        data: {
+            labels: Array.from({length: 101}, (_, i) => i),
+            datasets: [{ label: 'Pseudo-Exponencial', data: pseudoData, borderColor: '#ffcc00' }]
+        },
+        options: { maintainAspectRatio: false }
+    });
+
+    // Preguntas
+    const questions = [
+        { q: "¿Cuál es la condición matemática para que un conjunto difuso sea considerado 'Normal'?", a: ["Altura = 1", "Soporte = 1", "Convexidad > 0", "μ = 0.5"], c: 0 },
+        { q: "Si μ(x) = 0.4, ¿cuál es el valor del modificador de concentración 'Muy'?", a: ["0.2", "0.16", "0.63", "0.8"], c: 1 },
+        { q: "La operación Min[μA(x), μB(x)] corresponde a:", a: ["Unión", "Intersección", "Complemento", "Diferencia"], c: 1 },
+        { q: "¿Qué propiedad garantiza que la estabilidad del control no se vea afectada por múltiples picos?", a: ["Normalidad", "Convexidad", "Soporte unitario", "Simetría"], c: 1 },
+        { q: "En la función S, el punto m representa:", a: ["El límite inferior", "El punto de inflexión (μ=0.5)", "La altura máxima", "El soporte total"], c: 1 },
+        { q: "El complemento de un conjunto A se define matemáticamente como:", a: ["1 / μA", "1 - μA", "√μA", "(μA)²"], c: 1 },
+        { q: "Las leyes de De Morgan relacionan:", a: ["Suma y Resta", "Unión, Intersección y Complemento", "Gauss y Sigmoide", "Entrada y Salida"], c: 1 },
+        { q: "Un modificador de dilatación (ej. 'Más o menos') utiliza la función:", a: ["Cuadrado", "Raíz Cuadrada", "Logaritmo", "Exponencial"], c: 1 },
+        { q: "¿Cuál es el valor de pertenencia fuera del soporte de un conjunto?", a: ["1", "0.5", "0", "-1"], c: 2 },
+        { q: "¿Qué investigador formalizó los elementos de la Lógica Difusa en 1971?", a: ["Aristóteles", "Zadeh", "Mamdani", "Sugeno"], c: 1 }
+    ];
+
+    const container = document.getElementById('quiz-container');
+    questions.forEach((item, i) => {
+        const div = document.createElement('div');
+        div.className = 'quiz-item';
+        div.innerHTML = `<strong>${i+1}. ${item.q}</strong>`;
+        item.a.forEach((opt, j) => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-opt';
+            btn.innerText = opt;
+            btn.onclick = () => alert(j === item.c ? "Correcto!" : "Incorrecto");
+            div.appendChild(btn);
+        });
+        container.appendChild(div);
+    });
 </script>
+
 </body>
 </html>
