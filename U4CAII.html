@@ -239,13 +239,114 @@
     .face p{margin:0;color:#f8fbff;line-height:1.72}
     .mini{display:inline-block;margin-top:10px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.12);font-size:.82rem;font-weight:700}
 
-    .questions{display:grid;gap:14px}
-    .question{
-      padding:18px;border-radius:20px;border:1px solid var(--line);
-      background:linear-gradient(180deg,var(--panel),var(--panel2));
+    .mcq{
+      display:grid;
+      gap:20px;
     }
-    .question strong{display:block;margin-bottom:8px}
-    .question p{margin:0;color:var(--muted);line-height:1.75}
+    .mcq-card{
+      position:relative;
+      overflow:hidden;
+      padding:24px;
+      border-radius:24px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.025)),linear-gradient(180deg,var(--panel),var(--panel2));
+      box-shadow:var(--shadow);
+    }
+    .mcq-card::before{
+      content:"";
+      position:absolute;
+      inset:0 0 auto 0;
+      height:4px;
+      background:linear-gradient(90deg,var(--red),var(--cyan),var(--blue));
+      opacity:.95;
+    }
+    .mcq-head{
+      display:flex;
+      align-items:flex-start;
+      gap:14px;
+      margin-bottom:16px;
+    }
+    .mcq-number{
+      min-width:40px;
+      height:40px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      font-weight:900;
+      color:#fff;
+      background:linear-gradient(135deg,var(--red),var(--blue));
+      box-shadow:var(--shadow);
+    }
+    .mcq-title{
+      margin:0;
+      line-height:1.6;
+      font-size:1.05rem;
+    }
+    .options{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+      margin-top:10px;
+    }
+    @media (max-width:1024px){.options{grid-template-columns:1fr}}
+    .option{
+      text-align:left;
+      width:100%;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      padding:14px 16px;
+      border-radius:16px;
+      cursor:pointer;
+      font:inherit;
+      line-height:1.6;
+      transition:transform .2s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    body.light .option{border-color:rgba(15,23,42,.12);background:rgba(15,23,42,.03)}
+    .option:hover{
+      transform:translateY(-2px);
+      background:rgba(255,255,255,.08);
+      border-color:rgba(103,232,249,.35);
+      box-shadow:0 10px 22px rgba(0,0,0,.12);
+    }
+    body.light .option:hover{background:rgba(15,23,42,.05)}
+    .option.locked{
+      pointer-events:none;
+      opacity:.88;
+    }
+    .option.correct{
+      border-color:rgba(70,231,168,.55);
+      background:rgba(70,231,168,.14);
+      color:var(--text);
+    }
+    .option.wrong{
+      border-color:rgba(255,95,109,.58);
+      background:rgba(255,95,109,.14);
+      color:var(--text);
+    }
+    .option.dimmed{
+      opacity:.52;
+      filter:saturate(.8);
+    }
+    .mcq-result{
+      margin-top:14px;
+      padding:14px 16px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
+      line-height:1.75;
+      display:none;
+    }
+    .mcq-result.show{display:block}
+    .mcq-result.good{
+      border-color:rgba(70,231,168,.35);
+      background:rgba(70,231,168,.10);
+    }
+    .mcq-result.bad{
+      border-color:rgba(255,95,109,.35);
+      background:rgba(255,95,109,.10);
+    }
 
     .footer{padding:24px 0 60px;color:var(--muted)}
     .small-note{color:var(--muted2);font-size:.93rem;line-height:1.75}
@@ -590,7 +691,7 @@
           <div>
             <h2 class="section-title">6. Clases de funciones de pertenencia</h2>
             <p class="section-text">
-              Desde la página 6 hasta la 8 se presentan las funciones más usadas. Aquí están organizadas por secciones con una explicación más clara.
+              Desde la página 6 hasta la 8 se presentan las funciones más usadas. Aquí están organizadas por secciones con una explicación más clara y con figuras más detalladas para que puedas estudiar visualmente cada forma.
             </p>
           </div>
         </div>
@@ -664,35 +765,114 @@
           </article>
         </div>
 
-        <div class="grid grid-2" style="margin-top:18px">
+        <div class="grid grid-3" style="margin-top:18px">
           <div class="mini-diagram">
-            <span class="chip">Ejemplos de formas</span>
+            <span class="chip">Triangular</span>
             <div class="svg-wrap">
-              <svg viewBox="0 0 640 300" aria-label="Formas típicas de funciones de pertenencia">
-                <line x1="45" y1="245" x2="605" y2="245" class="axis"/>
-                <line x1="45" y1="245" x2="45" y2="40" class="axis"/>
-                <path d="M75 245 L170 90 L265 245" class="curve-red"/>
-                <path d="M285 245 L350 120 L440 120 L510 245" class="curve-blue"/>
-                <path d="M85 245 C135 245,155 200,185 140 C210 95,230 70,260 60 C290 52,325 55,355 70" class="curve-violet"/>
-                <text x="120" y="72" class="label">triangular</text>
-                <text x="350" y="104" class="label">trapezoidal</text>
-                <text x="180" y="160" class="label">gaussiana / suave</text>
+              <svg viewBox="0 0 360 250" aria-label="Función triangular">
+                <line x1="35" y1="200" x2="330" y2="200" class="axis"/>
+                <line x1="35" y1="200" x2="35" y2="30" class="axis"/>
+                <path d="M70 200 L180 60 L285 200" class="curve-red"/>
+                <line x1="70" y1="200" x2="70" y2="212" class="gridline"/>
+                <line x1="180" y1="60" x2="180" y2="200" class="gridline"/>
+                <line x1="285" y1="200" x2="285" y2="212" class="gridline"/>
+                <text x="64" y="227" class="label">a</text>
+                <text x="176" y="227" class="label">m</text>
+                <text x="281" y="227" class="label">b</text>
+                <text x="187" y="50" class="label">valor modal</text>
               </svg>
             </div>
           </div>
 
           <div class="mini-diagram">
-            <span class="chip">Transición tipo S</span>
+            <span class="chip">Trapezoidal</span>
             <div class="svg-wrap">
-              <svg viewBox="0 0 640 300" aria-label="Función S y crecimiento gamma">
-                <line x1="45" y1="245" x2="605" y2="245" class="axis"/>
-                <line x1="45" y1="245" x2="45" y2="40" class="axis"/>
-                <path d="M90 245 C145 245,185 245,230 215 C275 185,300 130,340 95 C380 60,450 48,560 48" class="curve-green"/>
-                <path d="M100 245 C150 245,190 240,240 215 C290 190,320 150,345 110 C372 68,410 45,470 42" class="curve-yellow"/>
-                <text x="400" y="36" class="label">alta pertenencia</text>
-                <text x="390" y="112" class="label">S / gamma</text>
+              <svg viewBox="0 0 360 250" aria-label="Función trapezoidal">
+                <line x1="35" y1="200" x2="330" y2="200" class="axis"/>
+                <line x1="35" y1="200" x2="35" y2="30" class="axis"/>
+                <path d="M60 200 L125 85 L235 85 L300 200" class="curve-blue"/>
+                <text x="56" y="227" class="label">a</text>
+                <text x="121" y="227" class="label">b</text>
+                <text x="231" y="227" class="label">c</text>
+                <text x="296" y="227" class="label">d</text>
+                <text x="146" y="73" class="label">zona de pertenencia total</text>
               </svg>
             </div>
+          </div>
+
+          <div class="mini-diagram">
+            <span class="chip">Gaussiana</span>
+            <div class="svg-wrap">
+              <svg viewBox="0 0 360 250" aria-label="Función gaussiana">
+                <line x1="35" y1="200" x2="330" y2="200" class="axis"/>
+                <line x1="35" y1="200" x2="35" y2="30" class="axis"/>
+                <path d="M55 200 C95 198,120 160,145 110 C160 82,172 62,180 58 C188 62,200 82,215 110 C240 160,265 198,305 200" class="curve-violet"/>
+                <line x1="180" y1="58" x2="180" y2="200" class="gridline"/>
+                <text x="176" y="227" class="label">m</text>
+                <text x="188" y="52" class="label">centro</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-3" style="margin-top:18px">
+          <div class="mini-diagram">
+            <span class="chip">Función S</span>
+            <div class="svg-wrap">
+              <svg viewBox="0 0 360 250" aria-label="Función S">
+                <line x1="35" y1="200" x2="330" y2="200" class="axis"/>
+                <line x1="35" y1="200" x2="35" y2="30" class="axis"/>
+                <path d="M60 200 C105 200,120 197,145 176 C165 160,177 135,190 112 C205 85,220 64,245 52 C267 42,290 40,315 40" class="curve-green"/>
+                <text x="210" y="97" class="label">transición suave</text>
+              </svg>
+            </div>
+          </div>
+
+          <div class="mini-diagram">
+            <span class="chip">Gamma</span>
+            <div class="svg-wrap">
+              <svg viewBox="0 0 360 250" aria-label="Función gamma">
+                <line x1="35" y1="200" x2="330" y2="200" class="axis"/>
+                <line x1="35" y1="200" x2="35" y2="30" class="axis"/>
+                <path d="M70 200 C120 200,145 190,170 165 C195 138,220 102,250 72 C272 52,292 42,315 38" class="curve-yellow"/>
+                <text x="170" y="152" class="label">crece desde un umbral</text>
+              </svg>
+            </div>
+          </div>
+
+          <div class="mini-diagram">
+            <span class="chip">Seudo-exponencial</span>
+            <div class="svg-wrap">
+              <svg viewBox="0 0 360 250" aria-label="Función seudo exponencial">
+                <line x1="35" y1="200" x2="330" y2="200" class="axis"/>
+                <line x1="35" y1="200" x2="35" y2="30" class="axis"/>
+                <path d="M65 185 C105 145,135 110,180 78 C220 52,260 40,315 35" class="curve-cyan"/>
+                <text x="150" y="92" class="label">curva no lineal</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="mini-diagram" style="margin-top:18px">
+          <span class="chip">Comparación global de formas</span>
+          <div class="svg-wrap">
+            <svg viewBox="0 0 760 320" aria-label="Comparación global de funciones de pertenencia">
+              <line x1="50" y1="260" x2="720" y2="260" class="axis"/>
+              <line x1="50" y1="260" x2="50" y2="35" class="axis"/>
+              <line x1="50" y1="60" x2="720" y2="60" class="gridline"/>
+              <path d="M80 260 L180 120 L280 260" class="curve-red"/>
+              <path d="M280 260 L340 135 L430 135 L500 260" class="curve-blue"/>
+              <path d="M70 260 C115 258,140 220,165 170 C190 115,220 72,250 60 C280 72,310 115,335 170 C360 220,385 258,430 260" class="curve-violet"/>
+              <path d="M90 260 C150 260,185 256,235 220 C285 185,315 120,355 88 C390 60,450 50,535 48" class="curve-green"/>
+              <path d="M105 260 C155 260,205 255,255 220 C305 185,335 140,370 96 C405 60,450 45,510 43" class="curve-yellow"/>
+              <path d="M430 220 C485 170,530 115,585 80 C625 55,665 42,710 38" class="curve-cyan"/>
+              <text x="108" y="112" class="label">triangular</text>
+              <text x="350" y="124" class="label">trapezoidal</text>
+              <text x="206" y="92" class="label">gaussiana</text>
+              <text x="500" y="88" class="label">S</text>
+              <text x="442" y="194" class="label">gamma</text>
+              <text x="610" y="74" class="label">seudo-exp.</text>
+            </svg>
           </div>
         </div>
       </div>
@@ -853,26 +1033,128 @@
         <div class="section-head">
           <div>
             <h2 class="section-title">9. Preguntas para estudiar</h2>
-            <p class="section-text">Aquí tienes más de 10 preguntas cubriendo todo lo visto hasta la página 8.</p>
+            <p class="section-text">Aquí tienes preguntas de desarrollo y luego preguntas de opción múltiple más complicadas para practicar de verdad.</p>
           </div>
         </div>
 
-        <div class="questions">
-          <div class="question"><strong>1.</strong><p>Explica con tus palabras qué diferencia existe entre la lógica convencional y la lógica difusa.</p></div>
-          <div class="question"><strong>2.</strong><p>¿Por qué la lógica difusa resulta útil para representar razonamientos humanos imprecisos?</p></div>
-          <div class="question"><strong>3.</strong><p>Define qué es un conjunto difuso y qué representa su función de pertenencia.</p></div>
-          <div class="question"><strong>4.</strong><p>¿Qué es el universo de discurso y por qué es necesario definirlo antes de construir conjuntos difusos?</p></div>
-          <div class="question"><strong>5.</strong><p>Explica la diferencia entre soporte y altura en una función de pertenencia.</p></div>
-          <div class="question"><strong>6.</strong><p>¿Cómo se realizan la unión y la intersección entre dos conjuntos difusos?</p></div>
-          <div class="question"><strong>7.</strong><p>¿Qué significa el complemento de un conjunto difuso y cómo se obtiene matemáticamente?</p></div>
-          <div class="question"><strong>8.</strong><p>¿Qué se entiende por convexidad en conjuntos difusos y por qué el texto la relaciona con la estabilidad en control?</p></div>
-          <div class="question"><strong>9.</strong><p>Describe qué hacen los modificadores de concentración, dilatación e intensificación.</p></div>
-          <div class="question"><strong>10.</strong><p>¿Cuándo convendría usar una función triangular y cuándo una trapezoidal?</p></div>
-          <div class="question"><strong>11.</strong><p>¿Qué ventajas ofrece una función gaussiana frente a otras funciones de pertenencia más simples?</p></div>
-          <div class="question"><strong>12.</strong><p>Explica qué representa una función tipo S y en qué situaciones sería útil.</p></div>
-          <div class="question"><strong>13.</strong><p>¿Qué idea transmite la función gamma dentro de un conjunto difuso?</p></div>
-          <div class="question"><strong>14.</strong><p>¿Por qué no se puede decir que una única función de pertenencia sea la mejor para todos los problemas?</p></div>
-          <div class="question"><strong>15.</strong><p>Haz un resumen general del tema desde la definición de lógica difusa hasta las clases de funciones de pertenencia.</p></div>
+        <div class="card" style="margin-top:4px">
+          <div class="bar"></div>
+          <h3>Preguntas para marcar · nivel más alto</h3>
+          <p class="section-text" style="margin-bottom:16px">Selecciona una respuesta. Al marcar una opción, el sistema te dirá si acertaste y te dará una explicación breve.</p>
+
+          <div class="mcq">
+            <div class="mcq-card">
+              <div class="mcq-head">
+                <div class="mcq-number">1</div>
+                <h4 class="mcq-title">¿Cuál afirmación describe mejor la diferencia estructural entre lógica clásica y lógica difusa?</h4>
+              </div>
+              <div class="options">
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq1','Eso describe una simplificación incorrecta. La lógica difusa no se limita a usar palabras; su diferencia central está en que permite grados de pertenencia y no solo pertenencia binaria.')">La lógica clásica usa variables numéricas y la lógica difusa usa solo palabras.</button>
+                <button class="option" data-correct="true" onclick="checkMCQ(this,'mcq1','Correcto. La lógica clásica trabaja con pertenencia binaria, mientras que la lógica difusa admite grados continuos entre 0 y 1 para representar transiciones graduales.')">La lógica clásica maneja pertenencia binaria y la lógica difusa admite grados continuos de pertenencia.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq1','Incorrecto. Ambas pueden formularse matemáticamente. La diferencia esencial no es el uso de matemáticas, sino el tipo de pertenencia que cada una maneja.')">La lógica clásica no usa matemáticas y la lógica difusa sí.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq1','Incorrecto. La lógica difusa no anula a la lógica clásica; la complementa cuando existen imprecisión, vaguedad o transiciones no bruscas.')">La lógica difusa anula completamente a la lógica clásica en problemas de control.</button>
+              </div>
+              <div class="mcq-result" id="mcq1"></div>
+            </div>
+
+            <div class="mcq-card">
+              <div class="mcq-head">
+                <div class="mcq-number">2</div>
+                <h4 class="mcq-title">Si μA(x)=0.3 y μB(x)=0.8, entonces para ese mismo x la unión y la intersección valen:</h4>
+              </div>
+              <div class="options">
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq2','Incorrecto. Esa opción mezcla suma y producto, pero en las operaciones básicas del texto la unión se calcula con max y la intersección con min.')">Unión = 1.1, intersección = 0.24</button>
+                <button class="option" data-correct="true" onclick="checkMCQ(this,'mcq2','Correcto. Unión = max(0.3, 0.8) = 0.8 e intersección = min(0.3, 0.8) = 0.3.')">Unión = 0.8, intersección = 0.3</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq2','Incorrecto. Esa respuesta está invertida: el valor mayor corresponde a la unión y el menor a la intersección.')">Unión = 0.3, intersección = 0.8</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq2','Incorrecto. 0.5 no coincide ni con el máximo ni con el mínimo de 0.3 y 0.8.')">Unión = 0.5, intersección = 0.5</button>
+              </div>
+              <div class="mcq-result" id="mcq2"></div>
+            </div>
+
+            <div class="mcq-card">
+              <div class="mcq-head">
+                <div class="mcq-number">3</div>
+                <h4 class="mcq-title">¿Qué opción explica mejor por qué una función trapezoidal suele ser útil en los extremos del universo de discurso?</h4>
+              </div>
+              <div class="options">
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq3','Incorrecto. La trapezoidal no se usa por ser la única continua; otras funciones también pueden ser continuas. Su ventaja está en la región plana de pertenencia total.')">Porque es la única función que puede representar continuidad matemática.</button>
+                <button class="option" data-correct="true" onclick="checkMCQ(this,'mcq3','Correcto. Su parte plana permite modelar una zona amplia de pertenencia total y cubrir mejor los bordes del universo de discurso.')">Porque su parte plana permite modelar una zona amplia de pertenencia total y cubrir mejor los bordes.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq3','Incorrecto. La superposición sigue pudiendo existir y, de hecho, muchas veces es deseable entre conjuntos vecinos.')">Porque siempre evita la superposición con otras funciones vecinas.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq3','Incorrecto. La trapezoidal no se define con tres parámetros, sino con cuatro: a, b, c y d.')">Porque se define con solo tres parámetros y por eso es más precisa.</button>
+              </div>
+              <div class="mcq-result" id="mcq3"></div>
+            </div>
+
+            <div class="mcq-card">
+              <div class="mcq-head">
+                <div class="mcq-number">4</div>
+                <h4 class="mcq-title">¿Cuál situación representa mejor el concepto de universo de discurso?</h4>
+              </div>
+              <div class="options">
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq4','Incorrecto. Eso describe etiquetas o conjuntos lingüísticos dentro de la variable, no el rango total de valores posibles.')">Definir los conjuntos “bajo”, “medio” y “alto” para una variable.</button>
+                <button class="option" data-correct="true" onclick="checkMCQ(this,'mcq4','Correcto. El universo de discurso es justamente el rango completo de valores que puede tomar la variable analizada.')">Establecer que la temperatura del proceso se analizará entre 0 °C y 100 °C.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq4','Incorrecto. Esa sería una regla o decisión de control, no la definición del dominio completo de la variable.')">Decidir que si la temperatura es alta entonces la acción de control disminuye.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq4','Incorrecto. Eso es un grado de pertenencia puntual para un valor específico, no el universo completo.')">Asignar una pertenencia de 0.6 a un valor de temperatura.</button>
+              </div>
+              <div class="mcq-result" id="mcq4"></div>
+            </div>
+
+            <div class="mcq-card">
+              <div class="mcq-head">
+                <div class="mcq-number">5</div>
+                <h4 class="mcq-title">Si una función de pertenencia tiene soporte amplio pero altura 1, ¿qué interpretación es más adecuada?</h4>
+              </div>
+              <div class="options">
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq5','Incorrecto. Si la altura es 1, entonces sí existe al menos un valor con pertenencia total.')">Que nunca alcanza pertenencia total.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq5','Incorrecto. La altura no obliga a que la función sea simétrica respecto al centro del dominio.')">Que obligatoriamente es simétrica respecto al centro del dominio.</button>
+                <button class="option" data-correct="true" onclick="checkMCQ(this,'mcq5','Correcto. Una altura igual a 1 indica que al menos un valor alcanza pertenencia total, y un soporte amplio indica que una región extensa del dominio participa con pertenencia positiva.')">Que existe al menos un valor con pertenencia total y además varios valores participan con pertenencia positiva.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq5','Incorrecto. Una función puede tener altura 1 y soporte amplio sin ser lineal por tramos; por ejemplo, una gaussiana.')">Que la función necesariamente es lineal por tramos.</button>
+              </div>
+              <div class="mcq-result" id="mcq5"></div>
+            </div>
+
+            <div class="mcq-card">
+              <div class="mcq-head">
+                <div class="mcq-number">6</div>
+                <h4 class="mcq-title">¿Qué opción refleja mejor el papel de los modificadores difusos como “muy” o “más o menos”?</h4>
+              </div>
+              <div class="options">
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq6','Incorrecto. Los modificadores no eliminan la función original; la transforman para cambiar su interpretación lingüística.')">Eliminan la función de pertenencia original y la sustituyen por una regla.</button>
+                <button class="option" data-correct="true" onclick="checkMCQ(this,'mcq6','Correcto. Los modificadores alteran matemáticamente la función de pertenencia para intensificar, suavizar o reforzar un significado lingüístico.')">Transforman matemáticamente la función de pertenencia para reforzar o suavizar un significado lingüístico.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq6','Incorrecto. El universo de discurso puede mantenerse igual; lo que cambia es la forma de la función de pertenencia.')">Solo cambian el universo de discurso sin tocar la pertenencia.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq6','Incorrecto. Los modificadores no convierten el sistema difuso en binario, sino que ajustan el grado de pertenencia.')">Convierten automáticamente un sistema difuso en uno binario.</button>
+              </div>
+              <div class="mcq-result" id="mcq6"></div>
+            </div>
+
+            <div class="mcq-card">
+              <div class="mcq-head">
+                <div class="mcq-number">7</div>
+                <h4 class="mcq-title">¿Cuál afirmación sobre convexidad es la más adecuada dentro del contexto del texto?</h4>
+              </div>
+              <div class="options">
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq7','Incorrecto. El texto la presenta como una propiedad importante al seleccionar conjuntos difusos para control, no como algo decorativo.')">Es una condición decorativa que no afecta el comportamiento del controlador.</button>
+                <button class="option" data-correct="true" onclick="checkMCQ(this,'mcq7','Correcto. En el contexto del texto, la convexidad se relaciona con una selección adecuada de conjuntos y con un comportamiento estable en aplicaciones de control.')">Es una propiedad importante al seleccionar conjuntos difusos porque favorece comportamientos adecuados en aplicaciones de control.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq7','Incorrecto. La convexidad no se limita a formas rectangulares o trapezoidales; también pueden ser convexas otras funciones suaves.')">Solo son convexos los conjuntos con forma rectangular o trapezoidal.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq7','Incorrecto. La convexidad no impide usar gaussianas o funciones tipo S; depende de la forma concreta del conjunto.')">Impide utilizar funciones gaussianas o tipo S.</button>
+              </div>
+              <div class="mcq-result" id="mcq7"></div>
+            </div>
+
+            <div class="mcq-card">
+              <div class="mcq-head">
+                <div class="mcq-number">8</div>
+                <h4 class="mcq-title">¿En qué caso sería más razonable preferir una función gaussiana frente a una triangular?</h4>
+              </div>
+              <div class="options">
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq8','Incorrecto. La gaussiana se prefiere justamente cuando no se quieren cambios bruscos ni esquinas marcadas.')">Cuando se buscan cambios bruscos y esquinas marcadas.</button>
+                <button class="option" data-correct="true" onclick="checkMCQ(this,'mcq8','Correcto. La gaussiana es útil cuando se necesita una transición muy suave, continua y sin quiebres pronunciados en la membresía.')">Cuando se requiere una transición suave, continua y sin quiebres pronunciados en la membresía.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq8','Incorrecto. Si se busca la representación más simple, normalmente la triangular resulta más directa y fácil de ajustar.')">Cuando se desea la representación más simple y con menor carga conceptual.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq8','Incorrecto. Una zona plana amplia de pertenencia total es más propia de una función trapezoidal, no de una gaussiana.')">Cuando se necesita una zona plana amplia de pertenencia total.</button>
+              </div>
+              <div class="mcq-result" id="mcq8"></div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -896,6 +1178,29 @@
       document.body.classList.toggle('light');
       themeBtn.textContent = document.body.classList.contains('light') ? '🌙 Modo oscuro' : '☀️ Modo claro';
     });
+
+    function checkMCQ(button, resultId, explanation){
+      const card = button.closest('.mcq-card');
+      const options = card.querySelectorAll('.option');
+      const result = document.getElementById(resultId);
+      const isCorrect = button.dataset.correct === 'true';
+
+      options.forEach(opt => {
+        opt.classList.add('locked');
+        if(opt !== button) opt.classList.add('dimmed');
+        if(opt.dataset.correct === 'true') opt.classList.add('correct');
+      });
+
+      if(!isCorrect){
+        button.classList.remove('correct');
+        button.classList.add('wrong');
+      }
+
+      result.className = `mcq-result show ${isCorrect ? 'good' : 'bad'}`;
+      result.innerHTML = isCorrect
+        ? `<strong style="color:var(--green)">Correcto.</strong> ${explanation}`
+        : `<strong style="color:#ff9aa5">Incorrecto.</strong> ${explanation}`;
+    }
   </script>
 </body>
 </html>
