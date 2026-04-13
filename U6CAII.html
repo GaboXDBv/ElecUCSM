@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Control Difuso - Parte 3: Controladores Difusos y Ejemplos</title>
+  <style>
+    :root{
+      --bg:#07111f;
+      --bg2:#0d1830;
+      --panel:#121f3b;
+      --panel2:#17284b;
+      --soft:#1f3563;
+      --line:rgba(255,255,255,.10);
+      --text:#f4f8ff;
+      --muted:#b8c6e6;
+      --muted2:#8ea2c9;
+      --red:#2ec27e;
+      --red2:#1f9d67;
+      --blue:#4ea8ff;
+      --blue2:#1b67d4;
+      --cyan:#7de3ff;
+      --violet:#4ea8ff;
+      --green:#2ec27e;
+      --yellow:#8adfbe;
+      --glass:rgba(255,255,255,.05);
+      --shadow:0 22px 50px rgba(0,0,0,.34);
+      --radius:26px;
+    }
+
+    body.light{
+      --bg:#eef4fb;
+      --bg2:#ffffff;
+      --panel:#ffffff;
+      --panel2:#f7faff;
+      --soft:#eaf1fc;
+      --line:rgba(15,23,42,.10);
+      --text:#0f172a;
+      --muted:#34445f;
+      --muted2:#62718d;
+      --glass:rgba(15,23,42,.03);
+      --shadow:0 14px 34px rgba(15,23,42,.10);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Inter,Segoe UI,Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255,95,109,.18), transparent 24%),
+        radial-gradient(circle at top right, rgba(78,168,255,.15), transparent 24%),
+        radial-gradient(circle at 70% 20%, rgba(103,232,249,.10), transparent 18%),
+        linear-gradient(180deg,var(--bg),var(--bg2));
+    }
+    a{text-decoration:none;color:inherit}
+    .container{width:min(1220px,92%);margin:auto}
+
+    .topbar{
+      position:sticky;top:0;z-index:90;
+      backdrop-filter:blur(14px);
+      background:rgba(7,17,31,.82);
+      border-bottom:1px solid var(--line);
+    }
+    body.light .topbar{background:rgba(255,255,255,.86)}
+
+    .nav{
+      display:flex;justify-content:space-between;align-items:center;gap:14px;
+      padding:14px 0;
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{
+      width:52px;height:52px;border-radius:18px;display:grid;place-items:center;
+      font-weight:900;color:#fff;letter-spacing:.04em;
+      background:linear-gradient(135deg,var(--red),var(--violet),var(--blue));
+      box-shadow:var(--shadow);
+    }
+    .brand h3{margin:0;font-size:1.03rem}
+    .brand small{display:block;margin-top:4px;color:var(--muted2)}
+    .nav-actions{display:flex;gap:10px;flex-wrap:wrap}
+
+    .btn{
+      border:none;cursor:pointer;padding:11px 16px;border-radius:14px;
+      font-weight:800;color:#fff;box-shadow:var(--shadow);
+      transition:.25s transform,.25s filter,.25s background;
+      background:linear-gradient(135deg,var(--red2),var(--red));
+    }
+    .btn:hover{transform:translateY(-2px);filter:brightness(1.05)}
+    .btn.secondary{background:linear-gradient(135deg,var(--blue2),var(--blue))}
+    .btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line);box-shadow:none}
+
+    .hero{padding:44px 0 20px}
+    .hero-card{
+      position:relative;overflow:hidden;
+      border:1px solid var(--line);border-radius:34px;padding:34px;
+      background:linear-gradient(135deg, rgba(255,95,109,.12), rgba(78,168,255,.12)), rgba(255,255,255,.02);
+      box-shadow:var(--shadow);
+    }
+    .hero-card::before,
+    .hero-card::after{
+      content:"";position:absolute;border-radius:50%;filter:blur(10px);pointer-events:none;
+    }
+    .hero-card::before{
+      width:220px;height:220px;right:-70px;top:-60px;
+      background:radial-gradient(circle, rgba(103,232,249,.18), transparent 68%);
+    }
+    .hero-card::after{
+      width:260px;height:260px;left:-80px;bottom:-100px;
+      background:radial-gradient(circle, rgba(139,123,255,.16), transparent 68%);
+    }
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;
+      border:1px solid var(--line);background:var(--glass);color:var(--muted);font-size:.92rem;
+    }
+    h1{font-size:clamp(2.2rem,4.6vw,4rem);line-height:1.04;margin:16px 0 12px}
+    .gradient{
+      background:linear-gradient(90deg,var(--red),var(--cyan),var(--blue));
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+    }
+    .subtitle{max-width:980px;color:var(--muted);line-height:1.85;font-size:1.06rem}
+    .quick-links{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+    .quick-links a{
+      padding:10px 14px;border-radius:14px;border:1px solid var(--line);
+      background:var(--glass);font-weight:800;color:var(--text);
+    }
+
+    .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:24px}
+    .stat{
+      padding:16px 18px;border-radius:18px;border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+    }
+    .stat strong{display:block;font-size:1.35rem}
+    .stat span{display:block;color:var(--muted);margin-top:6px;line-height:1.55}
+
+    section{padding:18px 0 34px}
+    .section-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+    .section-title{margin:0;font-size:2rem}
+    .section-text{margin:0;color:var(--muted);line-height:1.82;max-width:980px}
+
+    .grid{display:grid;gap:18px}
+    .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    @media (max-width:1024px){.grid-4,.grid-3,.grid-2,.stats{grid-template-columns:1fr}}
+
+    .card{
+      border:1px solid var(--line);border-radius:var(--radius);padding:22px;
+      background:linear-gradient(180deg,var(--panel),var(--panel2));box-shadow:var(--shadow);
+    }
+    .card h3,.card h4{margin:0 0 10px}
+    .card p,.card li{color:var(--muted);line-height:1.8}
+    .card ul{padding-left:18px;margin:0}
+    .bar{height:7px;border-radius:999px;background:linear-gradient(90deg,var(--red),var(--cyan),var(--blue));margin-bottom:14px}
+    .chip{display:inline-block;padding:7px 11px;border-radius:999px;border:1px solid var(--line);background:var(--glass);font-size:.82rem;font-weight:800;color:var(--muted);margin-bottom:10px}
+
+    .highlight{
+      border:1px solid rgba(78,168,255,.24);
+      background:rgba(78,168,255,.09);
+      border-left:4px solid var(--blue);
+      padding:18px 18px 18px 20px;border-radius:0 18px 18px 0;
+      line-height:1.8;color:var(--muted);
+    }
+
+    .math{
+      margin:14px 0 0;
+      padding:14px 16px;border-radius:18px;border:1px solid var(--line);
+      background:rgba(255,255,255,.04);font-family:Cambria,Georgia,serif;
+      font-size:1.04rem;color:var(--text);overflow:auto;
+    }
+
+    .compare{
+      display:grid;grid-template-columns:1.1fr .9fr;gap:18px;
+    }
+    @media (max-width:1024px){.compare{grid-template-columns:1fr}}
+
+    .mini-diagram{
+      border:1px solid var(--line);border-radius:24px;padding:18px;background:linear-gradient(180deg,var(--panel),var(--panel2));
+      box-shadow:var(--shadow)
+    }
+
+    .legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+    .legend span{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:.92rem}
+    .dot{width:10px;height:10px;border-radius:50%}
+
+    .svg-wrap{
+      width:100%;overflow:auto;border-radius:20px;border:1px solid var(--line);
+      background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.02));padding:12px;
+    }
+    svg{width:100%;height:auto;display:block}
+    .axis{stroke:rgba(255,255,255,.38);stroke-width:1.4}
+    body.light .axis{stroke:rgba(15,23,42,.35)}
+    .gridline{stroke:rgba(255,255,255,.08);stroke-width:1}
+    body.light .gridline{stroke:rgba(15,23,42,.08)}
+    .label{fill:currentColor;font-size:12px;opacity:.85}
+    .curve-red{fill:none;stroke:#ff5f6d;stroke-width:4}
+    .curve-blue{fill:none;stroke:#4ea8ff;stroke-width:4}
+    .curve-cyan{fill:none;stroke:#67e8f9;stroke-width:4}
+    .curve-violet{fill:none;stroke:#8b7bff;stroke-width:4}
+    .curve-yellow{fill:none;stroke:#ffd166;stroke-width:4}
+    .curve-green{fill:none;stroke:#46e7a8;stroke-width:4}
+    .soft-fill-red{fill:rgba(255,95,109,.10)}
+    .soft-fill-blue{fill:rgba(78,168,255,.10)}
+    .soft-fill-violet{fill:rgba(139,123,255,.12)}
+
+    .timeline{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+    @media (max-width:1024px){.timeline{grid-template-columns:1fr}}
+    .step{
+      padding:18px;border-radius:22px;border:1px solid var(--line);
+      background:linear-gradient(180deg,var(--panel),var(--panel2));box-shadow:var(--shadow);
+    }
+    .num{
+      width:38px;height:38px;border-radius:50%;display:grid;place-items:center;margin-bottom:12px;
+      background:linear-gradient(135deg,var(--red),var(--blue));font-weight:900;color:#fff;
+    }
+
+    .accordion{display:grid;gap:12px}
+    details{
+      border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,var(--panel),var(--panel2));
+      padding:14px 16px;
+    }
+    summary{cursor:pointer;font-weight:800;list-style:none}
+    summary::-webkit-details-marker{display:none}
+    details p{color:var(--muted);line-height:1.8;margin:12px 0 0}
+
+    .flashcards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+    @media (max-width:1024px){.flashcards{grid-template-columns:1fr}}
+    .flashcard{perspective:1000px;height:250px;cursor:pointer}
+    .flash-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .7s}
+    .flashcard.flip .flash-inner{transform:rotateY(180deg)}
+    .face{
+      position:absolute;inset:0;backface-visibility:hidden;border-radius:24px;padding:22px;
+      border:1px solid var(--line);box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:center;
+    }
+    .front{background:linear-gradient(135deg, rgba(200,29,76,.92), rgba(78,168,255,.20))}
+    .back{background:linear-gradient(135deg, rgba(27,103,212,.94), rgba(139,123,255,.30));transform:rotateY(180deg)}
+    .face .tag{font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;font-weight:800;opacity:.95}
+    .face h4{margin:10px 0;font-size:1.18rem}
+    .face p{margin:0;color:#f8fbff;line-height:1.72}
+    .mini{display:inline-block;margin-top:10px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.12);font-size:.82rem;font-weight:700}
+
+    .mcq{
+      display:grid;
+      gap:20px;
+    }
+    .mcq-card{
+      position:relative;
+      overflow:hidden;
+      padding:24px;
+      border-radius:24px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.025)),linear-gradient(180deg,var(--panel),var(--panel2));
+      box-shadow:var(--shadow);
+    }
+    .mcq-card::before{
+      content:"";
+      position:absolute;
+      inset:0 0 auto 0;
+      height:4px;
+      background:linear-gradient(90deg,var(--red),var(--cyan),var(--blue));
+      opacity:.95;
+    }
+    .mcq-head{
+      display:flex;
+      align-items:flex-start;
+      gap:14px;
+      margin-bottom:16px;
+    }
+    .mcq-number{
+      min-width:40px;
+      height:40px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      font-weight:900;
+      color:#fff;
+      background:linear-gradient(135deg,var(--red),var(--blue));
+      box-shadow:var(--shadow);
+    }
+    .mcq-title{
+      margin:0;
+      line-height:1.6;
+      font-size:1.05rem;
+    }
+    .options{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+      margin-top:10px;
+    }
+    @media (max-width:1024px){.options{grid-template-columns:1fr}}
+    .option{
+      text-align:left;
+      width:100%;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      padding:14px 16px;
+      border-radius:16px;
+      cursor:pointer;
+      font:inherit;
+      line-height:1.6;
+      transition:transform .2s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    body.light .option{border-color:rgba(15,23,42,.12);background:rgba(15,23,42,.03)}
+    .option:hover{
+      transform:translateY(-2px);
+      background:rgba(255,255,255,.08);
+      border-color:rgba(103,232,249,.35);
+      box-shadow:0 10px 22px rgba(0,0,0,.12);
+    }
+    body.light .option:hover{background:rgba(15,23,42,.05)}
+    .option.locked{
+      pointer-events:none;
+      opacity:.88;
+    }
+    .option.correct{
+      border-color:rgba(70,231,168,.55);
+      background:rgba(70,231,168,.14);
+      color:var(--text);
+    }
+    .option.wrong{
+      border-color:rgba(255,95,109,.58);
+      background:rgba(255,95,109,.14);
+      color:var(--text);
+    }
+    .option.dimmed{
+      opacity:.52;
+      filter:saturate(.8);
+    }
+    .mcq-result{
+      margin-top:14px;
+      padding:14px 16px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
+      line-height:1.75;
+      display:none;
+    }
+    .mcq-result.show{display:block}
+    .mcq-result.good{
+      border-color:rgba(70,231,168,.35);
+      background:rgba(70,231,168,.10);
+    }
+    .mcq-result.bad{
+      border-color:rgba(255,95,109,.35);
+      background:rgba(255,95,109,.10);
+    }
+
+    .footer{padding:24px 0 60px;color:var(--muted)}
+    .small-note{color:var(--muted2);font-size:.93rem;line-height:1.75}
+    .center{text-align:center}
+    .hl{color:var(--cyan);font-weight:800}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container nav">
+      <div class="brand">
+        <div class="logo">P3</div>
+        <div>
+          <h3>Control Avanzado II</h3>
+          <small>Parte 3 · controladores difusos y ejemplos hasta 1.6</small>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <a class="btn ghost" href="#inicio">⬆ Inicio</a>
+        <button class="btn secondary" id="themeBtn">☀️ Modo claro</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="inicio">
+    <section class="hero">
+      <div class="container">
+        <div class="hero-card">
+          <span class="pill">Página interactiva · teoría + figuras + resumen + preguntas</span>
+          <h1><span class="gradient">Parte 3:</span> controladores difusos, estructuras y ejemplos</h1>
+          <p class="subtitle">
+            Esta página corresponde a la <strong>parte 3</strong> y desarrolla el contenido desde la sección <strong>1.5 Controladores difusos</strong> hasta <strong>1.6 Ejemplos</strong>. Como aquí son menos páginas, la explicación está más detallada y organizada. También se respeta la lógica de los diagramas mostrados en el material: la estructura general del FLC, las arquitecturas de control difuso, la diferencia entre controladores <strong>tipo 1</strong> y <strong>tipo 2</strong>, el método general de diseño y la introducción a los ejemplos en Python/Colab. El <strong>Taller 1</strong> no aparece aquí.
+          </p>
+
+          <div class="quick-links">
+            <a href="#intro-p3">Introducción</a>
+            <a href="#flc">¿Qué es un FLC?</a>
+            <a href="#estructuras">Estructuras de control</a>
+            <a href="#tipo1tipo2">Tipo 1 y Tipo 2</a>
+            <a href="#diseno">Método de diseño</a>
+            <a href="#ejemplos">Ejemplos 1.6</a>
+            <a href="#flashcards">Flashcards</a>
+            <a href="#preguntas">Preguntas</a>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <strong>FLC</strong>
+              <span>Fuzzy Logic Controller aplicado al control automático.</span>
+            </div>
+            <div class="stat">
+              <strong>Tipo 1</strong>
+              <span>Controlador difuso clásico con funciones de pertenencia convencionales.</span>
+            </div>
+            <div class="stat">
+              <strong>Tipo 2</strong>
+              <span>Extiende el tipo 1 incorporando huella de incertidumbre.</span>
+            </div>
+            <div class="stat">
+              <strong>1.6</strong>
+              <span>Ejemplos en Python/Colab para funciones de pertenencia y control difuso PD.</span>
+            </div>
+          </div>
+            <div class="stat">
+              <strong>Mamdani</strong>
+              <span>Modelo más intuitivo y lingüístico.</span>
+            </div>
+            <div class="stat">
+              <strong>TSK</strong>
+              <span>Modelo más numérico y eficiente computacionalmente.</span>
+            </div>
+            <div class="stat">
+              <strong>FLC</strong>
+              <span>Controlador lógico difuso aplicado al control automático.</span>
+            </div>
+          </div>
+            <div class="stat">
+              <strong>Soporte</strong>
+              <span>Zona del dominio donde la función tiene pertenencia mayor que cero.</span>
+            </div>
+            <div class="stat">
+              <strong>Altura</strong>
+              <span>Valor máximo que alcanza una función de pertenencia.</span>
+            </div>
+            <div class="stat">
+              <strong>6 MFs</strong>
+              <span>Triangular, gamma, S, gaussiana, trapezoidal y seudo-exponencial.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="intro-p3">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">1. Introducción a los controladores difusos</h2>
+            <p class="section-text">
+              En esta parte el tema deja de enfocarse solo en conceptos de inferencia y pasa a la aplicación directa en <strong>control automático</strong>. La idea central es que un controlador difuso usa reglas basadas en conocimiento experto para generar acciones de control sobre un proceso, incluso cuando no se dispone de un modelo matemático exacto o cuando el sistema es no lineal, incierto o difícil de describir de manera clásica.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <article class="card">
+            <div class="bar"></div>
+            <h3>¿Por qué el control difuso es importante?</h3>
+            <p>
+              Porque permite incorporar experiencia humana de forma estructurada. En vez de depender únicamente de ecuaciones precisas, puede usar reglas del tipo <strong>“si el error es grande y sigue creciendo, aumenta fuertemente el control”</strong>. Esto lo vuelve útil en procesos complejos, no lineales o difíciles de modelar con exactitud.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Idea principal de esta parte</h3>
+            <p>
+              El material presenta primero la definición de <strong>controlador lógico difuso</strong>, luego las <strong>estructuras</strong> en que puede aparecer dentro de un sistema de control, después la diferencia entre <strong>tipo 1 y tipo 2</strong>, y finalmente un <strong>método de diseño</strong> junto con ejemplos en Python para control difuso PD.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="flc">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">2. ¿Qué es un controlador lógico difuso (FLC)?</h2>
+            <p class="section-text">
+              Un <strong>Fuzzy Logic Controller</strong> es un sistema que aplica lógica difusa al control automático de procesos. El texto remarca que su fortaleza está en aproximar el comportamiento deseado sin exigir un modelo matemático exacto del proceso y en aprovechar reglas construidas a partir de la experiencia del experto.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Ventajas principales</h3>
+            <ul>
+              <li>No requiere necesariamente un modelo matemático preciso del proceso.</li>
+              <li>Puede manejar no linealidades con reglas relativamente simples.</li>
+              <li>Permite introducir conocimiento heurístico del operador.</li>
+              <li>Es útil en presencia de incertidumbre o información imprecisa.</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Bloques internos del FLC</h3>
+            <p>
+              La figura del material muestra claramente cuatro bloques dentro del controlador: <strong>fusificación</strong>, <strong>base de conocimiento</strong>, <strong>inferencia</strong> y <strong>defusificación</strong>. Esos cuatro bloques reciben señales del sistema y generan la acción de control que se aplica al proceso.
+            </p>
+          </article>
+        </div>
+
+        <div class="mini-diagram" style="margin-top:18px">
+          <span class="chip">Estructura general del controlador difuso</span>
+          <div class="svg-wrap">
+            <svg viewBox="0 0 940 270" aria-label="Sistema de control difuso basado en el diagrama del material">
+              <circle cx="95" cy="130" r="22" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.16)"/>
+              <text x="88" y="136" class="label">Σ</text>
+              <rect x="160" y="78" width="430" height="104" rx="24" fill="rgba(46,194,126,.08)" stroke="rgba(46,194,126,.35)"/>
+              <rect x="190" y="103" width="92" height="52" rx="14" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.16)"/>
+              <rect x="304" y="103" width="132" height="52" rx="14" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.16)"/>
+              <rect x="458" y="103" width="102" height="52" rx="14" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.16)"/>
+              <rect x="650" y="103" width="118" height="52" rx="14" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.16)"/>
+              <rect x="820" y="103" width="90" height="52" rx="14" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.16)"/>
+              <line x1="15" y1="130" x2="73" y2="130" class="axis"/>
+              <line x1="117" y1="130" x2="160" y2="130" class="axis"/>
+              <line x1="590" y1="130" x2="650" y2="130" class="axis"/>
+              <line x1="768" y1="130" x2="820" y2="130" class="axis"/>
+              <line x1="865" y1="155" x2="865" y2="225" class="axis"/>
+              <line x1="865" y1="225" x2="95" y2="225" class="axis"/>
+              <line x1="95" y1="225" x2="95" y2="152" class="axis"/>
+              <text x="18" y="116" class="label">Entrada de referencia</text>
+              <text x="206" y="134" class="label">Fusificación</text>
+              <text x="324" y="126" class="label">Base de</text>
+              <text x="323" y="141" class="label">conocimiento</text>
+              <text x="480" y="134" class="label">Inferencia</text>
+              <text x="673" y="134" class="label">Defusificación</text>
+              <text x="844" y="134" class="label">Proceso</text>
+              <text x="846" y="92" class="label">Salida</text>
+              <text x="464" y="198" class="label">CONTROLADOR DIFUSO</text>
+              <text x="494" y="242" class="label">Sensor / realimentación</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="estructuras">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">3. Estructuras de los sistemas de control automático difusos</h2>
+            <p class="section-text">
+              El texto no presenta un solo tipo de sistema, sino varias <strong>arquitecturas</strong> donde la lógica difusa puede participar. Esta parte conviene estudiarla bien porque resume cómo se integra un FLC dentro de un lazo de control real.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-3">
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Sistema de control difuso</h3>
+            <p>
+              Es la estructura más directa. El controlador difuso produce la acción de control hacia el proceso y las reglas quedan fijas una vez cargadas. Es la forma más rígida, pero también la más sencilla de entender e implementar.
+            </p>
+          </article>
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Interconectado difusamente</h3>
+            <p>
+              Aquí el controlador clásico sigue presente, pero el controlador difuso modifica o corrige sus parámetros. El FLC no reemplaza del todo al regulador tradicional, sino que lo vuelve más flexible y adaptable.
+            </p>
+          </article>
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Jerarquizado</h3>
+            <p>
+              Se usan varios FC o FLC en distintos niveles. Uno de nivel superior puede reconfigurar o ajustar el comportamiento de los controladores de niveles inferiores.
+            </p>
+          </article>
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Híbrido</h3>
+            <p>
+              Se mezcla lógica difusa con redes neuronales u otras herramientas de inteligencia artificial para aprendizaje, ajuste y optimización.
+            </p>
+          </article>
+          <article class="card">
+            <div class="bar"></div>
+            <h3>En cascada</h3>
+            <p>
+              Varios FLC actúan en secuencia o en paralelo según las necesidades del proceso. Es útil cuando el problema tiene varias etapas o subobjetivos.
+            </p>
+          </article>
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Control difuso total</h3>
+            <p>
+              Toda la estructura de control es difusa y puede tener capacidad de autoorganización, cambiando funciones de membresía, reglas o incluso métodos de defusificación.
+            </p>
+          </article>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:18px">
+          <div class="mini-diagram">
+            <span class="chip">Sistema de control difuso</span>
+            <div class="svg-wrap">
+              <svg viewBox="0 0 700 200" aria-label="Sistema de control difuso">
+                <circle cx="80" cy="100" r="20" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.16)"/>
+                <text x="73" y="106" class="label">Σ</text>
+                <rect x="145" y="76" width="160" height="48" rx="14" fill="rgba(46,194,126,.09)" stroke="rgba(46,194,126,.28)"/>
+                <rect x="380" y="76" width="150" height="48" rx="14" fill="rgba(78,168,255,.09)" stroke="rgba(78,168,255,.28)"/>
+                <line x1="15" y1="100" x2="60" y2="100" class="axis"/>
+                <line x1="100" y1="100" x2="145" y2="100" class="axis"/>
+                <line x1="305" y1="100" x2="380" y2="100" class="axis"/>
+                <line x1="530" y1="100" x2="665" y2="100" class="axis"/>
+                <line x1="455" y1="124" x2="455" y2="170" class="axis"/>
+                <line x1="455" y1="170" x2="80" y2="170" class="axis"/>
+                <line x1="80" y1="170" x2="80" y2="120" class="axis"/>
+                <text x="152" y="104" class="label">Controlador Difuso (FLC)</text>
+                <text x="423" y="104" class="label">Objeto de Control</text>
+                <text x="18" y="88" class="label">Referencia</text>
+                <text x="615" y="88" class="label">Salida</text>
+              </svg>
+            </div>
+          </div>
+
+          <div class="mini-diagram">
+            <span class="chip">Sistema con controlador difuso interconectado</span>
+            <div class="svg-wrap">
+              <svg viewBox="0 0 760 220" aria-label="Sistema con controlador difuso y regulador clásico">
+                <circle cx="80" cy="110" r="20" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.16)"/>
+                <text x="73" y="116" class="label">Σ</text>
+                <rect x="155" y="62" width="128" height="42" rx="12" fill="rgba(46,194,126,.09)" stroke="rgba(46,194,126,.28)"/>
+                <rect x="155" y="122" width="128" height="42" rx="12" fill="rgba(78,168,255,.09)" stroke="rgba(78,168,255,.28)"/>
+                <rect x="350" y="92" width="142" height="42" rx="12" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.16)"/>
+                <line x1="15" y1="110" x2="60" y2="110" class="axis"/>
+                <line x1="100" y1="110" x2="155" y2="110" class="axis"/>
+                <line x1="283" y1="143" x2="350" y2="113" class="axis"/>
+                <line x1="283" y1="83" x2="350" y2="113" class="axis"/>
+                <line x1="492" y1="113" x2="735" y2="113" class="axis"/>
+                <line x1="430" y1="134" x2="430" y2="185" class="axis"/>
+                <line x1="430" y1="185" x2="80" y2="185" class="axis"/>
+                <line x1="80" y1="185" x2="80" y2="130" class="axis"/>
+                <text x="173" y="88" class="label">Controlador</text>
+                <text x="198" y="102" class="label">Difuso</text>
+                <text x="199" y="148" class="label">Regulador</text>
+                <text x="383" y="117" class="label">Objeto de Control</text>
+                <text x="18" y="97" class="label">Referencia</text>
+                <text x="668" y="100" class="label">Salida</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tipo1tipo2">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">4. Controlador difuso Tipo 1 y Tipo 2</h2>
+            <p class="section-text">
+              Esta parte es importante porque el texto distingue dos niveles de representación de la incertidumbre. El tipo 1 es el controlador difuso habitual; el tipo 2 aparece cuando la incertidumbre es más fuerte y no basta con una sola función de pertenencia bien definida.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Tipo 1</h3>
+            <p>
+              El controlador difuso tipo 1 utiliza conjuntos difusos convencionales. Cada valor del universo tiene un grado de pertenencia definido por una sola función. Es el esquema clásico de fusificación, reglas, razonamiento y defusificación.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Tipo 2</h3>
+            <p>
+              El tipo 2 introduce una <strong>huella de incertidumbre</strong>. En vez de una sola función exacta, se consideran funciones de pertenencia superior e inferior. Esto es útil cuando hay desacuerdo entre expertos, ruido en mediciones o incertidumbre fuerte en el significado de las reglas.
+            </p>
+          </article>
+        </div>
+
+        <div class="mini-diagram" style="margin-top:18px">
+          <span class="chip">Comparación conceptual</span>
+          <div class="svg-wrap">
+            <svg viewBox="0 0 860 280" aria-label="Comparación tipo 1 y tipo 2">
+              <rect x="50" y="60" width="320" height="150" rx="20" fill="rgba(78,168,255,.08)" stroke="rgba(78,168,255,.28)"/>
+              <rect x="490" y="60" width="320" height="150" rx="20" fill="rgba(46,194,126,.08)" stroke="rgba(46,194,126,.28)"/>
+              <text x="175" y="88" class="label">FLCT1</text>
+              <text x="615" y="88" class="label">FLCT2</text>
+              <rect x="90" y="110" width="80" height="40" rx="12" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.16)"/>
+              <rect x="190" y="110" width="90" height="40" rx="12" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.16)"/>
+              <rect x="300" y="110" width="60" height="40" rx="12" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.16)"/>
+              <text x="106" y="134" class="label">Fuzz.</text>
+              <text x="202" y="134" class="label">Razonamiento</text>
+              <text x="313" y="134" class="label">Def.</text>
+              <line x1="170" y1="130" x2="190" y2="130" class="axis"/>
+              <line x1="280" y1="130" x2="300" y2="130" class="axis"/>
+
+              <rect x="530" y="103" width="82" height="40" rx="12" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.16)"/>
+              <rect x="628" y="85" width="94" height="40" rx="12" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.16)"/>
+              <rect x="628" y="135" width="94" height="40" rx="12" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.16)"/>
+              <rect x="740" y="110" width="45" height="40" rx="12" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.16)"/>
+              <text x="548" y="128" class="label">Fuzz.</text>
+              <text x="649" y="110" class="label">MF sup.</text>
+              <text x="650" y="160" class="label">MF inf.</text>
+              <text x="745" y="135" class="label">Red.</text>
+              <text x="556" y="194" class="label">Huella de incertidumbre</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="diseno">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">5. Método general de diseño del controlador difuso</h2>
+            <p class="section-text">
+              El material propone un proceso de diseño paso a paso. Este bloque es muy importante porque convierte la teoría en una metodología concreta de implementación.
+            </p>
+          </div>
+        </div>
+
+        <div class="timeline">
+          <div class="step">
+            <div class="num">1</div>
+            <h3>Elegir la estructura del FC</h3>
+            <p>Se define si será clásico, ajustable, tuneable, adaptativo, autoajustable o con modelo de referencia.</p>
+          </div>
+          <div class="step">
+            <div class="num">2</div>
+            <h3>Organizar la base de datos</h3>
+            <p>Se determinan entradas, salidas, variables medidas y conversión a variables lingüísticas.</p>
+          </div>
+          <div class="step">
+            <div class="num">3</div>
+            <h3>Seleccionar funciones de membresía</h3>
+            <p>Se cuida el universo del discurso, el soporte, la altura y la superposición entre conjuntos.</p>
+          </div>
+          <div class="step">
+            <div class="num">4</div>
+            <h3>Formular la base de conocimiento</h3>
+            <p>Se construyen las reglas que permitan generar una acción de control aceptable en todas las condiciones relevantes.</p>
+          </div>
+          <div class="step">
+            <div class="num">5</div>
+            <h3>Definir la salida numérica</h3>
+            <p>Se elige el método de conversión de las variables lingüísticas a valores numéricos, por ejemplo usando defusificación.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:18px">
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Tipos de FC mencionados</h3>
+            <ul>
+              <li><strong>Clásico:</strong> estructura fija y simple.</li>
+              <li><strong>Ajustable:</strong> sus parámetros cambian con condiciones de operación.</li>
+              <li><strong>Tuneable:</strong> puede cambiar conexiones o estructura.</li>
+              <li><strong>Adaptativo:</strong> se reconfigura automáticamente ante cambios imprevistos.</li>
+              <li><strong>Autoajustable:</strong> modifica parámetros críticos para estabilidad.</li>
+              <li><strong>Con modelo de referencia:</strong> corrige diferencias respecto a un modelo deseado.</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Qué resalta el texto</h3>
+            <p>
+              El material insiste en que no basta con escoger funciones de membresía al azar. Debe cuidarse la cobertura del universo, la superposición entre conjuntos, la coherencia de las reglas y la relación entre el conocimiento experto y el objetivo del control.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="ejemplos">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">6. Ejemplos de la sección 1.6</h2>
+            <p class="section-text">
+              Como esta parte incluye pocas páginas, aquí se explica con más detalle qué muestran los ejemplos del notebook. La sección 1.6 introduce ejercicios resueltos en <strong>Google Colab o Jupyter</strong>, donde se trabaja desde las funciones de pertenencia hasta un controlador difuso PD completo con simulación de una planta de segundo orden.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Celdas base</h3>
+            <p>
+              El material indica primero tres bloques base: instalación de librerías, importación de librerías y funciones auxiliares. Allí aparecen <strong>numpy</strong>, <strong>matplotlib</strong>, <strong>skfuzzy</strong>, <strong>control</strong> y herramientas para generar gráficos y métricas. Eso prepara el entorno para todos los ejercicios posteriores.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Secuencia de los ejemplos</h3>
+            <p>
+              Los ejercicios están ordenados de menor a mayor complejidad. Primero se analizan funciones de pertenencia, luego fuzzificación manual, después evaluación de reglas, construcción del controlador PD, superficie de control 3D y finalmente la simulación temporal del sistema controlado.
+            </p>
+          </article>
+        </div>
+
+        <div class="grid grid-3" style="margin-top:18px">
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Ejercicio 1</h3>
+            <p>
+              Se define la variable difusa <strong>error</strong> con cinco conjuntos: NG, NP, C, PP y PG. Se usan trapezoidales en extremos y triangulares en zona central para verificar cobertura y traslape.
+            </p>
+          </article>
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Ejercicio 2</h3>
+            <p>
+              Se calcula manualmente el grado de pertenencia de un valor puntual, mostrando que un mismo valor puede pertenecer parcialmente a varios conjuntos al mismo tiempo.
+            </p>
+          </article>
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Ejercicio 3</h3>
+            <p>
+              Se evalúan reglas con el operador mínimo y se interpreta la salida difusa agregada según los grados de activación obtenidos.
+            </p>
+          </article>
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Ejercicio 4</h3>
+            <p>
+              Se diseña un controlador difuso PD completo con entradas <strong>error</strong> y <strong>derivada del error</strong>, y una salida de control con cinco conjuntos difusos.
+            </p>
+          </article>
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Ejercicio 5</h3>
+            <p>
+              Se construye la base de <strong>25 reglas</strong> del PD difuso y se genera la <strong>superficie de control 3D</strong>, muy útil para analizar continuidad, coherencia física y regiones de control más agresivo o suave.
+            </p>
+          </article>
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Ejercicio 6</h3>
+            <p>
+              Se aplica el controlador difuso PD a un sistema de segundo orden y se obtienen la respuesta al escalón, la señal de control, el error y métricas de desempeño como tiempo de subida, establecimiento, sobreimpulso y error estacionario.
+            </p>
+          </article>
+        </div>
+
+        <div class="mini-diagram" style="margin-top:18px">
+          <span class="chip">Lógica del ejemplo PD difuso</span>
+          <div class="svg-wrap">
+            <svg viewBox="0 0 860 240" aria-label="Diagrama conceptual del ejemplo PD difuso">
+              <rect x="40" y="95" width="120" height="48" rx="14" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.16)"/>
+              <rect x="220" y="95" width="140" height="48" rx="14" fill="rgba(46,194,126,.09)" stroke="rgba(46,194,126,.28)"/>
+              <rect x="420" y="95" width="180" height="48" rx="14" fill="rgba(78,168,255,.09)" stroke="rgba(78,168,255,.28)"/>
+              <rect x="670" y="95" width="140" height="48" rx="14" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.16)"/>
+              <line x1="160" y1="119" x2="220" y2="119" class="axis"/>
+              <line x1="360" y1="119" x2="420" y2="119" class="axis"/>
+              <line x1="600" y1="119" x2="670" y2="119" class="axis"/>
+              <text x="60" y="123" class="label">error / derror</text>
+              <text x="236" y="123" class="label">Fuzzificación</text>
+              <text x="455" y="115" class="label">Reglas PD + inferencia</text>
+              <text x="696" y="123" class="label">control / planta</text>
+              <text x="285" y="182" class="label">Luego se grafican salida, control, error y métricas</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="flashcards">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">7. Flashcards</h2>
+            <p class="section-text">Haz clic en cada tarjeta para voltearla.</p>
+          </div>
+        </div>
+
+        <div class="flashcards">
+          <div class="flashcard" onclick="this.classList.toggle('flip')">
+            <div class="flash-inner">
+              <div class="face front">
+                <span class="tag">Flashcard 1</span>
+                <h4>¿Qué es un FLC?</h4>
+                <p>Un controlador que usa lógica difusa para controlar un proceso.</p>
+                <span class="mini">Clic para ver</span>
+              </div>
+              <div class="face back">
+                <span class="tag">Respuesta</span>
+                <h4>FLC</h4>
+                <p>Es un controlador lógico difuso que combina fusificación, base de conocimiento, inferencia y defusificación para generar la acción de control.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="flashcard" onclick="this.classList.toggle('flip')">
+            <div class="flash-inner">
+              <div class="face front">
+                <span class="tag">Flashcard 2</span>
+                <h4>¿Qué distingue al tipo 2?</h4>
+                <p>La presencia de huella de incertidumbre.</p>
+                <span class="mini">Clic para ver</span>
+              </div>
+              <div class="face back">
+                <span class="tag">Respuesta</span>
+                <h4>Tipo 2</h4>
+                <p>Usa funciones de pertenencia superior e inferior para representar incertidumbre adicional en expertos, reglas o mediciones.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="flashcard" onclick="this.classList.toggle('flip')">
+            <div class="flash-inner">
+              <div class="face front">
+                <span class="tag">Flashcard 3</span>
+                <h4>¿Cuántos bloques internos tiene el FLC clásico?</h4>
+                <p>Cuatro bloques esenciales.</p>
+                <span class="mini">Clic para ver</span>
+              </div>
+              <div class="face back">
+                <span class="tag">Respuesta</span>
+                <h4>Bloques del FLC</h4>
+                <p>Fusificación, base de conocimiento, inferencia y defusificación.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="flashcard" onclick="this.classList.toggle('flip')">
+            <div class="flash-inner">
+              <div class="face front">
+                <span class="tag">Flashcard 4</span>
+                <h4>¿Qué muestra el ejercicio 5?</h4>
+                <p>La superficie 3D del controlador PD difuso.</p>
+                <span class="mini">Clic para ver</span>
+              </div>
+              <div class="face back">
+                <span class="tag">Respuesta</span>
+                <h4>Ejercicio 5</h4>
+                <p>Muestra la base de 25 reglas del PD difuso y la superficie de control 3D para analizar continuidad y coherencia física.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="flashcard" onclick="this.classList.toggle('flip')">
+            <div class="flash-inner">
+              <div class="face front">
+                <span class="tag">Flashcard 5</span>
+                <h4>¿Qué incluye el método general de diseño?</h4>
+                <p>Elegir estructura, datos, membresías, reglas y salida numérica.</p>
+                <span class="mini">Clic para ver</span>
+              </div>
+              <div class="face back">
+                <span class="tag">Respuesta</span>
+                <h4>Diseño</h4>
+                <p>Incluye elegir la estructura del FC, organizar la base de datos, seleccionar funciones de membresía, formular la base de conocimiento y definir la salida numérica.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="flashcard" onclick="this.classList.toggle('flip')">
+            <div class="flash-inner">
+              <div class="face front">
+                <span class="tag">Flashcard 6</span>
+                <h4>¿Qué evalúa el ejercicio 6?</h4>
+                <p>La respuesta temporal de un sistema controlado por PD difuso.</p>
+                <span class="mini">Clic para ver</span>
+              </div>
+              <div class="face back">
+                <span class="tag">Respuesta</span>
+                <h4>Ejercicio 6</h4>
+                <p>Evalúa salida, señal de control, error y métricas de desempeño de un sistema de segundo orden con controlador difuso PD.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">6. Flashcards</h2>
+            <p class="section-text">Haz clic en cada tarjeta para voltearla.</p>
+          </div>
+        </div>
+
+        <div class="flashcards">
+          <div class="flashcard" onclick="this.classList.toggle('flip')">
+            <div class="flash-inner">
+              <div class="face front">
+                <span class="tag">Flashcard 1</span>
+                <h4>¿Qué es una variable lingüística?</h4>
+                <p>Una variable cuyos valores pueden expresarse con etiquetas del lenguaje natural.</p>
+                <span class="mini">Clic para ver</span>
+              </div>
+              <div class="face back">
+                <span class="tag">Respuesta</span>
+                <h4>Variable lingüística</h4>
+                <p>Es una variable que toma valores como bajo, medio, alto, negativo o positivo, y cada valor lingüístico se representa mediante una función de pertenencia.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="flashcard" onclick="this.classList.toggle('flip')">
+            <div class="flash-inner">
+              <div class="face front">
+                <span class="tag">Flashcard 2</span>
+                <h4>¿Qué es una regla difusa?</h4>
+                <p>Sigue una estructura tipo SI... ENTONCES...</p>
+                <span class="mini">Clic para ver</span>
+              </div>
+              <div class="face back">
+                <span class="tag">Respuesta</span>
+                <h4>Regla difusa</h4>
+                <p>Es una expresión lingüística que modela una decisión a partir de un antecedente y un consecuente, usando proposiciones difusas.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="flashcard" onclick="this.classList.toggle('flip')">
+            <div class="flash-inner">
+              <div class="face front">
+                <span class="tag">Flashcard 3</span>
+                <h4>¿Qué hace el fusificador?</h4>
+                <p>Convierte entradas reales en grados de pertenencia.</p>
+                <span class="mini">Clic para ver</span>
+              </div>
+              <div class="face back">
+                <span class="tag">Respuesta</span>
+                <h4>Fusificador</h4>
+                <p>Transforma valores numéricos del mundo real en valores difusos al evaluarlos en las funciones de pertenencia definidas.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="flashcard" onclick="this.classList.toggle('flip')">
+            <div class="flash-inner">
+              <div class="face front">
+                <span class="tag">Flashcard 4</span>
+                <h4>¿Qué diferencia a Mamdani de TSK?</h4>
+                <p>La forma del consecuente y de la salida final.</p>
+                <span class="mini">Clic para ver</span>
+              </div>
+              <div class="face back">
+                <span class="tag">Respuesta</span>
+                <h4>Mamdani vs TSK</h4>
+                <p>En Mamdani el consecuente es difuso y se defusifica; en TSK el consecuente es numérico o funcional y la salida se obtiene por ponderación.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="flashcard" onclick="this.classList.toggle('flip')">
+            <div class="flash-inner">
+              <div class="face front">
+                <span class="tag">Flashcard 5</span>
+                <h4>¿Qué es la defusificación?</h4>
+                <p>Es el paso que convierte una salida difusa en un número real.</p>
+                <span class="mini">Clic para ver</span>
+              </div>
+              <div class="face back">
+                <span class="tag">Respuesta</span>
+                <h4>Defusificación</h4>
+                <p>Es el proceso matemático que toma el conjunto difuso de salida y lo transforma en un valor numérico utilizable en la práctica.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="flashcard" onclick="this.classList.toggle('flip')">
+            <div class="flash-inner">
+              <div class="face front">
+                <span class="tag">Flashcard 6</span>
+                <h4>¿Qué es un FLC?</h4>
+                <p>Un controlador lógico difuso aplicado al control automático.</p>
+                <span class="mini">Clic para ver</span>
+              </div>
+              <div class="face back">
+                <span class="tag">Respuesta</span>
+                <h4>FLC</h4>
+                <p>Es un sistema de control que usa fusificación, base de conocimiento, inferencia y defusificación para generar la acción de control.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="preguntas">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">8. Preguntas para estudiar</h2>
+            <p class="section-text">Solo quedan preguntas para marcar, centradas en esta parte 3.</p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:4px">
+          <div class="bar"></div>
+          <h3>Preguntas para marcar · Parte 3</h3>
+          <p class="section-text" style="margin-bottom:16px">Selecciona una respuesta. Si marcas mal, se te explica por qué.</p>
+
+          <div class="mcq">
+            <div class="mcq-card">
+              <div class="mcq-head"><div class="mcq-number">1</div><h4 class="mcq-title">¿Cuál es una ventaja central del controlador difuso según el texto?</h4></div>
+              <div class="options">
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'p31','Incorrecto. Un FLC no se limita a sistemas lineales; una de sus fortalezas es precisamente tratar comportamientos no lineales.')">Solo funciona correctamente en sistemas lineales.</button>
+                <button class="option" data-correct="true" onclick="checkMCQ(this,'p31','Correcto. El texto resalta que puede funcionar sin requerir un modelo matemático exacto y aprovechar conocimiento experto.')">Puede aplicarse sin depender completamente de un modelo matemático preciso del proceso.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'p31','Incorrecto. El FLC sí produce acción de control, no solo medición.')">Su función es únicamente medir variables del sistema.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'p31','Incorrecto. No reemplaza toda la teoría de control clásica; más bien la complementa.')">Elimina por completo la necesidad de cualquier teoría de control.</button>
+              </div>
+              <div class="mcq-result" id="p31"></div>
+            </div>
+
+            <div class="mcq-card">
+              <div class="mcq-head"><div class="mcq-number">2</div><h4 class="mcq-title">¿Qué bloques forman el núcleo interno del FLC clásico?</h4></div>
+              <div class="options">
+                <button class="option" data-correct="true" onclick="checkMCQ(this,'p32','Correcto. Esos son los cuatro bloques que aparecen resaltados en el diagrama del controlador difuso.')">Fusificación, base de conocimiento, inferencia y defusificación.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'p32','Incorrecto. Allí faltan bloques esenciales del FLC como la base de conocimiento y la defusificación.')">Error, derivada del error, planta y sensor.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'p32','Incorrecto. Esa combinación mezcla elementos de planta y red neuronal, no la estructura interna básica del FLC.')">Red neuronal, proceso, compensador y filtro.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'p32','Incorrecto. El FLC no se reduce a solo entradas, salidas y reglas.')">Entradas, salidas y reglas binarias.</button>
+              </div>
+              <div class="mcq-result" id="p32"></div>
+            </div>
+
+            <div class="mcq-card">
+              <div class="mcq-head"><div class="mcq-number">3</div><h4 class="mcq-title">En la arquitectura interconectada difusamente, el controlador difuso:</h4></div>
+              <div class="options">
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'p33','Incorrecto. Esa descripción corresponde más al sistema de control difuso directo.')">Reemplaza por completo al regulador clásico en todos los casos.</button>
+                <button class="option" data-correct="true" onclick="checkMCQ(this,'p33','Correcto. En esa estructura el controlador difuso corrige o ajusta parámetros del controlador clásico.')">Corrige o ajusta los parámetros de un controlador tradicional.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'p33','Incorrecto. No es solo un bloque de visualización o monitoreo.')">Solo observa el proceso sin intervenir en la acción de control.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'p33','Incorrecto. La estructura interconectada no se define por operar exclusivamente en lazo abierto.')">Opera únicamente sin realimentación.</button>
+              </div>
+              <div class="mcq-result" id="p33"></div>
+            </div>
+
+            <div class="mcq-card">
+              <div class="mcq-head"><div class="mcq-number">4</div><h4 class="mcq-title">¿Qué rasgo vuelve diferente a un controlador difuso tipo 2?</h4></div>
+              <div class="options">
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'p34','Incorrecto. El tipo 2 no elimina las funciones de pertenencia.')">No usa funciones de pertenencia.</button>
+                <button class="option" data-correct="true" onclick="checkMCQ(this,'p34','Correcto. El tipo 2 incorpora una huella de incertidumbre usando funciones de pertenencia superior e inferior.')">Representa incertidumbre adicional mediante funciones de pertenencia superior e inferior.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'p34','Incorrecto. El tipo 2 no está restringido a una sola entrada o salida.')">Solo admite una entrada y una salida.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'p34','Incorrecto. No se define por eliminar la defusificación.')">Nunca utiliza etapa de salida numérica.</button>
+              </div>
+              <div class="mcq-result" id="p34"></div>
+            </div>
+
+            <div class="mcq-card">
+              <div class="mcq-head"><div class="mcq-number">5</div><h4 class="mcq-title">Según el método general de diseño, ¿qué ocurre después de organizar la base de datos del FC?</h4></div>
+              <div class="options">
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'p35','Incorrecto. Esa acción viene después, cuando ya se han definido membresías y reglas.')">Aplicar directamente la salida numérica al proceso.</button>
+                <button class="option" data-correct="true" onclick="checkMCQ(this,'p35','Correcto. Luego se selecciona el tipo de funciones de membresía cuidando universo, soporte, altura y superposición.')">Seleccionar el tipo de funciones de membresía difusas.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'p35','Incorrecto. El diseño no pasa directamente de la base de datos al híbrido.')">Agregar redes neuronales de manera obligatoria.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'p35','Incorrecto. El control difuso no se diseña empezando por las métricas finales.')">Calcular primero tiempo de subida y sobreimpulso.</button>
+              </div>
+              <div class="mcq-result" id="p35"></div>
+            </div>
+
+            <div class="mcq-card">
+              <div class="mcq-head"><div class="mcq-number">6</div><h4 class="mcq-title">¿Qué muestra principalmente el ejercicio 5 de la sección 1.6?</h4></div>
+              <div class="options">
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'p36','Incorrecto. Eso corresponde más al ejercicio de simulación temporal del sistema de segundo orden.')">La respuesta temporal completa del sistema con métricas.</button>
+                <button class="option" data-correct="true" onclick="checkMCQ(this,'p36','Correcto. El ejercicio 5 construye la base de 25 reglas del PD difuso y la superficie de control 3D.')">La base de reglas del controlador PD y la superficie de control en 3D.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'p36','Incorrecto. El ejercicio 5 no se centra en instalación de librerías.')">Solo la instalación de librerías en Colab.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'p36','Incorrecto. La comparación con PID aparece después, en otro ejercicio.')">Una comparación final entre PID clásico y control difuso.</button>
+              </div>
+              <div class="mcq-result" id="p36"></div>
+            </div>
+
+            <div class="mcq-card">
+              <div class="mcq-head"><div class="mcq-number">7</div><h4 class="mcq-title">En el ejercicio 6, además de la salida del sistema, ¿qué otras dos señales se grafican explícitamente?</h4></div>
+              <div class="options">
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'p37','Incorrecto. No se muestra una red neuronal ni una función de costo en ese ejercicio.')">La función de costo y la red neuronal.</button>
+                <button class="option" data-correct="true" onclick="checkMCQ(this,'p37','Correcto. Se grafican la señal de control u(t) y la evolución del error e(t), además de la salida.')">La señal de control y el error.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'p37','Incorrecto. La base de reglas no se grafica como señal temporal en ese ejercicio.')">La base de reglas y el soporte de las membresías.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'p37','Incorrecto. El ejercicio no se centra en ruido ni frecuencia.')">El ruido de medición y la frecuencia de muestreo.</button>
+              </div>
+              <div class="mcq-result" id="p37"></div>
+            </div>
+
+            <div class="mcq-card">
+              <div class="mcq-head"><div class="mcq-number">8</div><h4 class="mcq-title">¿Cuál interpretación es la más correcta sobre la sección 1.6 del material?</h4></div>
+              <div class="options">
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'p38','Incorrecto. La sección 1.6 sí incluye desarrollo práctico y código.')">Es una parte puramente teórica sin implementación alguna.</button>
+                <button class="option" data-correct="true" onclick="checkMCQ(this,'p38','Correcto. La sección 1.6 lleva la teoría a ejemplos prácticos en Python/Colab, desde funciones de pertenencia hasta simulaciones de control difuso.')">Es la parte donde la teoría se lleva a ejemplos prácticos programados, desde membresías hasta simulación del controlador.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'p38','Incorrecto. No se limita a solo instalar paquetes.')">Solo enseña a instalar librerías y no desarrolla control.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'p38','Incorrecto. La sección 1.6 sí trata control difuso y no únicamente redes neuronales.')">Está dedicada exclusivamente a redes neuronales profundas.</button>
+              </div>
+              <div class="mcq-result" id="p38"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="card center">
+        <h3 style="margin-top:0">Página lista para estudiar</h3>
+        <p class="small-note">
+          Esta versión está centrada únicamente en la <span class="hl">parte 3</span>: <strong>controladores difusos</strong>, <strong>estructuras del FLC</strong>, <strong>tipo 1 y tipo 2</strong>, <strong>método general de diseño</strong> y la introducción detallada de la sección <strong>1.6 Ejemplos</strong>. Se reforzó la explicación porque aquí el bloque es más corto, y los diagramas fueron reordenados respetando la lógica mostrada en el material.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const themeBtn = document.getElementById('themeBtn');
+    themeBtn.addEventListener('click', () => {
+      document.body.classList.toggle('light');
+      themeBtn.textContent = document.body.classList.contains('light') ? '🌙 Modo oscuro' : '☀️ Modo claro';
+    });
+
+    function checkMCQ(button, resultId, explanation){
+      const card = button.closest('.mcq-card');
+      const options = card.querySelectorAll('.option');
+      const result = document.getElementById(resultId);
+      const isCorrect = button.dataset.correct === 'true';
+
+      options.forEach(opt => {
+        opt.classList.add('locked');
+        if(opt !== button) opt.classList.add('dimmed');
+        if(opt.dataset.correct === 'true') opt.classList.add('correct');
+      });
+
+      if(!isCorrect){
+        button.classList.remove('correct');
+        button.classList.add('wrong');
+      }
+
+      result.className = `mcq-result show ${isCorrect ? 'good' : 'bad'}`;
+      result.innerHTML = isCorrect
+        ? `<strong style="color:var(--green)">Correcto.</strong> ${explanation}`
+        : `<strong style="color:#ff9aa5">Incorrecto.</strong> ${explanation}`;
+    }
+  </script>
+</body>
+</html>
