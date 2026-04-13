@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Control Difuso - Fundamentos y Funciones de Pertenencia</title>
+  <title>Control Difuso - Fundamentos, definiciones, leyes, funciones y estudio</title>
   <style>
     :root{
       --bg:#07111f;
@@ -55,7 +55,7 @@
         linear-gradient(180deg,var(--bg),var(--bg2));
     }
     a{text-decoration:none;color:inherit}
-    .container{width:min(1220px,92%);margin:auto}
+    .container{width:min(1240px,92%);margin:auto}
 
     .topbar{
       position:sticky;top:0;z-index:90;
@@ -67,7 +67,7 @@
 
     .nav{
       display:flex;justify-content:space-between;align-items:center;gap:14px;
-      padding:14px 0;
+      padding:14px 0;flex-wrap:wrap;
     }
     .brand{display:flex;align-items:center;gap:12px}
     .logo{
@@ -97,18 +97,6 @@
       background:linear-gradient(135deg, rgba(255,95,109,.12), rgba(78,168,255,.12)), rgba(255,255,255,.02);
       box-shadow:var(--shadow);
     }
-    .hero-card::before,
-    .hero-card::after{
-      content:"";position:absolute;border-radius:50%;filter:blur(10px);pointer-events:none;
-    }
-    .hero-card::before{
-      width:220px;height:220px;right:-70px;top:-60px;
-      background:radial-gradient(circle, rgba(103,232,249,.18), transparent 68%);
-    }
-    .hero-card::after{
-      width:260px;height:260px;left:-80px;bottom:-100px;
-      background:radial-gradient(circle, rgba(139,123,255,.16), transparent 68%);
-    }
     .pill{
       display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;
       border:1px solid var(--line);background:var(--glass);color:var(--muted);font-size:.92rem;
@@ -118,7 +106,7 @@
       background:linear-gradient(90deg,var(--red),var(--cyan),var(--blue));
       -webkit-background-clip:text;background-clip:text;color:transparent;
     }
-    .subtitle{max-width:980px;color:var(--muted);line-height:1.85;font-size:1.06rem}
+    .subtitle{max-width:1000px;color:var(--muted);line-height:1.85;font-size:1.06rem}
     .quick-links{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
     .quick-links a{
       padding:10px 14px;border-radius:14px;border:1px solid var(--line);
@@ -136,7 +124,7 @@
     section{padding:18px 0 34px}
     .section-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:16px}
     .section-title{margin:0;font-size:2rem}
-    .section-text{margin:0;color:var(--muted);line-height:1.82;max-width:980px}
+    .section-text{margin:0;color:var(--muted);line-height:1.82;max-width:1000px}
 
     .grid{display:grid;gap:18px}
     .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -166,12 +154,10 @@
       margin:14px 0 0;
       padding:14px 16px;border-radius:18px;border:1px solid var(--line);
       background:rgba(255,255,255,.04);font-family:Cambria,Georgia,serif;
-      font-size:1.04rem;color:var(--text);overflow:auto;
+      font-size:1.04rem;color:var(--text);overflow:auto;line-height:1.8;
     }
 
-    .compare{
-      display:grid;grid-template-columns:1.1fr .9fr;gap:18px;
-    }
+    .compare{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
     @media (max-width:1024px){.compare{grid-template-columns:1fr}}
 
     .mini-diagram{
@@ -199,9 +185,21 @@
     .curve-violet{fill:none;stroke:#8b7bff;stroke-width:4}
     .curve-yellow{fill:none;stroke:#ffd166;stroke-width:4}
     .curve-green{fill:none;stroke:#46e7a8;stroke-width:4}
-    .soft-fill-red{fill:rgba(255,95,109,.10)}
-    .soft-fill-blue{fill:rgba(78,168,255,.10)}
-    .soft-fill-violet{fill:rgba(139,123,255,.12)}
+
+    .definition-list{display:grid;gap:16px}
+    .definition{
+      border:1px solid var(--line);border-radius:22px;padding:20px;
+      background:linear-gradient(180deg,var(--panel),var(--panel2));box-shadow:var(--shadow)
+    }
+    .definition h4{margin:0 0 10px;font-size:1.06rem}
+    .definition p{margin:0;color:var(--muted);line-height:1.8}
+    .definition .math{margin-top:12px}
+
+    .separator{
+      display:flex;align-items:center;gap:14px;margin:10px 0 16px;
+      color:var(--muted2);font-weight:800;letter-spacing:.05em;text-transform:uppercase;font-size:.84rem;
+    }
+    .separator::before,.separator::after{content:"";height:1px;flex:1;background:var(--line)}
 
     .timeline{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
     @media (max-width:1024px){.timeline{grid-template-columns:1fr}}
@@ -213,15 +211,6 @@
       width:38px;height:38px;border-radius:50%;display:grid;place-items:center;margin-bottom:12px;
       background:linear-gradient(135deg,var(--red),var(--blue));font-weight:900;color:#fff;
     }
-
-    .accordion{display:grid;gap:12px}
-    details{
-      border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,var(--panel),var(--panel2));
-      padding:14px 16px;
-    }
-    summary{cursor:pointer;font-weight:800;list-style:none}
-    summary::-webkit-details-marker{display:none}
-    details p{color:var(--muted);line-height:1.8;margin:12px 0 0}
 
     .flashcards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
     @media (max-width:1024px){.flashcards{grid-template-columns:1fr}}
@@ -239,119 +228,36 @@
     .face p{margin:0;color:#f8fbff;line-height:1.72}
     .mini{display:inline-block;margin-top:10px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.12);font-size:.82rem;font-weight:700}
 
-    .mcq{
-      display:grid;
-      gap:20px;
-    }
+    .mcq{display:grid;gap:20px}
     .mcq-card{
-      position:relative;
-      overflow:hidden;
-      padding:24px;
-      border-radius:24px;
-      border:1px solid var(--line);
+      position:relative;overflow:hidden;padding:24px;border-radius:24px;border:1px solid var(--line);
       background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.025)),linear-gradient(180deg,var(--panel),var(--panel2));
       box-shadow:var(--shadow);
     }
-    .mcq-card::before{
-      content:"";
-      position:absolute;
-      inset:0 0 auto 0;
-      height:4px;
-      background:linear-gradient(90deg,var(--red),var(--cyan),var(--blue));
-      opacity:.95;
-    }
-    .mcq-head{
-      display:flex;
-      align-items:flex-start;
-      gap:14px;
-      margin-bottom:16px;
-    }
-    .mcq-number{
-      min-width:40px;
-      height:40px;
-      border-radius:50%;
-      display:grid;
-      place-items:center;
-      font-weight:900;
-      color:#fff;
-      background:linear-gradient(135deg,var(--red),var(--blue));
-      box-shadow:var(--shadow);
-    }
-    .mcq-title{
-      margin:0;
-      line-height:1.6;
-      font-size:1.05rem;
-    }
-    .options{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:12px;
-      margin-top:10px;
-    }
+    .mcq-card::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,var(--red),var(--cyan),var(--blue));opacity:.95}
+    .mcq-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px}
+    .mcq-number{min-width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:900;color:#fff;background:linear-gradient(135deg,var(--red),var(--blue));box-shadow:var(--shadow)}
+    .mcq-title{margin:0;line-height:1.6;font-size:1.05rem}
+    .options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:10px}
     @media (max-width:1024px){.options{grid-template-columns:1fr}}
-    .option{
-      text-align:left;
-      width:100%;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.05);
-      color:var(--text);
-      padding:14px 16px;
-      border-radius:16px;
-      cursor:pointer;
-      font:inherit;
-      line-height:1.6;
-      transition:transform .2s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
-    }
+    .option{text-align:left;width:100%;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:var(--text);padding:14px 16px;border-radius:16px;cursor:pointer;font:inherit;line-height:1.6;transition:transform .2s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease}
     body.light .option{border-color:rgba(15,23,42,.12);background:rgba(15,23,42,.03)}
-    .option:hover{
-      transform:translateY(-2px);
-      background:rgba(255,255,255,.08);
-      border-color:rgba(103,232,249,.35);
-      box-shadow:0 10px 22px rgba(0,0,0,.12);
-    }
+    .option:hover{transform:translateY(-2px);background:rgba(255,255,255,.08);border-color:rgba(103,232,249,.35);box-shadow:0 10px 22px rgba(0,0,0,.12)}
     body.light .option:hover{background:rgba(15,23,42,.05)}
-    .option.locked{
-      pointer-events:none;
-      opacity:.88;
-    }
-    .option.correct{
-      border-color:rgba(70,231,168,.55);
-      background:rgba(70,231,168,.14);
-      color:var(--text);
-    }
-    .option.wrong{
-      border-color:rgba(255,95,109,.58);
-      background:rgba(255,95,109,.14);
-      color:var(--text);
-    }
-    .option.dimmed{
-      opacity:.52;
-      filter:saturate(.8);
-    }
-    .mcq-result{
-      margin-top:14px;
-      padding:14px 16px;
-      border-radius:16px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.04);
-      color:var(--muted);
-      line-height:1.75;
-      display:none;
-    }
+    .option.locked{pointer-events:none;opacity:.88}
+    .option.correct{border-color:rgba(70,231,168,.55);background:rgba(70,231,168,.14)}
+    .option.wrong{border-color:rgba(255,95,109,.58);background:rgba(255,95,109,.14)}
+    .option.dimmed{opacity:.52;filter:saturate(.8)}
+    .mcq-result{margin-top:14px;padding:14px 16px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);line-height:1.75;display:none}
     .mcq-result.show{display:block}
-    .mcq-result.good{
-      border-color:rgba(70,231,168,.35);
-      background:rgba(70,231,168,.10);
-    }
-    .mcq-result.bad{
-      border-color:rgba(255,95,109,.35);
-      background:rgba(255,95,109,.10);
-    }
+    .mcq-result.good{border-color:rgba(70,231,168,.35);background:rgba(70,231,168,.10)}
+    .mcq-result.bad{border-color:rgba(255,95,109,.35);background:rgba(255,95,109,.10)}
 
     .footer{padding:24px 0 60px;color:var(--muted)}
     .small-note{color:var(--muted2);font-size:.93rem;line-height:1.75}
     .center{text-align:center}
     .hl{color:var(--cyan);font-weight:800}
+    code.inline{background:rgba(255,255,255,.08);padding:2px 8px;border-radius:8px;border:1px solid var(--line);font-family:Consolas,monospace;font-size:.94em}
   </style>
 </head>
 <body>
@@ -361,7 +267,7 @@
         <div class="logo">FD</div>
         <div>
           <h3>Control Avanzado II</h3>
-          <small>Fundamentos de lógica difusa · páginas 1 a 8</small>
+          <small>Teoría completa de lógica difusa · explicada y separada</small>
         </div>
       </div>
       <div class="nav-actions">
@@ -375,24 +281,21 @@
     <section class="hero">
       <div class="container">
         <div class="hero-card">
-          <span class="pill">Página interactiva · teoría + figuras + resumen + preguntas</span>
-          <h1><span class="gradient">Lógica difusa</span>, universo de discurso y funciones de pertenencia</h1>
+          <span class="pill">Página interactiva · teoría completa + fórmulas + explicaciones + preguntas</span>
+          <h1><span class="gradient">Lógica difusa</span>, universo de discurso, leyes, operaciones y funciones de pertenencia</h1>
           <p class="subtitle">
-            Esta página resume de forma visual y teórica los puntos más importantes de la primera parte de la unidad:
-            <strong>qué es la lógica difusa</strong>, cómo se diferencia de la lógica convencional, qué es el
-            <strong>universo de discurso</strong>, cómo funcionan los <strong>grados de pertenencia</strong>, cuáles son las
-            <strong>operaciones entre conjuntos difusos</strong>, qué son los <strong>modificadores</strong> y cuáles son las
-            <strong>funciones de pertenencia más usadas</strong>. Al final también tienes <strong>flashcards</strong> y una sección de
-            <strong>preguntas para estudiar</strong>.
+            Esta versión conserva <strong>toda la estructura importante de la página anterior</strong>, pero ahora la teoría está más completa. Se añadieron las <strong>definiciones 1.1 a 1.11</strong>, las <strong>fórmulas</strong>, la explicación de cada ley y operación, y se separó cada tema en bloques para que puedas estudiar mejor. La idea es que no solo veas la expresión matemática, sino también <strong>qué significa</strong>, <strong>cómo se interpreta</strong> y <strong>para qué sirve</strong> dentro de la lógica difusa y el control.
           </p>
 
           <div class="quick-links">
             <a href="#intro">Introducción</a>
             <a href="#comparacion">Lógica convencional vs difusa</a>
-            <a href="#definiciones">Definiciones</a>
+            <a href="#definiciones">Definiciones 1.1 a 1.11</a>
             <a href="#universo">Universo de discurso</a>
             <a href="#modificadores">Modificadores</a>
             <a href="#funciones">Funciones de pertenencia</a>
+            <a href="#resumen">Resumen</a>
+            <a href="#flashcards">Flashcards</a>
             <a href="#preguntas">Preguntas</a>
           </div>
 
@@ -402,16 +305,16 @@
               <span>La pertenencia difusa no es binaria, sino gradual.</span>
             </div>
             <div class="stat">
-              <strong>Soporte</strong>
-              <span>Zona del dominio donde la función tiene pertenencia mayor que cero.</span>
+              <strong>max / min</strong>
+              <span>La unión y la intersección básicas se calculan con máximo y mínimo.</span>
             </div>
             <div class="stat">
-              <strong>Altura</strong>
-              <span>Valor máximo que alcanza una función de pertenencia.</span>
+              <strong>1 - μ(x)</strong>
+              <span>El complemento invierte el grado de pertenencia.</span>
             </div>
             <div class="stat">
-              <strong>6 MFs</strong>
-              <span>Triangular, gamma, S, gaussiana, trapezoidal y seudo-exponencial.</span>
+              <strong>Convexidad</strong>
+              <span>Propiedad importante para que los conjuntos tengan una forma coherente.</span>
             </div>
           </div>
         </div>
@@ -424,8 +327,7 @@
           <div>
             <h2 class="section-title">1. Introducción general</h2>
             <p class="section-text">
-              La lógica difusa aparece como una herramienta para representar la incertidumbre y la imprecisión propias del razonamiento humano.
-              En lugar de obligar a que algo sea completamente verdadero o completamente falso, permite expresar grados intermedios de pertenencia.
+              La lógica difusa aparece como una herramienta para representar la incertidumbre y la imprecisión propias del razonamiento humano. En lugar de obligar a que algo sea completamente verdadero o completamente falso, permite expresar grados intermedios de pertenencia. Por eso, conceptos como <strong>bajo</strong>, <strong>medio</strong>, <strong>alto</strong>, <strong>rápido</strong> o <strong>lento</strong> pueden modelarse de forma matemática sin imponer límites bruscos.
             </p>
           </div>
         </div>
@@ -435,9 +337,7 @@
             <div class="bar"></div>
             <h3>¿Qué estudia esta parte del tema?</h3>
             <p>
-              Esta primera parte se enfoca en los fundamentos del control difuso: el significado de los conjuntos difusos,
-              la forma en que se describen con funciones de pertenencia, las operaciones básicas entre conjuntos y las clases de
-              funciones que se usan para modelar conceptos lingüísticos como <strong>bajo</strong>, <strong>medio</strong> o <strong>alto</strong>.
+              Esta primera parte se enfoca en los fundamentos de los conjuntos difusos: qué son, cómo se describen mediante funciones de pertenencia, qué operaciones pueden hacerse entre ellos y qué leyes deben cumplir. También presenta conceptos como universo de discurso, soporte, altura, modificadores lingüísticos y funciones de pertenencia.
             </p>
           </article>
 
@@ -445,16 +345,13 @@
             <div class="bar"></div>
             <h3>¿Por qué es importante?</h3>
             <p>
-              Porque muchos procesos reales no se describen bien con límites rígidos. En control automático, una variable puede ser
-              <strong>un poco alta</strong>, <strong>moderadamente baja</strong> o <strong>muy cercana al valor deseado</strong>. La lógica difusa permite traducir
-              esas ideas del lenguaje natural a una forma matemática utilizable.
+              Porque muchos procesos reales no se describen bien con límites rígidos. En control automático, una variable puede ser <strong>un poco alta</strong>, <strong>moderadamente baja</strong> o <strong>casi correcta</strong>. La lógica difusa permite traducir esas ideas del lenguaje natural a una representación matemática que luego puede utilizarse en reglas y controladores.
             </p>
           </article>
         </div>
 
         <div class="highlight" style="margin-top:18px">
-          <strong>Idea clave:</strong> la lógica difusa no reemplaza a la lógica clásica en todos los casos; más bien amplía su alcance cuando el problema
-          incluye vaguedad, interpretación humana o transiciones graduales entre estados.
+          <strong>Idea clave:</strong> la lógica difusa no reemplaza a la lógica clásica en todos los casos; más bien la amplía cuando el problema contiene vaguedad, interpretación humana o transiciones suaves entre estados.
         </div>
       </div>
     </section>
@@ -466,7 +363,7 @@
             <div>
               <h2 class="section-title">2. Lógica convencional vs lógica difusa</h2>
               <p class="section-text">
-                Una de las figuras más importantes del material muestra que la diferencia principal está en cómo se define la pertenencia.
+                La diferencia principal entre ambas está en la forma en que se define la pertenencia de un valor a un conjunto.
               </p>
             </div>
           </div>
@@ -475,12 +372,10 @@
             <div class="bar"></div>
             <h3>Interpretación teórica</h3>
             <p>
-              En la lógica convencional, un elemento pertenece o no pertenece a un conjunto. Eso significa que solo hay dos opciones:
-              <strong>0</strong> o <strong>1</strong>. En cambio, en la lógica difusa la pertenencia puede tomar cualquier valor entre 0 y 1, lo que permite representar
-              transiciones suaves. Así, una persona no es simplemente <em>alta</em> o <em>no alta</em>; puede pertenecer al conjunto <em>alto</em> con cierto grado.
+              En la lógica convencional, un elemento pertenece o no pertenece a un conjunto. Eso significa que solo hay dos posibilidades: <strong>0</strong> o <strong>1</strong>. En cambio, en la lógica difusa la pertenencia puede tomar cualquier valor entre 0 y 1, lo que permite representar transiciones graduales.
             </p>
             <p>
-              Esta idea es esencial cuando se trabaja con conceptos lingüísticos, porque en la realidad las fronteras no siempre están claramente definidas.
+              Así, una temperatura no es solamente <em>alta</em> o <em>no alta</em>; puede pertenecer al conjunto <em>alta</em> con un cierto grado, por ejemplo 0.4, 0.7 o 0.9. Esa capacidad de representar matices es la base de la teoría difusa.
             </p>
           </div>
         </div>
@@ -514,68 +409,129 @@
       <div class="container">
         <div class="section-head">
           <div>
-            <h2 class="section-title">3. Definiciones fundamentales</h2>
+            <h2 class="section-title">3. Definiciones fundamentales y leyes básicas</h2>
             <p class="section-text">
-              Aquí está la base matemática que sostiene toda la lógica difusa. Estas definiciones sirven para entender cómo se construyen y manipulan los conjuntos difusos.
+              Aquí están reunidas y separadas las definiciones 1.1 a 1.11. Cada bloque incluye la fórmula y una explicación breve para que se entienda el significado, no solo la notación.
             </p>
           </div>
         </div>
 
-        <div class="grid grid-3">
-          <article class="card">
-            <div class="bar"></div>
-            <h3>Conjunto difuso</h3>
-            <p>
-              Un conjunto difuso <strong>A</strong> es una clase de objetos <strong>x</strong> que tienen un grado de pertenencia continuo entre <strong>0 y 1</strong>.
-              Ese grado se expresa mediante una función de pertenencia μ<sub>A</sub>(x).
-            </p>
-            <div class="math">A = { x / μ<sub>A</sub>(x) }, con 0 ≤ μ<sub>A</sub>(x) ≤ 1</div>
-          </article>
+        <div class="separator">Definiciones fundamentales</div>
+        <div class="definition-list">
+          <div class="definition">
+            <span class="chip">Definición 1.1</span>
+            <h4>Conjunto difuso</h4>
+            <p>Un conjunto difuso <strong>A</strong> es una clase de objetos <strong>x</strong> con un grado de pertenencia continuo entre 0 y 1, perteneciente al universo del discurso <strong>X</strong>.</p>
+            <div class="math">μ<sub>A</sub>(x) ∈ [0,1], &nbsp; x ∈ X</div>
+            <p>Esto significa que un elemento no pertenece solamente de forma total o nula, sino en cierto grado. Ese grado lo da la función de pertenencia.</p>
+          </div>
 
-          <article class="card">
-            <div class="bar"></div>
-            <h3>Igualdad, inclusión y complemento</h3>
-            <p>
-              Dos conjuntos difusos son iguales si sus grados de pertenencia coinciden. Un conjunto está incluido en otro cuando su pertenencia nunca supera a la del segundo.
-              El complemento invierte la pertenencia respecto a 1.
-            </p>
-            <div class="math">μ<sub>A′</sub>(x) = 1 − μ<sub>A</sub>(x)</div>
-          </article>
+          <div class="definition">
+            <span class="chip">Definición 1.2</span>
+            <h4>Igualdad de conjuntos difusos</h4>
+            <p>Dos conjuntos difusos <strong>A</strong> y <strong>B</strong> son iguales si sus grados de pertenencia coinciden para todos los elementos del universo.</p>
+            <div class="math">A = B &nbsp; ⇔ &nbsp; μ<sub>A</sub>(x) = μ<sub>B</sub>(x), &nbsp; ∀x ∈ X</div>
+            <p>No basta con que se parezcan visualmente; deben coincidir punto a punto en su función de pertenencia.</p>
+          </div>
 
-          <article class="card">
-            <div class="bar"></div>
-            <h3>Unión e intersección</h3>
-            <p>
-              La unión entre dos conjuntos difusos se obtiene tomando el <strong>máximo</strong> entre sus pertenencias,
-              mientras que la intersección se obtiene tomando el <strong>mínimo</strong>.
-            </p>
-            <div class="math">
-              μ<sub>A∪B</sub>(x)=max(μ<sub>A</sub>(x), μ<sub>B</sub>(x))<br>
-              μ<sub>A∩B</sub>(x)=min(μ<sub>A</sub>(x), μ<sub>B</sub>(x))
-            </div>
-          </article>
+          <div class="definition">
+            <span class="chip">Definición 1.3</span>
+            <h4>Complemento del conjunto difuso</h4>
+            <p>El complemento de <strong>A</strong>, denotado por <strong>A′</strong>, representa el grado en que un elemento no pertenece a dicho conjunto.</p>
+            <div class="math">μ<sub>A′</sub>(x) = 1 - μ<sub>A</sub>(x)</div>
+            <p>Si un elemento pertenece mucho a <strong>A</strong>, pertenecerá poco a su complemento, y viceversa.</p>
+          </div>
+
+          <div class="definition">
+            <span class="chip">Definición 1.4</span>
+            <h4>Inclusión</h4>
+            <p>Se dice que un conjunto difuso <strong>A</strong> está incluido en <strong>B</strong> si para todo elemento del universo el grado de pertenencia a <strong>A</strong> es menor o igual que el de <strong>B</strong>.</p>
+            <div class="math">A ⊂ B &nbsp; ⇔ &nbsp; μ<sub>A</sub>(x) ≤ μ<sub>B</sub>(x), &nbsp; ∀x ∈ X</div>
+            <p>Esto expresa que todo lo que pertenece a <strong>A</strong> también está contenido dentro de <strong>B</strong>, al menos con el mismo grado o uno mayor.</p>
+          </div>
+
+          <div class="definition">
+            <span class="chip">Definición 1.5</span>
+            <h4>Unión</h4>
+            <p>La unión de los conjuntos difusos <strong>A</strong> y <strong>B</strong> se obtiene tomando, para cada punto del universo, el mayor de los dos grados de pertenencia.</p>
+            <div class="math">C = A ∪ B &nbsp; ⇔ &nbsp; μ<sub>C</sub>(x) = max[μ<sub>A</sub>(x), μ<sub>B</sub>(x)]</div>
+            <p>La unión responde a la pregunta: “¿qué tanto pertenece el elemento a por lo menos uno de los dos conjuntos?”.</p>
+          </div>
+
+          <div class="definition">
+            <span class="chip">Definición 1.6</span>
+            <h4>Intersección</h4>
+            <p>La intersección de los conjuntos difusos <strong>A</strong> y <strong>B</strong> se obtiene tomando el menor de los dos grados de pertenencia.</p>
+            <div class="math">C = A ∩ B &nbsp; ⇔ &nbsp; μ<sub>C</sub>(x) = min[μ<sub>A</sub>(x), μ<sub>B</sub>(x)]</div>
+            <p>La intersección refleja la parte común entre ambos conjuntos, es decir, qué tanto un elemento pertenece simultáneamente a ambos.</p>
+          </div>
         </div>
 
-        <div class="grid grid-2" style="margin-top:18px">
-          <article class="card">
+        <div class="separator">Leyes de Morgan</div>
+        <div class="grid grid-2">
+          <div class="card">
             <div class="bar"></div>
-            <h3>Leyes importantes</h3>
-            <ul>
-              <li><strong>Leyes de Morgan:</strong> relacionan complemento, unión e intersección.</li>
-              <li><strong>Leyes distributivas:</strong> mantienen coherencia algebraica entre operaciones.</li>
-              <li><strong>Suma algebraica:</strong> combina pertenencias manteniendo el límite superior adecuado.</li>
-              <li><strong>Diferencia absoluta:</strong> mide cuánto difieren dos funciones de pertenencia.</li>
-            </ul>
-          </article>
+            <h3>Definición 1.7 · Primera ley de Morgan</h3>
+            <div class="math">(A ∪ B)′ = A′ ∩ B′</div>
+            <p>El complemento de la unión equivale a la intersección de los complementos. En términos intuitivos, no pertenecer a la unión significa no pertenecer ni a <strong>A</strong> ni a <strong>B</strong>.</p>
+          </div>
+          <div class="card">
+            <div class="bar"></div>
+            <h3>Definición 1.7 · Segunda ley de Morgan</h3>
+            <div class="math">(A ∩ B)′ = A′ ∪ B′</div>
+            <p>El complemento de la intersección equivale a la unión de los complementos. Si un elemento no pertenece a la parte común, entonces falla al menos en uno de los dos conjuntos.</p>
+          </div>
+        </div>
 
-          <article class="card">
+        <div class="separator">Leyes distributivas</div>
+        <div class="grid grid-2">
+          <div class="card">
             <div class="bar"></div>
-            <h3>Convexidad</h3>
-            <p>
-              El texto remarca que los conjuntos difusos usados en control deben ser <strong>convexos</strong>. Eso significa, de manera intuitiva,
-              que no deben tener “huecos extraños” en su forma. Esta propiedad favorece comportamientos más estables y respuestas finitas en sistemas de control.
-            </p>
-          </article>
+            <h3>Definición 1.8 · Distribución de la intersección</h3>
+            <div class="math">C ∩ (A ∪ B) = (C ∩ A) ∪ (C ∩ B)</div>
+            <p>Esta ley indica que intersectar un conjunto con una unión puede hacerse por partes y después unir los resultados. Ayuda a reorganizar expresiones sin cambiar su significado.</p>
+          </div>
+          <div class="card">
+            <div class="bar"></div>
+            <h3>Definición 1.8 · Distribución de la unión</h3>
+            <div class="math">C ∪ (A ∩ B) = (C ∪ A) ∩ (C ∪ B)</div>
+            <p>Aquí ocurre lo contrario: la unión con una intersección puede separarse en dos uniones y luego intersectarse. Es una ley útil para simplificar operaciones más largas.</p>
+          </div>
+        </div>
+
+        <div class="separator">Operaciones adicionales</div>
+        <div class="grid grid-2">
+          <div class="card">
+            <div class="bar"></div>
+            <h3>Definición 1.9 · Suma algebraica</h3>
+            <p>La suma algebraica entre dos conjuntos difusos <strong>A</strong> y <strong>B</strong> combina sus grados de pertenencia mediante una suma, pero exigiendo que el resultado no supere 1.</p>
+            <div class="math">
+              A + B<br>
+              μ<sub>A+B</sub>(x) = μ<sub>A</sub>(x) + μ<sub>B</sub>(x),<br>
+              con la condición &nbsp; μ<sub>A</sub>(x) + μ<sub>B</sub>(x) ≤ 1
+            </div>
+            <p>Esta operación sirve cuando se quiere representar un efecto acumulativo de pertenencias sin salir del intervalo válido de la lógica difusa.</p>
+          </div>
+
+          <div class="card">
+            <div class="bar"></div>
+            <h3>Definición 1.10 · Diferencia absoluta</h3>
+            <p>La diferencia absoluta entre <strong>A</strong> y <strong>B</strong> mide cuánto difieren sus funciones de pertenencia en cada valor del universo.</p>
+            <div class="math">μ<sub>|A-B|</sub>(x) = | μ<sub>A</sub>(x) - μ<sub>B</sub>(x) |</div>
+            <p>Mientras más grande sea este valor, mayor será la diferencia entre ambos conjuntos en ese punto.</p>
+          </div>
+        </div>
+
+        <div class="separator">Propiedad geométrica</div>
+        <div class="card">
+          <div class="bar"></div>
+          <h3>Definición 1.11 · Conjunto difuso convexo</h3>
+          <p>Un conjunto difuso se considera convexo si, al tomar dos puntos del universo, cualquier punto intermedio conserva una pertenencia no menor que el mínimo de los extremos.</p>
+          <div class="math">
+            ∀x,y ∈ X, &nbsp; ∀λ ∈ [0,1]:<br>
+            μ<sub>A</sub>(λx + (1-λ)y) ≥ min[μ<sub>A</sub>(x), μ<sub>A</sub>(y)]
+          </div>
+          <p>Intuitivamente, esto quiere decir que el conjunto no tiene “huecos” o caídas extrañas entre dos puntos importantes. En control difuso, esta propiedad ayuda a definir conjuntos bien formados y más coherentes.</p>
         </div>
       </div>
     </section>
@@ -586,7 +542,7 @@
           <div>
             <h2 class="section-title">4. Universo de discurso, soporte y altura</h2>
             <p class="section-text">
-              Estos tres conceptos aparecen varias veces y suelen preguntarse directamente en teoría. Conviene tenerlos bien diferenciados.
+              Estos tres conceptos aparecen constantemente y conviene diferenciarlos bien porque suelen preguntarse directamente en teoría.
             </p>
           </div>
         </div>
@@ -596,11 +552,10 @@
             <div class="bar"></div>
             <h3>¿Qué es el universo de discurso?</h3>
             <p>
-              Es el <strong>conjunto total de valores posibles</strong> que puede tomar una variable. Por ejemplo, si una temperatura se estudia entre 0 °C y 100 °C,
-              ese intervalo es su universo de discurso. Dentro de ese universo se definen los conjuntos difusos como <em>baja</em>, <em>media</em> y <em>alta</em>.
+              Es el <strong>conjunto total de valores posibles</strong> que puede tomar una variable. Por ejemplo, si una temperatura se estudia entre 0 °C y 100 °C, ese intervalo constituye su universo de discurso. Dentro de ese rango se definen los conjuntos difusos, como por ejemplo <em>fría</em>, <em>templada</em> y <em>caliente</em>.
             </p>
             <p>
-              Dicho simple: el universo de discurso es el <strong>rango completo donde vive la variable</strong>.
+              Dicho de forma sencilla, el universo de discurso es el espacio donde “vive” la variable que estamos analizando.
             </p>
           </article>
 
@@ -608,12 +563,12 @@
             <div class="bar"></div>
             <h3>Soporte y altura</h3>
             <p>
-              El <strong>soporte</strong> es la zona del dominio donde la función de pertenencia es mayor que cero. La <strong>altura</strong> es el valor máximo que alcanza esa función.
-              En muchas funciones normalizadas, la altura es igual a 1.
+              El <strong>soporte</strong> es la parte del dominio donde la función de pertenencia toma valores mayores que cero. La <strong>altura</strong> es el valor máximo que alcanza esa función. En muchos conjuntos normalizados, la altura vale 1.
             </p>
-            <div class="math">
-              soporte(A) = {x ∈ X / μ<sub>A</sub>(x) &gt; 0}
-            </div>
+            <div class="math">soporte(A) = { x ∈ X / μ<sub>A</sub>(x) &gt; 0 }</div>
+            <p>
+              Estos conceptos permiten identificar en qué rango un conjunto tiene efecto y qué tan fuerte puede llegar a ser su pertenencia.
+            </p>
           </article>
         </div>
 
@@ -645,7 +600,7 @@
           <div>
             <h2 class="section-title">5. Modificadores difusos</h2>
             <p class="section-text">
-              Otra imagen importante muestra que una misma idea lingüística puede intensificarse o suavizarse usando modificadores matemáticos.
+              Los modificadores difusos permiten transformar una función de pertenencia para reflejar palabras como <strong>muy</strong>, <strong>más o menos</strong> o <strong>extremadamente</strong>. En otras palabras, son operadores lingüísticos convertidos en operaciones matemáticas.
             </p>
           </div>
         </div>
@@ -655,8 +610,7 @@
             <div class="bar"></div>
             <h3>Concentración</h3>
             <p>
-              Hace que la pertenencia se vuelva más exigente. Se usa para ideas como <strong>muy</strong>, <strong>extremadamente</strong> o <strong>muchísimo</strong>.
-              La curva tiende a volverse más estrecha cerca de la zona donde la pertenencia es alta.
+              Hace que la pertenencia sea más exigente. Se usa para representar expresiones como <strong>muy alto</strong> o <strong>muy rápido</strong>. Matemáticamente suele hacer que la curva se estreche y que solo los valores realmente cercanos al centro mantengan una pertenencia alta.
             </p>
           </article>
 
@@ -664,8 +618,7 @@
             <div class="bar"></div>
             <h3>Dilatación</h3>
             <p>
-              Hace que la pertenencia sea más flexible. Representa expresiones como <strong>más o menos</strong>.
-              La curva se expande y permite que más valores tengan pertenencia apreciable.
+              Hace que la pertenencia sea más flexible. Se relaciona con expresiones como <strong>más o menos alto</strong>. En términos prácticos, ensancha la función y permite que más valores tengan una pertenencia apreciable.
             </p>
           </article>
 
@@ -673,14 +626,13 @@
             <div class="bar"></div>
             <h3>Intensificación</h3>
             <p>
-              Modifica la función para remarcar mejor los extremos. Se usa cuando se quiere reforzar la diferencia entre valores claramente pertenecientes y valores ambiguos.
+              Modifica la función para remarcar mejor los extremos, reforzando la diferencia entre valores claramente pertenecientes y valores ambiguos. Su utilidad está en hacer más marcada la interpretación lingüística.
             </p>
           </article>
         </div>
 
         <div class="highlight" style="margin-top:18px">
-          <strong>Aplicación teórica:</strong> estos modificadores permiten traducir palabras del lenguaje natural a cambios concretos en la forma matemática de la función de pertenencia.
-          Por eso son muy útiles cuando se diseñan reglas que deben parecerse al razonamiento humano.
+          <strong>Aplicación:</strong> estos modificadores son valiosos porque acercan la matemática al lenguaje humano. Gracias a ellos, una regla como “si la temperatura es muy alta” puede traducirse a una transformación específica de la función de pertenencia.
         </div>
       </div>
     </section>
@@ -691,76 +643,60 @@
           <div>
             <h2 class="section-title">6. Clases de funciones de pertenencia</h2>
             <p class="section-text">
-              Desde la página 6 hasta la 8 se presentan las funciones más usadas. Aquí están organizadas por secciones con una explicación más clara y con figuras más detalladas para que puedas estudiar visualmente cada forma.
+              Las funciones de pertenencia son las curvas que indican qué tanto pertenece un valor a un conjunto difuso. Cada tipo de función tiene una forma distinta y una utilidad diferente según el problema.
             </p>
           </div>
         </div>
 
-        <div class="accordion">
-          <details open>
-            <summary>6.1 Función triangular</summary>
-            <p>
-              Tiene forma de triángulo y se define con tres parámetros: límite inferior, valor modal y límite superior.
-              Es una de las más usadas por su simplicidad. Resulta muy práctica cuando se quiere dividir un universo de discurso en regiones claras y fáciles de ajustar.
-            </p>
-          </details>
-          <details>
-            <summary>6.2 Función gamma</summary>
-            <p>
-              Es una función creciente que arranca desde un límite inferior. Se utiliza para representar conceptos donde la pertenencia aumenta progresivamente a partir de un punto.
-              Es útil cuando el interés está en modelar valores grandes o crecientes.
-            </p>
-          </details>
-          <details>
-            <summary>6.3 Función S</summary>
-            <p>
-              Tiene una forma suave en S y representa una transición progresiva desde baja pertenencia hacia alta pertenencia.
-              Es adecuada para describir fenómenos donde no existe un cambio brusco, sino un paso gradual entre estados.
-            </p>
-          </details>
-          <details>
-            <summary>6.4 Función gaussiana</summary>
-            <p>
-              Tiene forma de campana y se caracteriza por ser suave y simétrica. Es muy apreciada cuando se desea continuidad y ausencia de esquinas marcadas en la respuesta.
-              En control y modelado suele ser atractiva por su comportamiento matemático elegante.
-            </p>
-          </details>
-          <details>
-            <summary>6.5 Función trapezoidal</summary>
-            <p>
-              Se define con cuatro parámetros y tiene una parte superior plana. Es excelente cuando se quiere representar una región donde varios valores pertenezcan completamente al conjunto.
-              Se usa mucho en los extremos del universo porque permite cubrir mejor los bordes.
-            </p>
-          </details>
-          <details>
-            <summary>6.6 Función seudo-exponencial</summary>
-            <p>
-              Presenta una forma suave y decreciente o centrada según su formulación. Se emplea para modelar comportamientos no lineales con transición progresiva, cuando se busca una alternativa distinta a las formas lineales.
-            </p>
-          </details>
-        </div>
-
-        <div class="grid grid-2" style="margin-top:18px">
+        <div class="grid grid-2">
           <article class="card">
             <div class="bar"></div>
-            <h3>¿Para qué sirve cada una en términos prácticos?</h3>
-            <ul>
-              <li><strong>Triangular:</strong> diseño simple, explicación clara y ajuste rápido.</li>
-              <li><strong>Trapezoidal:</strong> ideal para extremos o zonas de pertenencia total.</li>
-              <li><strong>Gaussiana:</strong> transiciones suaves y comportamiento continuo.</li>
-              <li><strong>S:</strong> buena para cambios graduales de “no pertenece” a “sí pertenece”.</li>
-              <li><strong>Gamma:</strong> útil cuando la pertenencia crece a partir de cierto umbral.</li>
-              <li><strong>Seudo-exponencial:</strong> útil para modelados más flexibles y no lineales.</li>
-            </ul>
+            <h3>Triangular</h3>
+            <p>
+              Tiene forma de triángulo y normalmente se define con tres parámetros: inicio, pico y final. Es una de las más utilizadas porque es simple, fácil de interpretar y rápida de ajustar. Resulta apropiada cuando se desea una representación clara de regiones como <em>bajo</em>, <em>medio</em> y <em>alto</em>.
+            </p>
+            <div class="math">triangular(a,m,b)</div>
           </article>
 
           <article class="card">
             <div class="bar"></div>
-            <h3>¿Qué conviene recordar en teoría?</h3>
+            <h3>Trapezoidal</h3>
             <p>
-              No existe una única función “mejor” para todos los problemas. La elección depende del proceso, la forma de los datos,
-              la facilidad de interpretación y el comportamiento deseado en la transición entre conjuntos. En control, también se debe cuidar
-              la convexidad, la cobertura del universo de discurso y la superposición adecuada entre funciones vecinas.
+              Se define con cuatro parámetros y posee una parte superior plana. Eso la hace muy útil cuando se desea representar una zona donde múltiples valores pertenecen completamente al conjunto. Se usa mucho en los extremos del universo porque cubre mejor los bordes.
+            </p>
+            <div class="math">trapezoidal(a,b,c,d)</div>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Gaussiana</h3>
+            <p>
+              Tiene forma de campana y es suave y simétrica. Su ventaja principal es que no presenta esquinas marcadas, por lo que ofrece transiciones más continuas. Es muy valorada cuando se desea un comportamiento matemático elegante y más natural.
+            </p>
+            <div class="math">gaussiana(m,σ)</div>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Función S</h3>
+            <p>
+              Tiene una transición suave desde baja pertenencia hasta pertenencia alta. Se usa cuando un fenómeno cambia progresivamente y no de forma brusca, como ocurre en muchos sistemas físicos reales.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Gamma</h3>
+            <p>
+              Es una función creciente que parte de un cierto umbral. Sirve para representar conceptos donde el interés aumenta a medida que crece la variable, por ejemplo <em>grande</em> o <em>rápido</em> a partir de un determinado punto.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="bar"></div>
+            <h3>Seudo-exponencial</h3>
+            <p>
+              Presenta una variación no lineal y suave. Se usa como alternativa cuando se quiere una transición distinta a las funciones lineales por tramos, manteniendo continuidad y flexibilidad en el modelado.
             </p>
           </article>
         </div>
@@ -773,13 +709,9 @@
                 <line x1="35" y1="200" x2="330" y2="200" class="axis"/>
                 <line x1="35" y1="200" x2="35" y2="30" class="axis"/>
                 <path d="M70 200 L180 60 L285 200" class="curve-red"/>
-                <line x1="70" y1="200" x2="70" y2="212" class="gridline"/>
-                <line x1="180" y1="60" x2="180" y2="200" class="gridline"/>
-                <line x1="285" y1="200" x2="285" y2="212" class="gridline"/>
                 <text x="64" y="227" class="label">a</text>
                 <text x="176" y="227" class="label">m</text>
                 <text x="281" y="227" class="label">b</text>
-                <text x="187" y="50" class="label">valor modal</text>
               </svg>
             </div>
           </div>
@@ -795,7 +727,6 @@
                 <text x="121" y="227" class="label">b</text>
                 <text x="231" y="227" class="label">c</text>
                 <text x="296" y="227" class="label">d</text>
-                <text x="146" y="73" class="label">zona de pertenencia total</text>
               </svg>
             </div>
           </div>
@@ -807,9 +738,7 @@
                 <line x1="35" y1="200" x2="330" y2="200" class="axis"/>
                 <line x1="35" y1="200" x2="35" y2="30" class="axis"/>
                 <path d="M55 200 C95 198,120 160,145 110 C160 82,172 62,180 58 C188 62,200 82,215 110 C240 160,265 198,305 200" class="curve-violet"/>
-                <line x1="180" y1="58" x2="180" y2="200" class="gridline"/>
                 <text x="176" y="227" class="label">m</text>
-                <text x="188" y="52" class="label">centro</text>
               </svg>
             </div>
           </div>
@@ -823,7 +752,6 @@
                 <line x1="35" y1="200" x2="330" y2="200" class="axis"/>
                 <line x1="35" y1="200" x2="35" y2="30" class="axis"/>
                 <path d="M60 200 C105 200,120 197,145 176 C165 160,177 135,190 112 C205 85,220 64,245 52 C267 42,290 40,315 40" class="curve-green"/>
-                <text x="210" y="97" class="label">transición suave</text>
               </svg>
             </div>
           </div>
@@ -835,7 +763,6 @@
                 <line x1="35" y1="200" x2="330" y2="200" class="axis"/>
                 <line x1="35" y1="200" x2="35" y2="30" class="axis"/>
                 <path d="M70 200 C120 200,145 190,170 165 C195 138,220 102,250 72 C272 52,292 42,315 38" class="curve-yellow"/>
-                <text x="170" y="152" class="label">crece desde un umbral</text>
               </svg>
             </div>
           </div>
@@ -847,33 +774,13 @@
                 <line x1="35" y1="200" x2="330" y2="200" class="axis"/>
                 <line x1="35" y1="200" x2="35" y2="30" class="axis"/>
                 <path d="M65 185 C105 145,135 110,180 78 C220 52,260 40,315 35" class="curve-cyan"/>
-                <text x="150" y="92" class="label">curva no lineal</text>
               </svg>
             </div>
           </div>
         </div>
 
-        <div class="mini-diagram" style="margin-top:18px">
-          <span class="chip">Comparación global de formas</span>
-          <div class="svg-wrap">
-            <svg viewBox="0 0 760 320" aria-label="Comparación global de funciones de pertenencia">
-              <line x1="50" y1="260" x2="720" y2="260" class="axis"/>
-              <line x1="50" y1="260" x2="50" y2="35" class="axis"/>
-              <line x1="50" y1="60" x2="720" y2="60" class="gridline"/>
-              <path d="M80 260 L180 120 L280 260" class="curve-red"/>
-              <path d="M280 260 L340 135 L430 135 L500 260" class="curve-blue"/>
-              <path d="M70 260 C115 258,140 220,165 170 C190 115,220 72,250 60 C280 72,310 115,335 170 C360 220,385 258,430 260" class="curve-violet"/>
-              <path d="M90 260 C150 260,185 256,235 220 C285 185,315 120,355 88 C390 60,450 50,535 48" class="curve-green"/>
-              <path d="M105 260 C155 260,205 255,255 220 C305 185,335 140,370 96 C405 60,450 45,510 43" class="curve-yellow"/>
-              <path d="M430 220 C485 170,530 115,585 80 C625 55,665 42,710 38" class="curve-cyan"/>
-              <text x="108" y="112" class="label">triangular</text>
-              <text x="350" y="124" class="label">trapezoidal</text>
-              <text x="206" y="92" class="label">gaussiana</text>
-              <text x="500" y="88" class="label">S</text>
-              <text x="442" y="194" class="label">gamma</text>
-              <text x="610" y="74" class="label">seudo-exp.</text>
-            </svg>
-          </div>
+        <div class="highlight" style="margin-top:18px">
+          <strong>Idea importante:</strong> no existe una única función de pertenencia mejor para todos los casos. La elección depende del proceso, del tipo de transición deseada, de la facilidad de interpretación y de la forma en que se quiere representar el conocimiento del experto.
         </div>
       </div>
     </section>
@@ -883,9 +790,7 @@
         <div class="section-head">
           <div>
             <h2 class="section-title">7. Resumen rápido por pasos</h2>
-            <p class="section-text">
-              Esta secuencia te sirve para estudiar o exponer el tema de manera ordenada.
-            </p>
+            <p class="section-text">Esta secuencia resume la lógica del tema y también sirve para exponerlo.</p>
           </div>
         </div>
 
@@ -893,27 +798,27 @@
           <div class="step">
             <div class="num">1</div>
             <h3>Definir la variable</h3>
-            <p>Primero se identifica qué magnitud se quiere representar: altura, temperatura, error, velocidad, etc.</p>
+            <p>Primero se identifica qué magnitud se quiere representar: temperatura, error, velocidad, nivel, etc.</p>
           </div>
           <div class="step">
             <div class="num">2</div>
             <h3>Fijar el universo</h3>
-            <p>Luego se establece el rango total de valores posibles para esa variable.</p>
+            <p>Luego se establece el rango total de valores posibles de esa variable.</p>
           </div>
           <div class="step">
             <div class="num">3</div>
             <h3>Elegir conjuntos</h3>
-            <p>Se crean conceptos lingüísticos como bajo, medio y alto para describir la variable.</p>
+            <p>Se crean términos lingüísticos como bajo, medio y alto.</p>
           </div>
           <div class="step">
             <div class="num">4</div>
             <h3>Asignar funciones</h3>
-            <p>Cada conjunto recibe una función de pertenencia con su soporte, altura y forma apropiada.</p>
+            <p>Cada conjunto recibe una función de pertenencia con soporte, altura y forma apropiada.</p>
           </div>
           <div class="step">
             <div class="num">5</div>
             <h3>Operar e interpretar</h3>
-            <p>Finalmente se usan operaciones difusas y reglas para modelar decisiones o comportamientos del sistema.</p>
+            <p>Finalmente se aplican operaciones y reglas para modelar decisiones o comportamiento.</p>
           </div>
         </div>
       </div>
@@ -965,38 +870,6 @@
             <div class="flash-inner">
               <div class="face front">
                 <span class="tag">Flashcard 3</span>
-                <h4>¿Qué es el soporte?</h4>
-                <p>La zona donde la pertenencia es mayor que cero.</p>
-                <span class="mini">Clic para ver</span>
-              </div>
-              <div class="face back">
-                <span class="tag">Respuesta</span>
-                <h4>Soporte</h4>
-                <p>Es el intervalo del dominio en el cual la función de pertenencia toma valores positivos.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="flashcard" onclick="this.classList.toggle('flip')">
-            <div class="flash-inner">
-              <div class="face front">
-                <span class="tag">Flashcard 4</span>
-                <h4>¿Qué es la altura?</h4>
-                <p>El valor máximo que alcanza la función.</p>
-                <span class="mini">Clic para ver</span>
-              </div>
-              <div class="face back">
-                <span class="tag">Respuesta</span>
-                <h4>Altura</h4>
-                <p>Es el grado máximo de pertenencia que alcanza una función de pertenencia dentro de su dominio.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="flashcard" onclick="this.classList.toggle('flip')">
-            <div class="flash-inner">
-              <div class="face front">
-                <span class="tag">Flashcard 5</span>
                 <h4>¿Cómo se calcula la unión?</h4>
                 <p>Con el valor máximo entre pertenencias.</p>
                 <span class="mini">Clic para ver</span>
@@ -1012,7 +885,7 @@
           <div class="flashcard" onclick="this.classList.toggle('flip')">
             <div class="flash-inner">
               <div class="face front">
-                <span class="tag">Flashcard 6</span>
+                <span class="tag">Flashcard 4</span>
                 <h4>¿Cómo se calcula la intersección?</h4>
                 <p>Con el valor mínimo entre pertenencias.</p>
                 <span class="mini">Clic para ver</span>
@@ -1021,6 +894,38 @@
                 <span class="tag">Respuesta</span>
                 <h4>Intersección</h4>
                 <p>La pertenencia del conjunto intersección se obtiene tomando el mínimo entre las pertenencias de los conjuntos involucrados.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="flashcard" onclick="this.classList.toggle('flip')">
+            <div class="flash-inner">
+              <div class="face front">
+                <span class="tag">Flashcard 5</span>
+                <h4>¿Qué expresa la convexidad?</h4>
+                <p>Que la forma del conjunto no tenga huecos raros entre dos puntos importantes.</p>
+                <span class="mini">Clic para ver</span>
+              </div>
+              <div class="face back">
+                <span class="tag">Respuesta</span>
+                <h4>Convexidad</h4>
+                <p>Indica que cualquier punto intermedio mantiene una pertenencia no menor que el mínimo entre los extremos.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="flashcard" onclick="this.classList.toggle('flip')">
+            <div class="flash-inner">
+              <div class="face front">
+                <span class="tag">Flashcard 6</span>
+                <h4>¿Para qué sirven los modificadores difusos?</h4>
+                <p>Para convertir expresiones lingüísticas en cambios sobre la membresía.</p>
+                <span class="mini">Clic para ver</span>
+              </div>
+              <div class="face back">
+                <span class="tag">Respuesta</span>
+                <h4>Modificadores</h4>
+                <p>Permiten intensificar o suavizar una función de pertenencia para reflejar ideas como “muy” o “más o menos”.</p>
               </div>
             </div>
           </div>
@@ -1033,26 +938,26 @@
         <div class="section-head">
           <div>
             <h2 class="section-title">9. Preguntas para estudiar</h2>
-            <p class="section-text">Aquí tienes preguntas de desarrollo y luego preguntas de opción múltiple más complicadas para practicar de verdad.</p>
+            <p class="section-text">Aquí tienes preguntas de opción múltiple con explicación automática.</p>
           </div>
         </div>
 
         <div class="card" style="margin-top:4px">
           <div class="bar"></div>
-          <h3>Preguntas para marcar · nivel más alto</h3>
+          <h3>Preguntas para marcar</h3>
           <p class="section-text" style="margin-bottom:16px">Selecciona una respuesta. Al marcar una opción, el sistema te dirá si acertaste y te dará una explicación breve.</p>
 
           <div class="mcq">
             <div class="mcq-card">
               <div class="mcq-head">
                 <div class="mcq-number">1</div>
-                <h4 class="mcq-title">¿Cuál afirmación describe mejor la diferencia estructural entre lógica clásica y lógica difusa?</h4>
+                <h4 class="mcq-title">¿Cuál afirmación describe mejor la diferencia entre lógica clásica y lógica difusa?</h4>
               </div>
               <div class="options">
-                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq1','Eso describe una simplificación incorrecta. La lógica difusa no se limita a usar palabras; su diferencia central está en que permite grados de pertenencia y no solo pertenencia binaria.')">La lógica clásica usa variables numéricas y la lógica difusa usa solo palabras.</button>
-                <button class="option" data-correct="true" onclick="checkMCQ(this,'mcq1','Correcto. La lógica clásica trabaja con pertenencia binaria, mientras que la lógica difusa admite grados continuos entre 0 y 1 para representar transiciones graduales.')">La lógica clásica maneja pertenencia binaria y la lógica difusa admite grados continuos de pertenencia.</button>
-                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq1','Incorrecto. Ambas pueden formularse matemáticamente. La diferencia esencial no es el uso de matemáticas, sino el tipo de pertenencia que cada una maneja.')">La lógica clásica no usa matemáticas y la lógica difusa sí.</button>
-                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq1','Incorrecto. La lógica difusa no anula a la lógica clásica; la complementa cuando existen imprecisión, vaguedad o transiciones no bruscas.')">La lógica difusa anula completamente a la lógica clásica en problemas de control.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq1','Incorrecto. La diferencia esencial no es que una use palabras y la otra no, sino el tipo de pertenencia que cada una maneja.')">La lógica clásica usa variables y la difusa solo palabras.</button>
+                <button class="option" data-correct="true" onclick="checkMCQ(this,'mcq1','Correcto. La lógica clásica trabaja con pertenencia binaria, mientras que la lógica difusa admite grados continuos entre 0 y 1.')">La lógica clásica maneja pertenencia binaria y la difusa admite grados continuos.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq1','Incorrecto. Ambas pueden formularse matemáticamente.')">La lógica clásica no usa matemáticas y la difusa sí.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq1','Incorrecto. La lógica difusa complementa a la clásica cuando existe incertidumbre o gradualidad.')">La lógica difusa elimina completamente a la lógica clásica.</button>
               </div>
               <div class="mcq-result" id="mcq1"></div>
             </div>
@@ -1060,13 +965,13 @@
             <div class="mcq-card">
               <div class="mcq-head">
                 <div class="mcq-number">2</div>
-                <h4 class="mcq-title">Si μA(x)=0.3 y μB(x)=0.8, entonces para ese mismo x la unión y la intersección valen:</h4>
+                <h4 class="mcq-title">Si μA(x)=0.3 y μB(x)=0.8, ¿cuánto valen la unión y la intersección?</h4>
               </div>
               <div class="options">
-                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq2','Incorrecto. Esa opción mezcla suma y producto, pero en las operaciones básicas del texto la unión se calcula con max y la intersección con min.')">Unión = 1.1, intersección = 0.24</button>
-                <button class="option" data-correct="true" onclick="checkMCQ(this,'mcq2','Correcto. Unión = max(0.3, 0.8) = 0.8 e intersección = min(0.3, 0.8) = 0.3.')">Unión = 0.8, intersección = 0.3</button>
-                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq2','Incorrecto. Esa respuesta está invertida: el valor mayor corresponde a la unión y el menor a la intersección.')">Unión = 0.3, intersección = 0.8</button>
-                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq2','Incorrecto. 0.5 no coincide ni con el máximo ni con el mínimo de 0.3 y 0.8.')">Unión = 0.5, intersección = 0.5</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq2','Incorrecto. La unión básica no se calcula con suma ni la intersección con producto.')">Unión = 1.1, intersección = 0.24</button>
+                <button class="option" data-correct="true" onclick="checkMCQ(this,'mcq2','Correcto. Unión = max(0.3, 0.8)=0.8 e intersección = min(0.3, 0.8)=0.3.')">Unión = 0.8, intersección = 0.3</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq2','Incorrecto. Está invertido: el mayor valor va en la unión y el menor en la intersección.')">Unión = 0.3, intersección = 0.8</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq2','Incorrecto. 0.5 no corresponde ni al máximo ni al mínimo.')">Unión = 0.5, intersección = 0.5</button>
               </div>
               <div class="mcq-result" id="mcq2"></div>
             </div>
@@ -1074,85 +979,15 @@
             <div class="mcq-card">
               <div class="mcq-head">
                 <div class="mcq-number">3</div>
-                <h4 class="mcq-title">¿Qué opción explica mejor por qué una función trapezoidal suele ser útil en los extremos del universo de discurso?</h4>
+                <h4 class="mcq-title">¿Por qué la función trapezoidal es útil en los extremos del universo?</h4>
               </div>
               <div class="options">
-                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq3','Incorrecto. La trapezoidal no se usa por ser la única continua; otras funciones también pueden ser continuas. Su ventaja está en la región plana de pertenencia total.')">Porque es la única función que puede representar continuidad matemática.</button>
-                <button class="option" data-correct="true" onclick="checkMCQ(this,'mcq3','Correcto. Su parte plana permite modelar una zona amplia de pertenencia total y cubrir mejor los bordes del universo de discurso.')">Porque su parte plana permite modelar una zona amplia de pertenencia total y cubrir mejor los bordes.</button>
-                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq3','Incorrecto. La superposición sigue pudiendo existir y, de hecho, muchas veces es deseable entre conjuntos vecinos.')">Porque siempre evita la superposición con otras funciones vecinas.</button>
-                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq3','Incorrecto. La trapezoidal no se define con tres parámetros, sino con cuatro: a, b, c y d.')">Porque se define con solo tres parámetros y por eso es más precisa.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq3','Incorrecto. No es la única función continua.')">Porque es la única función continua.</button>
+                <button class="option" data-correct="true" onclick="checkMCQ(this,'mcq3','Correcto. Su zona plana permite representar una región amplia con pertenencia total y cubrir mejor los bordes.')">Porque su parte plana cubre mejor una zona de pertenencia total.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq3','Incorrecto. La superposición sigue siendo posible y muchas veces es deseable.')">Porque evita siempre la superposición.</button>
+                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq3','Incorrecto. La trapezoidal usa cuatro parámetros.')">Porque solo usa tres parámetros.</button>
               </div>
               <div class="mcq-result" id="mcq3"></div>
-            </div>
-
-            <div class="mcq-card">
-              <div class="mcq-head">
-                <div class="mcq-number">4</div>
-                <h4 class="mcq-title">¿Cuál situación representa mejor el concepto de universo de discurso?</h4>
-              </div>
-              <div class="options">
-                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq4','Incorrecto. Eso describe etiquetas o conjuntos lingüísticos dentro de la variable, no el rango total de valores posibles.')">Definir los conjuntos “bajo”, “medio” y “alto” para una variable.</button>
-                <button class="option" data-correct="true" onclick="checkMCQ(this,'mcq4','Correcto. El universo de discurso es justamente el rango completo de valores que puede tomar la variable analizada.')">Establecer que la temperatura del proceso se analizará entre 0 °C y 100 °C.</button>
-                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq4','Incorrecto. Esa sería una regla o decisión de control, no la definición del dominio completo de la variable.')">Decidir que si la temperatura es alta entonces la acción de control disminuye.</button>
-                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq4','Incorrecto. Eso es un grado de pertenencia puntual para un valor específico, no el universo completo.')">Asignar una pertenencia de 0.6 a un valor de temperatura.</button>
-              </div>
-              <div class="mcq-result" id="mcq4"></div>
-            </div>
-
-            <div class="mcq-card">
-              <div class="mcq-head">
-                <div class="mcq-number">5</div>
-                <h4 class="mcq-title">Si una función de pertenencia tiene soporte amplio pero altura 1, ¿qué interpretación es más adecuada?</h4>
-              </div>
-              <div class="options">
-                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq5','Incorrecto. Si la altura es 1, entonces sí existe al menos un valor con pertenencia total.')">Que nunca alcanza pertenencia total.</button>
-                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq5','Incorrecto. La altura no obliga a que la función sea simétrica respecto al centro del dominio.')">Que obligatoriamente es simétrica respecto al centro del dominio.</button>
-                <button class="option" data-correct="true" onclick="checkMCQ(this,'mcq5','Correcto. Una altura igual a 1 indica que al menos un valor alcanza pertenencia total, y un soporte amplio indica que una región extensa del dominio participa con pertenencia positiva.')">Que existe al menos un valor con pertenencia total y además varios valores participan con pertenencia positiva.</button>
-                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq5','Incorrecto. Una función puede tener altura 1 y soporte amplio sin ser lineal por tramos; por ejemplo, una gaussiana.')">Que la función necesariamente es lineal por tramos.</button>
-              </div>
-              <div class="mcq-result" id="mcq5"></div>
-            </div>
-
-            <div class="mcq-card">
-              <div class="mcq-head">
-                <div class="mcq-number">6</div>
-                <h4 class="mcq-title">¿Qué opción refleja mejor el papel de los modificadores difusos como “muy” o “más o menos”?</h4>
-              </div>
-              <div class="options">
-                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq6','Incorrecto. Los modificadores no eliminan la función original; la transforman para cambiar su interpretación lingüística.')">Eliminan la función de pertenencia original y la sustituyen por una regla.</button>
-                <button class="option" data-correct="true" onclick="checkMCQ(this,'mcq6','Correcto. Los modificadores alteran matemáticamente la función de pertenencia para intensificar, suavizar o reforzar un significado lingüístico.')">Transforman matemáticamente la función de pertenencia para reforzar o suavizar un significado lingüístico.</button>
-                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq6','Incorrecto. El universo de discurso puede mantenerse igual; lo que cambia es la forma de la función de pertenencia.')">Solo cambian el universo de discurso sin tocar la pertenencia.</button>
-                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq6','Incorrecto. Los modificadores no convierten el sistema difuso en binario, sino que ajustan el grado de pertenencia.')">Convierten automáticamente un sistema difuso en uno binario.</button>
-              </div>
-              <div class="mcq-result" id="mcq6"></div>
-            </div>
-
-            <div class="mcq-card">
-              <div class="mcq-head">
-                <div class="mcq-number">7</div>
-                <h4 class="mcq-title">¿Cuál afirmación sobre convexidad es la más adecuada dentro del contexto del texto?</h4>
-              </div>
-              <div class="options">
-                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq7','Incorrecto. El texto la presenta como una propiedad importante al seleccionar conjuntos difusos para control, no como algo decorativo.')">Es una condición decorativa que no afecta el comportamiento del controlador.</button>
-                <button class="option" data-correct="true" onclick="checkMCQ(this,'mcq7','Correcto. En el contexto del texto, la convexidad se relaciona con una selección adecuada de conjuntos y con un comportamiento estable en aplicaciones de control.')">Es una propiedad importante al seleccionar conjuntos difusos porque favorece comportamientos adecuados en aplicaciones de control.</button>
-                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq7','Incorrecto. La convexidad no se limita a formas rectangulares o trapezoidales; también pueden ser convexas otras funciones suaves.')">Solo son convexos los conjuntos con forma rectangular o trapezoidal.</button>
-                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq7','Incorrecto. La convexidad no impide usar gaussianas o funciones tipo S; depende de la forma concreta del conjunto.')">Impide utilizar funciones gaussianas o tipo S.</button>
-              </div>
-              <div class="mcq-result" id="mcq7"></div>
-            </div>
-
-            <div class="mcq-card">
-              <div class="mcq-head">
-                <div class="mcq-number">8</div>
-                <h4 class="mcq-title">¿En qué caso sería más razonable preferir una función gaussiana frente a una triangular?</h4>
-              </div>
-              <div class="options">
-                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq8','Incorrecto. La gaussiana se prefiere justamente cuando no se quieren cambios bruscos ni esquinas marcadas.')">Cuando se buscan cambios bruscos y esquinas marcadas.</button>
-                <button class="option" data-correct="true" onclick="checkMCQ(this,'mcq8','Correcto. La gaussiana es útil cuando se necesita una transición muy suave, continua y sin quiebres pronunciados en la membresía.')">Cuando se requiere una transición suave, continua y sin quiebres pronunciados en la membresía.</button>
-                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq8','Incorrecto. Si se busca la representación más simple, normalmente la triangular resulta más directa y fácil de ajustar.')">Cuando se desea la representación más simple y con menor carga conceptual.</button>
-                <button class="option" data-correct="false" onclick="checkMCQ(this,'mcq8','Incorrecto. Una zona plana amplia de pertenencia total es más propia de una función trapezoidal, no de una gaussiana.')">Cuando se necesita una zona plana amplia de pertenencia total.</button>
-              </div>
-              <div class="mcq-result" id="mcq8"></div>
             </div>
           </div>
         </div>
@@ -1163,10 +998,9 @@
   <footer class="footer">
     <div class="container">
       <div class="card center">
-        <h3 style="margin-top:0">Página lista para estudiar</h3>
+        <h3 style="margin-top:0">Página completa corregida</h3>
         <p class="small-note">
-          Esta versión está centrada en la teoría de las <span class="hl">páginas 1 a 8</span>, y deja fuera el desarrollo posterior de variables lingüísticas y reglas difusas como pediste.
-          El diseño usa únicamente <strong>HTML, CSS y SVG</strong>, así que no necesitas librerías externas para que se vea bien.
+          Ahora la página conserva <strong>todo el contenido importante</strong> y además incluye las definiciones 1.1 a 1.11, las leyes, las operaciones y las explicaciones separadas. Quedó pensada para estudiar teoría de manera más clara y más completa.
         </p>
       </div>
     </div>
@@ -1204,4 +1038,5 @@
   </script>
 </body>
 </html>
+
 
