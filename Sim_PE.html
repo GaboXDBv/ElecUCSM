@@ -1,0 +1,2488 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulación 3D - Faja Transportadora Minera</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    body {
+      overflow: hidden;
+      background: #07111f;
+      color: white;
+    }
+
+    #scene-container {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #top-title {
+      position: fixed;
+      top: 16px;
+      left: 24px;
+      z-index: 10;
+      padding: 14px 20px;
+      background: rgba(5, 12, 25, 0.78);
+      border: 1px solid rgba(0, 210, 255, 0.35);
+      border-radius: 16px;
+      box-shadow: 0 0 25px rgba(0, 180, 255, 0.22);
+      backdrop-filter: blur(10px);
+    }
+
+    #top-title h1 {
+      font-size: 18px;
+      letter-spacing: 1px;
+      color: #dff8ff;
+    }
+
+    #top-title p {
+      font-size: 12px;
+      color: #9fc7d8;
+      margin-top: 4px;
+    }
+
+    #hmi {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      width: 430px;
+      max-height: calc(100vh - 32px);
+      overflow-y: auto;
+      z-index: 20;
+      padding: 16px;
+      background: linear-gradient(145deg, rgba(8, 18, 34, 0.95), rgba(6, 28, 45, 0.92));
+      border: 1px solid rgba(0, 200, 255, 0.35);
+      border-radius: 20px;
+      box-shadow: 0 0 35px rgba(0, 180, 255, 0.25);
+      backdrop-filter: blur(12px);
+    }
+
+    #hmi::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #hmi::-webkit-scrollbar-thumb {
+      background: #1d8db4;
+      border-radius: 8px;
+    }
+
+    .hmi-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      padding-bottom: 10px;
+    }
+
+    .hmi-header h2 {
+      font-size: 18px;
+      color: #8eeeff;
+    }
+
+    .status-box {
+      padding: 8px 12px;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 13px;
+      letter-spacing: 1px;
+      background: #0b9152;
+      color: white;
+      box-shadow: 0 0 12px rgba(0,255,140,.4);
+    }
+
+    .section {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.055);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .section h3 {
+      font-size: 14px;
+      color: #72dfff;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .metric {
+      background: rgba(0,0,0,.22);
+      border-radius: 10px;
+      padding: 9px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .metric label {
+      display: block;
+      color: #9fb7c8;
+      font-size: 11px;
+      margin-bottom: 4px;
+    }
+
+    .metric span {
+      font-size: 17px;
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .profile {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 7px;
+      margin-top: 8px;
+    }
+
+    .zone {
+      height: 76px;
+      border-radius: 12px;
+      background: #12a363;
+      padding: 7px 5px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-shadow: inset 0 0 12px rgba(255,255,255,.12);
+    }
+
+    .zone b {
+      font-size: 12px;
+    }
+
+    .zone span {
+      margin-top: 4px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .zone.normal {
+      background: linear-gradient(180deg, #12b76a, #087844);
+    }
+
+    .zone.warning {
+      background: linear-gradient(180deg, #f5c542, #a06a05);
+    }
+
+    .zone.critical {
+      background: linear-gradient(180deg, #ff3b3b, #8a0808);
+    }
+
+    .bar {
+      width: 100%;
+      height: 10px;
+      background: rgba(255,255,255,.1);
+      border-radius: 20px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 20px;
+      background: linear-gradient(90deg, #12b76a, #f5c542, #ff3b3b);
+      transition: width .15s linear;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      overflow: hidden;
+      border-radius: 10px;
+    }
+
+    th, td {
+      padding: 6px 4px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+
+    th {
+      color: #9beeff;
+      background: rgba(0, 180, 255, .08);
+      font-weight: 600;
+    }
+
+    td {
+      color: #dcefff;
+    }
+
+    .led-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .led-item {
+      text-align: center;
+      font-size: 11px;
+      color: #c4d7e5;
+    }
+
+    .led {
+      width: 18px;
+      height: 18px;
+      margin: 0 auto 5px;
+      border-radius: 50%;
+      background: #233142;
+      box-shadow: inset 0 0 8px rgba(0,0,0,.8);
+    }
+
+    .led.on-green {
+      background: #22ff8a;
+      box-shadow: 0 0 13px #22ff8a;
+    }
+
+    .led.on-blue {
+      background: #35d7ff;
+      box-shadow: 0 0 13px #35d7ff;
+    }
+
+    .led.on-red {
+      background: #ff3434;
+      box-shadow: 0 0 13px #ff3434;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    button {
+      padding: 10px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #0ba6d8, #075d88);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: .2s;
+      box-shadow: 0 0 12px rgba(0,200,255,.18);
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.15);
+    }
+
+    button.reset {
+      background: linear-gradient(180deg, #7c8b99, #323b45);
+    }
+
+    #legend {
+      position: fixed;
+      left: 24px;
+      bottom: 24px;
+      z-index: 10;
+      padding: 14px 18px;
+      background: rgba(5, 12, 25, 0.78);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 16px;
+      font-size: 13px;
+      color: #d9eef8;
+      backdrop-filter: blur(8px);
+      line-height: 1.65;
+    }
+
+    .key {
+      color: #72dfff;
+      font-weight: bold;
+    }
+
+    .formula {
+      margin-top: 8px;
+      background: rgba(0,0,0,.25);
+      padding: 8px;
+      border-radius: 10px;
+      font-size: 12px;
+      color: #bcefff;
+      border-left: 3px solid #24d7ff;
+    }
+
+    .small-note {
+      margin-top: 7px;
+      font-size: 11px;
+      color: #94aebe;
+      line-height: 1.35;
+    }
+
+    .alarm-list,
+    .event-log {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .alarm-card,
+    .event-item {
+      padding: 8px 9px;
+      border-radius: 10px;
+      background: rgba(0,0,0,.24);
+      border: 1px solid rgba(255,255,255,.08);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .alarm-card.critical {
+      border-color: rgba(255,70,70,.55);
+      background: rgba(130, 0, 0, .28);
+      color: #ffd8d8;
+      box-shadow: inset 0 0 14px rgba(255,0,0,.12);
+    }
+
+    .alarm-card.warning {
+      border-color: rgba(245,197,66,.55);
+      background: rgba(145, 98, 0, .24);
+      color: #fff1ba;
+    }
+
+    .alarm-normal {
+      padding: 9px;
+      border-radius: 10px;
+      background: rgba(18, 183, 106, .14);
+      border: 1px solid rgba(34,255,138,.22);
+      color: #bffff0;
+      font-size: 12px;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .event-item b {
+      color: #72dfff;
+      margin-right: 5px;
+    }
+
+    .event-item.alarm {
+      border-left: 3px solid #ff3434;
+    }
+
+    .event-item.warning {
+      border-left: 3px solid #f5c542;
+    }
+
+    .event-item.ok {
+      border-left: 3px solid #22ff8a;
+    }
+
+
+
+    #view-controls {
+      position: fixed;
+      left: 24px;
+      bottom: 150px;
+      z-index: 18;
+      width: 190px;
+      padding: 12px;
+      background: rgba(5, 12, 25, 0.82);
+      border: 1px solid rgba(0, 200, 255, 0.28);
+      border-radius: 16px;
+      box-shadow: 0 0 22px rgba(0, 160, 255, 0.18);
+      backdrop-filter: blur(8px);
+      user-select: none;
+    }
+
+    .view-title {
+      text-align: center;
+      color: #8eeeff;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.7px;
+      margin-bottom: 8px;
+    }
+
+    .view-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 42px);
+      grid-template-rows: repeat(2, 38px);
+      justify-content: center;
+      gap: 7px;
+    }
+
+    .view-grid button {
+      width: 42px;
+      height: 38px;
+      border: 1px solid rgba(120, 230, 255, 0.36);
+      border-radius: 10px;
+      background: linear-gradient(180deg, #123450, #071927);
+      color: #dff8ff;
+      font-size: 20px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: inset 0 0 12px rgba(255,255,255,.06), 0 0 12px rgba(0,180,255,.12);
+    }
+
+    .view-grid button:active,
+    .view-grid button.hold {
+      transform: translateY(1px);
+      background: linear-gradient(180deg, #1a5a7c, #0b2538);
+      box-shadow: 0 0 16px rgba(0,200,255,.35);
+    }
+
+    .view-help {
+      margin-top: 8px;
+      color: #9fc7d8;
+      text-align: center;
+      font-size: 10.5px;
+      line-height: 1.25;
+    }
+
+    #alarm-banner {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 50;
+      display: none;
+      padding: 24px 38px;
+      border-radius: 20px;
+      background: rgba(150, 0, 0, .86);
+      border: 2px solid #ff5252;
+      box-shadow: 0 0 45px rgba(255, 0, 0, .65);
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: white;
+      animation: pulseAlarm .75s infinite alternate;
+    }
+
+    @keyframes pulseAlarm {
+      from {
+        opacity: .72;
+        transform: translate(-50%, -50%) scale(.98);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.03);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="scene-container"></div>
+
+  <div id="top-title">
+    <h1>MONITOREO PREDICTIVO 3D - FAJA TRANSPORTADORA MINERA</h1>
+    <p>Medición ultrasónica diferencial + visión artificial industrial para detección de desgarres</p>
+  </div>
+
+  <div id="alarm-banner">ALARMA INDUSTRIAL</div>
+
+  <aside id="hmi">
+    <div class="hmi-header">
+      <h2>Panel HMI</h2>
+      <div id="generalStatus" class="status-box">NORMAL</div>
+    </div>
+
+    <div class="section">
+      <h3>📏 Medición de espesor</h3>
+      <div class="grid2">
+        <div class="metric">
+          <label>Espesor promedio</label>
+          <span id="avgThickness">30.0 mm</span>
+        </div>
+
+        <div class="metric">
+          <label>Espesor mínimo</label>
+          <span id="minThickness">30.0 mm</span>
+        </div>
+
+        <div class="metric">
+          <label>Desgaste máximo</label>
+          <span id="wearPercent">0 %</span>
+          <div class="bar">
+            <div id="wearBar" class="bar-fill"></div>
+          </div>
+        </div>
+
+        <div class="metric">
+          <label>Faja</label>
+          <span id="beltState">OPERANDO</span>
+        </div>
+      </div>
+
+      <div class="formula">
+        G = A - (X1 + X2)<br>
+        A = distancia fija entre cabezal superior e inferior
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>🟩 Perfil transversal de espesor</h3>
+
+      <div class="profile">
+        <div id="zone0" class="zone normal"><b>Z1</b><span>30.0</span></div>
+        <div id="zone1" class="zone normal"><b>Z2</b><span>30.0</span></div>
+        <div id="zone2" class="zone normal"><b>Z3</b><span>30.0</span></div>
+        <div id="zone3" class="zone normal"><b>Z4</b><span>30.0</span></div>
+        <div id="zone4" class="zone normal"><b>Z5</b><span>30.0</span></div>
+      </div>
+
+      <p class="small-note">
+        Verde: normal | Amarillo: desgaste moderado | Rojo: desgaste crítico
+      </p>
+    </div>
+
+    <div class="section">
+      <h3>📡 Señales ultrasónicas industriales</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Par</th>
+            <th>X1 mm</th>
+            <th>X2 mm</th>
+            <th>mA Sup.</th>
+            <th>mA Inf.</th>
+            <th>V PLC</th>
+            <th>G mm</th>
+          </tr>
+        </thead>
+
+        <tbody id="sensorTable"></tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <h3>🎥 Cámara industrial inteligente</h3>
+
+      <div class="grid2">
+        <div class="metric">
+          <label>Probabilidad de desgarre</label>
+          <span id="tearProbability">0 %</span>
+          <div class="bar">
+            <div id="tearBar" class="bar-fill"></div>
+          </div>
+        </div>
+
+        <div class="metric">
+          <label>Estado cámara</label>
+          <span id="cameraState">OK</span>
+        </div>
+      </div>
+
+      <p class="small-note">
+        La alarma visual se activa cuando la probabilidad de desgarre supera el 80 %.
+      </p>
+    </div>
+
+    <div class="section">
+      <h3>⚙️ PLC industrial</h3>
+
+      <div class="led-row">
+        <div class="led-item">
+          <div id="ledRun" class="led on-green"></div>
+          RUN
+        </div>
+
+        <div class="led-item">
+          <div id="ledSensor" class="led on-blue"></div>
+          SENSOR OK
+        </div>
+
+        <div class="led-item">
+          <div id="ledCamera" class="led on-blue"></div>
+          CAMERA OK
+        </div>
+
+        <div class="led-item">
+          <div id="ledAlarm" class="led"></div>
+          ALARM
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>🚨 Alarmas activas</h3>
+      <div id="activeAlarms" class="alarm-list">
+        <div class="alarm-normal">Sin alarmas activas</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>🧾 Registro de eventos</h3>
+      <div id="eventLog" class="event-log">
+        <div class="event-item ok"><b>00:00:00</b> Sistema listo para iniciar.</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>🎛️ Controles</h3>
+
+      <div class="controls">
+        <button id="btnStart">INICIAR / PAUSAR</button>
+        <button id="btnDefect">DEFECTO</button>
+        <button id="btnReset" class="reset">RESET</button>
+      </div>
+
+      <p class="small-note">
+        Teclado: ESPACIO iniciar/detener | D defecto | R resetear | Flechas mover vista | Mouse rotar cámara
+      </p>
+    </div>
+  </aside>
+
+  <div id="legend">
+    <div><span class="key">Azul:</span> haz ultrasónico diferencial</div>
+    <div><span class="key">Amarillo:</span> desgaste de faja</div>
+    <div><span class="key">Rojo/Negro:</span> desgarre superficial</div>
+    <div><span class="key">Verde:</span> visión artificial activa</div>
+  </div>
+
+  <div id="view-controls">
+    <div class="view-title">MOVER VISTA</div>
+    <div class="view-grid">
+      <span></span>
+      <button id="viewUp" data-move="up" title="Mover vista hacia adelante">↑</button>
+      <span></span>
+      <button id="viewLeft" data-move="left" title="Mover vista a la izquierda">←</button>
+      <button id="viewDown" data-move="down" title="Mover vista hacia atrás">↓</button>
+      <button id="viewRight" data-move="right" title="Mover vista a la derecha">→</button>
+    </div>
+    <div class="view-help">Usa las flechas del teclado o mantén presionados estos botones.</div>
+  </div>
+
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module">
+    import * as THREE from "three";
+    import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+    const container = document.getElementById("scene-container");
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x07111f);
+    scene.fog = new THREE.Fog(0x07111f, 14, 34);
+
+    const camera = new THREE.PerspectiveCamera(
+      55,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      100
+    );
+
+    camera.position.set(9, 7, 9);
+
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true
+    });
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    container.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.target.set(0, 1.2, 0);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+
+
+    const viewControl = {
+      up: false,
+      down: false,
+      left: false,
+      right: false
+    };
+
+    const viewMoveSpeed = 5.0;
+
+    function setViewControl(direction, active) {
+      if (direction in viewControl) {
+        viewControl[direction] = active;
+      }
+    }
+
+    function moveView(dt) {
+      const forward = new THREE.Vector3();
+      camera.getWorldDirection(forward);
+      forward.y = 0;
+
+      if (forward.lengthSq() < 0.0001) {
+        forward.set(0, 0, -1);
+      }
+
+      forward.normalize();
+
+      const right = new THREE.Vector3();
+      right.crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
+
+      const move = new THREE.Vector3();
+
+      if (viewControl.up) move.add(forward);
+      if (viewControl.down) move.sub(forward);
+      if (viewControl.right) move.add(right);
+      if (viewControl.left) move.sub(right);
+
+      if (move.lengthSq() > 0) {
+        move.normalize().multiplyScalar(viewMoveSpeed * dt);
+        camera.position.add(move);
+        controls.target.add(move);
+      }
+    }
+
+    function initViewControls() {
+      document.querySelectorAll("#view-controls button[data-move]").forEach((button) => {
+        const direction = button.dataset.move;
+
+        const start = (event) => {
+          event.preventDefault();
+          setViewControl(direction, true);
+          button.classList.add("hold");
+        };
+
+        const stop = (event) => {
+          if (event) event.preventDefault();
+          setViewControl(direction, false);
+          button.classList.remove("hold");
+        };
+
+        button.addEventListener("pointerdown", start);
+        button.addEventListener("pointerup", stop);
+        button.addEventListener("pointerleave", stop);
+        button.addEventListener("pointercancel", stop);
+      });
+    }
+
+    const clock = new THREE.Clock();
+
+    const state = {
+      running: true,
+      beltSpeed: 3.1,
+      nominalThickness: 27,
+      criticalThickness: 20,
+      warningThickness: 24,
+      maxAllowedWear: 18,
+      tearAlarmThreshold: 70,
+      A: 250,
+      sensorX: 1.5,
+      cameraX: -2.2,
+      tearProbability: 0,
+      thickness: [30, 30, 30, 30, 30],
+      defects: [],
+      eventLog: [],
+      lastStatus: "",
+      lastAlarmSnapshot: "",
+      autoStopByTear: false,
+      beltMotionTime: 0
+    };
+
+    const materials = {
+      metal: new THREE.MeshStandardMaterial({
+        color: 0x7d8790,
+        metalness: 0.85,
+        roughness: 0.28
+      }),
+
+      darkMetal: new THREE.MeshStandardMaterial({
+        color: 0x28313b,
+        metalness: 0.75,
+        roughness: 0.34
+      }),
+
+      belt: new THREE.MeshStandardMaterial({
+        color: 0x111111,
+        roughness: 0.88,
+        metalness: 0.02
+      }),
+
+      blue: new THREE.MeshStandardMaterial({
+        color: 0x00b7ff,
+        emissive: 0x006e9b,
+        emissiveIntensity: 0.7,
+        transparent: true,
+        opacity: 0.75
+      }),
+
+      green: new THREE.MeshStandardMaterial({
+        color: 0x20ff88,
+        emissive: 0x10aa55,
+        emissiveIntensity: 0.8
+      }),
+
+      red: new THREE.MeshStandardMaterial({
+        color: 0xff2020,
+        emissive: 0x991111,
+        emissiveIntensity: 0.9
+      }),
+
+      yellow: new THREE.MeshStandardMaterial({
+        color: 0xf5c542,
+        emissive: 0x9a6a00,
+        emissiveIntensity: 0.4
+      })
+    };
+
+    function createBeltTexture() {
+    const width = 2048;
+    const height = 512;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+
+    const grad = ctx.createLinearGradient(0, 0, 0, height);
+    grad.addColorStop(0, "#121212");
+    grad.addColorStop(0.18, "#080808");
+    grad.addColorStop(0.50, "#141414");
+    grad.addColorStop(0.82, "#090909");
+    grad.addColorStop(1, "#121212");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, width, height);
+
+    const centerGrad = ctx.createLinearGradient(0, 0, 0, height);
+    centerGrad.addColorStop(0, "rgba(255,255,255,0.012)");
+    centerGrad.addColorStop(0.5, "rgba(255,255,255,0.042)");
+    centerGrad.addColorStop(1, "rgba(255,255,255,0.012)");
+    ctx.fillStyle = centerGrad;
+    ctx.fillRect(0, height * 0.16, width, height * 0.68);
+
+    ctx.fillStyle = "rgba(255,255,255,0.038)";
+    ctx.fillRect(0, 0, width, 14);
+    ctx.fillRect(0, height - 14, width, 14);
+    ctx.fillStyle = "rgba(0,0,0,0.20)";
+    ctx.fillRect(0, 14, width, 10);
+    ctx.fillRect(0, height - 24, width, 10);
+
+    // Líneas longitudinales suaves del caucho
+    for (let x = 0; x < width; x += 28) {
+      ctx.fillStyle = "rgba(255,255,255,0.012)";
+      ctx.fillRect(x, 0, 1, height);
+      ctx.fillStyle = "rgba(0,0,0,0.022)";
+      ctx.fillRect(x + 1, 0, 1, height);
+    }
+
+    // Juntas / empalmes sutiles como una banda real
+    for (let x = 240; x < width; x += 420) {
+      ctx.fillStyle = "rgba(255,255,255,0.020)";
+      ctx.fillRect(x, 0, 3, height);
+      ctx.fillStyle = "rgba(0,0,0,0.040)";
+      ctx.fillRect(x + 3, 0, 3, height);
+    }
+
+    for (let i = 0; i < 28000; i++) {
+      const x = Math.random() * width;
+      const y = Math.random() * height;
+      const size = Math.random() * 1.9 + 0.4;
+      const shade = Math.floor(18 + Math.random() * 42);
+      const alpha = 0.04 + Math.random() * 0.07;
+      ctx.fillStyle = `rgba(${shade},${shade},${shade},${alpha})`;
+      ctx.fillRect(x, y, size, size);
+    }
+
+    for (let i = 0; i < 220; i++) {
+      const x = Math.random() * width;
+      const y = 40 + Math.random() * (height - 80);
+      const len = 25 + Math.random() * 120;
+      ctx.strokeStyle = `rgba(255,255,255,${0.010 + Math.random() * 0.025})`;
+      ctx.lineWidth = 1 + Math.random() * 1.6;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + len, y + (Math.random() - 0.5) * 4);
+      ctx.stroke();
+    }
+
+    for (let i = 0; i < 28; i++) {
+      const x = Math.random() * width;
+      const y = Math.random() * height;
+      const w = 80 + Math.random() * 200;
+      const h = 24 + Math.random() * 70;
+      const local = ctx.createRadialGradient(x, y, 5, x, y, w);
+      local.addColorStop(0, "rgba(255,255,255,0.030)");
+      local.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = local;
+      ctx.fillRect(x - w, y - h, w * 2, h * 2);
+    }
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(5.5, 1);
+    texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+
+    return texture;
+  }
+  function createBeltBumpTexture() {
+  const width = 2048;
+  const height = 512;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+
+  // Base media para bump
+  ctx.fillStyle = "rgb(128,128,128)";
+  ctx.fillRect(0, 0, width, height);
+
+  // Bordes ligeramente elevados
+  ctx.fillStyle = "rgb(148,148,148)";
+  ctx.fillRect(0, 0, width, 14);
+  ctx.fillRect(0, height - 14, width, 14);
+
+  // Canales / textura longitudinal
+  for (let x = 0; x < width; x += 34) {
+    ctx.fillStyle = "rgb(138,138,138)";
+    ctx.fillRect(x, 0, 1, height);
+    ctx.fillStyle = "rgb(118,118,118)";
+    ctx.fillRect(x + 1, 0, 1, height);
+  }
+
+  // Rugosidad granulada
+  for (let i = 0; i < 26000; i++) {
+    const x = Math.random() * width;
+    const y = Math.random() * height;
+    const gray = 110 + Math.floor(Math.random() * 35);
+    const alpha = 0.15 + Math.random() * 0.15;
+    ctx.fillStyle = `rgba(${gray},${gray},${gray},${alpha})`;
+    ctx.fillRect(x, y, 1.3, 1.3);
+  }
+
+  // Pequeñas marcas longitudinales
+  for (let i = 0; i < 220; i++) {
+    const x = Math.random() * width;
+    const y = 40 + Math.random() * (height - 80);
+    const len = 15 + Math.random() * 80;
+
+    ctx.strokeStyle = `rgba(150,150,150,${0.08 + Math.random() * 0.12})`;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + len, y + (Math.random() - 0.5) * 3);
+    ctx.stroke();
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(5.5, 1);
+  texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+
+  return texture;
+}
+    const beltTexture = createBeltTexture();
+    const beltBumpTexture = createBeltBumpTexture();
+
+    materials.belt.map = beltTexture;
+    materials.belt.bumpMap = beltBumpTexture;
+    materials.belt.bumpScale = 0.12;
+    materials.belt.roughnessMap = beltBumpTexture;
+    materials.belt.needsUpdate = true;
+
+    function roundedBox(width, height, depth, material) {
+      const mesh = new THREE.Mesh(
+        new THREE.BoxGeometry(width, height, depth),
+        material
+      );
+
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+
+      return mesh;
+    }
+
+    function addLighting() {
+      const ambient = new THREE.AmbientLight(0x9fb7ff, 0.35);
+      scene.add(ambient);
+
+      const key = new THREE.DirectionalLight(0xffffff, 2.8);
+      key.position.set(6, 9, 5);
+      key.castShadow = true;
+      key.shadow.mapSize.width = 2048;
+      key.shadow.mapSize.height = 2048;
+      key.shadow.camera.near = 0.5;
+      key.shadow.camera.far = 35;
+      key.shadow.camera.left = -12;
+      key.shadow.camera.right = 12;
+      key.shadow.camera.top = 12;
+      key.shadow.camera.bottom = -12;
+      scene.add(key);
+
+      const blueLight = new THREE.PointLight(0x00b7ff, 2.2, 16);
+      blueLight.position.set(-4, 4, -5);
+      scene.add(blueLight);
+
+      const greenLight = new THREE.PointLight(0x20ff88, 1.4, 10);
+      greenLight.position.set(-2.2, 4.2, 0);
+      scene.add(greenLight);
+    }
+
+    function createFloor() {
+      const floor = new THREE.Mesh(
+        new THREE.PlaneGeometry(40, 40),
+        new THREE.MeshStandardMaterial({
+          color: 0x101820,
+          metalness: 0.2,
+          roughness: 0.8
+        })
+      );
+
+      floor.rotation.x = -Math.PI / 2;
+      floor.position.y = -0.02;
+      floor.receiveShadow = true;
+      scene.add(floor);
+
+      const grid = new THREE.GridHelper(36, 36, 0x204050, 0x142735);
+      grid.position.y = 0.005;
+      scene.add(grid);
+    }
+
+    let beltMesh;
+    let beltBasePositions = null;
+    const conveyorRollers = [];
+
+    function getBeltSurfaceOffset(x, z, time = 0) {
+      const trough = 0.016 - Math.pow(z / 2.08, 2) * 0.034;
+      const waveA = Math.sin(x * 1.05 - time * 5.6) * 0.020;
+      const waveB = Math.sin(x * 1.95 - time * 9.1 + z * 1.38) * 0.008;
+      const waveC = Math.sin(x * 0.56 - time * 3.15) * 0.005;
+      return trough + waveA + waveB + waveC;
+    }
+
+    function updateBeltGeometry(time = 0) {
+      if (!beltMesh || !beltBasePositions) return;
+
+      const pos = beltMesh.geometry.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const idx = i * 3;
+        const baseX = beltBasePositions[idx];
+        const baseY = beltBasePositions[idx + 1];
+        const baseZ = beltBasePositions[idx + 2];
+        const offset = getBeltSurfaceOffset(baseX, baseZ, time);
+        const influence = baseY > 0 ? 1 : 0.25;
+        pos.setXYZ(i, baseX, baseY + offset * influence, baseZ);
+      }
+      pos.needsUpdate = true;
+      beltMesh.geometry.computeVertexNormals();
+    }
+
+    function createConveyor() {
+      beltMesh = new THREE.Mesh(
+        new THREE.BoxGeometry(14, 0.18, 4.2, 96, 1, 26),
+        materials.belt
+      );
+
+      beltBasePositions = Float32Array.from(
+        beltMesh.geometry.attributes.position.array
+      );
+      updateBeltGeometry(0);
+
+      beltMesh.position.set(0, 1.15, 0);
+      beltMesh.castShadow = true;
+      beltMesh.receiveShadow = true;
+      scene.add(beltMesh);
+
+      const sideLeft = roundedBox(14.45, 0.32, 0.18, materials.darkMetal);
+      sideLeft.position.set(0, 1.01, -2.3);
+      scene.add(sideLeft);
+
+      const sideRight = roundedBox(14.45, 0.32, 0.18, materials.darkMetal);
+      sideRight.position.set(0, 1.01, 2.3);
+      scene.add(sideRight);
+
+      for (let x = -6.5; x <= 6.5; x += 1.45) {
+        const roller = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.18, 0.18, 4.7, 32),
+          materials.metal
+        );
+
+        roller.rotation.x = Math.PI / 2;
+        roller.position.set(x, 0.84, 0);
+        roller.castShadow = true;
+        roller.receiveShadow = true;
+        scene.add(roller);
+        conveyorRollers.push(roller);
+      }
+
+      const headDrum = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.38, 0.38, 4.55, 40),
+        new THREE.MeshStandardMaterial({
+          color: 0x808992,
+          metalness: 0.74,
+          roughness: 0.24
+        })
+      );
+      headDrum.rotation.x = Math.PI / 2;
+      headDrum.position.set(6.95, 1.05, 0);
+      scene.add(headDrum);
+      conveyorRollers.push(headDrum);
+
+      const tailDrum = headDrum.clone();
+      tailDrum.position.x = -6.95;
+      scene.add(tailDrum);
+      conveyorRollers.push(tailDrum);
+
+      for (let x = -6.8; x <= 6.8; x += 2.2) {
+        for (const z of [-2.25, 2.25]) {
+          const leg = roundedBox(0.18, 1.0, 0.18, materials.metal);
+          leg.position.set(x, 0.45, z);
+          scene.add(leg);
+        }
+      }
+
+      const motor = new THREE.Group();
+
+      const motorBody = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.45, 0.45, 0.9, 40),
+        new THREE.MeshStandardMaterial({
+          color: 0x165b78,
+          metalness: 0.6,
+          roughness: 0.25
+        })
+      );
+
+      motorBody.rotation.z = Math.PI / 2;
+      motorBody.castShadow = true;
+      motorBody.receiveShadow = true;
+
+      const motorCap = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.48, 0.48, 0.12, 40),
+        materials.metal
+      );
+      motorCap.rotation.z = Math.PI / 2;
+      motorCap.position.x = 0.5;
+
+      const shaft = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.1, 0.1, 0.7, 24),
+        materials.metal
+      );
+      shaft.rotation.z = Math.PI / 2;
+      shaft.position.x = -0.7;
+
+      motor.add(motorBody, motorCap, shaft);
+      motor.position.set(6.8, 1.05, 3.05);
+      scene.add(motor);
+    }
+
+    const sensorPairs = [];
+    const zoneZ = [-1.65, -0.82, 0, 0.82, 1.65];
+
+    function createUltrasonicSystem() {
+      const upperBar = roundedBox(0.35, 0.22, 4.5, materials.darkMetal);
+      upperBar.position.set(state.sensorX, 2.75, 0);
+      scene.add(upperBar);
+
+      const lowerBar = roundedBox(0.35, 0.22, 4.5, materials.darkMetal);
+      lowerBar.position.set(state.sensorX, 0.25, 0);
+      scene.add(lowerBar);
+
+      zoneZ.forEach((z, i) => {
+        const pair = new THREE.Group();
+
+        const upper = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.16, 0.16, 0.38, 32),
+          new THREE.MeshStandardMaterial({
+            color: 0x1c87a8,
+            metalness: 0.55,
+            roughness: 0.22,
+            emissive: 0x003d52,
+            emissiveIntensity: 0.5
+          })
+        );
+
+        upper.rotation.x = Math.PI / 2;
+        upper.position.set(state.sensorX, 2.52, z);
+        upper.castShadow = true;
+
+        const lower = upper.clone();
+        lower.position.set(state.sensorX, 0.48, z);
+        lower.rotation.x = -Math.PI / 2;
+
+        const beamTop = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.035, 0.09, 1.12, 24, 1, true),
+          materials.blue
+        );
+
+        beamTop.position.set(state.sensorX, 1.96, z);
+        beamTop.castShadow = false;
+
+        const beamBottom = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.09, 0.035, 0.72, 24, 1, true),
+          materials.blue
+        );
+
+        beamBottom.position.set(state.sensorX, 0.84, z);
+
+        const label = createTextSprite(`US-${i + 1}`);
+        label.position.set(state.sensorX + 0.05, 2.95, z);
+
+        pair.add(upper, lower, beamTop, beamBottom, label);
+        scene.add(pair);
+
+        sensorPairs.push({
+          group: pair,
+          upper,
+          lower,
+          beamTop,
+          beamBottom,
+          z,
+          x1: 110,
+          x2: 110,
+          maTop: 12,
+          maBottom: 12,
+          voltTop: 5,
+          voltBottom: 5
+        });
+      });
+    }
+
+    function createTextSprite(message) {
+      const canvas = document.createElement("canvas");
+      canvas.width = 256;
+      canvas.height = 96;
+
+      const ctx = canvas.getContext("2d");
+
+      ctx.fillStyle = "rgba(0,0,0,0.55)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = "#00d8ff";
+      ctx.strokeRect(3, 3, canvas.width - 6, canvas.height - 6);
+
+      ctx.fillStyle = "#bff6ff";
+      ctx.font = "bold 38px Segoe UI";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(message, canvas.width / 2, canvas.height / 2);
+
+      const texture = new THREE.CanvasTexture(canvas);
+
+      const material = new THREE.SpriteMaterial({
+        map: texture,
+        transparent: true
+      });
+
+      const sprite = new THREE.Sprite(material);
+      sprite.scale.set(0.65, 0.25, 1);
+
+      return sprite;
+    }
+
+    let cameraVisionCone;
+    let scanLine;
+
+    function createIndustrialCamera() {
+      const camGroup = new THREE.Group();
+
+      const supportMaterial = new THREE.MeshStandardMaterial({
+        color: 0x6f7c88,
+        metalness: 0.82,
+        roughness: 0.26
+      });
+
+      const base = roundedBox(0.52, 0.16, 0.52, materials.darkMetal);
+      base.position.set(-2.85, 0.08, -2.45);
+
+      const post = roundedBox(0.16, 3.15, 0.16, supportMaterial);
+      post.position.set(-2.85, 1.62, -2.45);
+
+      const topArm = roundedBox(0.16, 0.16, 2.55, supportMaterial);
+      topArm.position.set(-2.55, 3.12, -1.18);
+
+      const brace = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.05, 0.05, 1.28, 20),
+        supportMaterial
+      );
+      brace.position.set(-2.63, 2.48, -1.84);
+      brace.rotation.x = Math.PI / 2.35;
+      brace.rotation.z = -0.11;
+
+      const hangingMount = roundedBox(0.10, 0.62, 0.10, supportMaterial);
+      hangingMount.position.set(state.cameraX - 0.02, 2.82, -0.02);
+
+      const body = roundedBox(
+        0.65,
+        0.42,
+        0.52,
+        new THREE.MeshStandardMaterial({
+          color: 0x1b2633,
+          metalness: 0.7,
+          roughness: 0.25
+        })
+      );
+      body.position.set(state.cameraX, 3.0, 0);
+
+      const lens = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.18, 0.24, 0.28, 32),
+        new THREE.MeshStandardMaterial({
+          color: 0x050505,
+          metalness: 0.4,
+          roughness: 0.15,
+          emissive: 0x113344,
+          emissiveIntensity: 0.6
+        })
+      );
+      lens.rotation.x = Math.PI / 2;
+      lens.position.set(state.cameraX, 2.7, 0);
+
+      const ledRing = new THREE.Mesh(
+        new THREE.TorusGeometry(0.35, 0.025, 12, 60),
+        materials.green
+      );
+      ledRing.rotation.x = Math.PI / 2;
+      ledRing.position.set(state.cameraX, 2.55, 0);
+
+      const coneGeometry = new THREE.ConeGeometry(1.35, 1.7, 32, 1, true);
+      cameraVisionCone = new THREE.Mesh(
+        coneGeometry,
+        new THREE.MeshBasicMaterial({
+          color: 0x20ff88,
+          transparent: true,
+          opacity: 0.16,
+          side: THREE.DoubleSide,
+          depthWrite: false
+        })
+      );
+      cameraVisionCone.rotation.x = Math.PI;
+      cameraVisionCone.position.set(state.cameraX, 1.9, 0);
+
+      scanLine = new THREE.Mesh(
+        new THREE.BoxGeometry(0.04, 0.02, 3.5),
+        new THREE.MeshBasicMaterial({
+          color: 0x40ff9d,
+          transparent: true,
+          opacity: 0.9
+        })
+      );
+      scanLine.position.set(state.cameraX, 1.33, 0);
+
+      const light = new THREE.SpotLight(
+        0x20ff88,
+        4.5,
+        5,
+        Math.PI / 5,
+        0.45,
+        1
+      );
+      light.position.set(state.cameraX, 2.75, 0);
+      light.target.position.set(state.cameraX, 1.1, 0);
+      scene.add(light.target);
+
+      const label = createTextSprite("CAMERA AI");
+      label.position.set(state.cameraX, 3.55, 0);
+
+      camGroup.add(
+        base,
+        post,
+        topArm,
+        brace,
+        hangingMount,
+        body,
+        lens,
+        ledRing,
+        cameraVisionCone,
+        scanLine,
+        label,
+        light
+      );
+
+      scene.add(camGroup);
+    }
+
+    let hmi3DScreenTexture;
+    let hmi3DScreenCanvas;
+    let hmi3DScreenCtx;
+    let hmiAlarmLamp;
+
+    function createHMIScreenTexture() {
+      hmi3DScreenCanvas = document.createElement("canvas");
+      hmi3DScreenCanvas.width = 1024;
+      hmi3DScreenCanvas.height = 560;
+      hmi3DScreenCtx = hmi3DScreenCanvas.getContext("2d");
+
+      hmi3DScreenTexture = new THREE.CanvasTexture(hmi3DScreenCanvas);
+      hmi3DScreenTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+
+      drawHMI3DScreen({
+        status: "INICIANDO",
+        activeAlarms: [],
+        avg: 30,
+        min: 30,
+        wear: 0,
+        tearProbability: 0
+      });
+
+      return hmi3DScreenTexture;
+    }
+
+    function getTimeStamp() {
+      return new Date().toLocaleTimeString("es-PE", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      });
+    }
+
+    function addEvent(message, type = "ok") {
+      state.eventLog.unshift({
+        time: getTimeStamp(),
+        message,
+        type
+      });
+
+      if (state.eventLog.length > 8) {
+        state.eventLog.pop();
+      }
+
+      updateEventLogDOM();
+    }
+
+    function updateEventLogDOM() {
+      const log = document.getElementById("eventLog");
+      if (!log) return;
+
+      log.innerHTML = state.eventLog.map((item) => `
+        <div class="event-item ${item.type}">
+          <b>${item.time}</b>${item.message}
+        </div>
+      `).join("");
+    }
+
+    function updateAlarmDOM(activeAlarms) {
+      const container = document.getElementById("activeAlarms");
+      if (!container) return;
+
+      if (activeAlarms.length === 0) {
+        container.innerHTML = '<div class="alarm-normal">Sin alarmas activas</div>';
+        return;
+      }
+
+      container.innerHTML = activeAlarms.map((alarm) => `
+        <div class="alarm-card ${alarm.type}">
+          <b>${alarm.title}</b><br>${alarm.detail}
+        </div>
+      `).join("");
+    }
+
+    function drawHMI3DScreen(data) {
+      if (!hmi3DScreenCtx) return;
+
+      const ctx = hmi3DScreenCtx;
+      const w = hmi3DScreenCanvas.width;
+      const h = hmi3DScreenCanvas.height;
+
+      ctx.clearRect(0, 0, w, h);
+
+      const gradient = ctx.createLinearGradient(0, 0, w, h);
+      gradient.addColorStop(0, "#041825");
+      gradient.addColorStop(1, "#062f45");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.strokeStyle = "rgba(80,220,255,.65)";
+      ctx.lineWidth = 8;
+      ctx.strokeRect(12, 12, w - 24, h - 24);
+
+      ctx.fillStyle = "#9beeff";
+      ctx.font = "bold 42px Segoe UI, Arial";
+      ctx.fillText("PANTALLA HMI - REGISTROS Y ALARMAS", 42, 70);
+
+      const statusColor = data.status === "ALARMA"
+        ? "#ff4242"
+        : data.status === "ALERTA"
+          ? "#f5c542"
+          : "#22ff8a";
+
+      ctx.fillStyle = statusColor;
+      ctx.fillRect(760, 34, 210, 54);
+      ctx.fillStyle = "#001018";
+      ctx.font = "bold 30px Segoe UI, Arial";
+      ctx.textAlign = "center";
+      ctx.fillText(data.status, 865, 70);
+      ctx.textAlign = "left";
+
+      ctx.fillStyle = "rgba(255,255,255,.08)";
+      ctx.fillRect(42, 110, 420, 150);
+      ctx.fillRect(492, 110, 480, 150);
+      ctx.fillRect(42, 285, 930, 220);
+
+      ctx.fillStyle = "#dff8ff";
+      ctx.font = "bold 28px Segoe UI, Arial";
+      ctx.fillText("VARIABLES", 65, 150);
+      ctx.fillText("ALARMAS ACTIVAS", 515, 150);
+      ctx.fillText("REGISTRO DE EVENTOS", 65, 325);
+
+      ctx.font = "24px Consolas, monospace";
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText(`Espesor prom.: ${data.avg.toFixed(1)} mm`, 65, 188);
+      ctx.fillText(`Espesor mín.:  ${data.min.toFixed(1)} mm`, 65, 222);
+      ctx.fillText(`Desgaste:      ${data.wear.toFixed(1)} %`, 65, 256);
+      ctx.fillText(`Desgarre cam.: ${data.tearProbability.toFixed(0)} %`, 515, 255);
+
+      ctx.font = "22px Segoe UI, Arial";
+      if (data.activeAlarms.length === 0) {
+        ctx.fillStyle = "#bffff0";
+        ctx.fillText("Sistema sin alarmas activas", 515, 194);
+      } else {
+        data.activeAlarms.slice(0, 3).forEach((alarm, index) => {
+          ctx.fillStyle = alarm.type === "critical" ? "#ffd0d0" : "#fff1ba";
+          ctx.fillText(`• ${alarm.title}`, 515, 194 + index * 34);
+        });
+      }
+
+      ctx.font = "21px Consolas, monospace";
+      if (state.eventLog.length === 0) {
+        ctx.fillStyle = "#bffff0";
+        ctx.fillText(`${getTimeStamp()}  Sistema listo`, 65, 365);
+      } else {
+        state.eventLog.slice(0, 5).forEach((item, index) => {
+          ctx.fillStyle = item.type === "alarm"
+            ? "#ffb3b3"
+            : item.type === "warning"
+              ? "#ffe59a"
+              : "#c9f7ff";
+          ctx.fillText(`${item.time}  ${item.message}`, 65, 365 + index * 34);
+        });
+      }
+
+      hmi3DScreenTexture.needsUpdate = true;
+    }
+
+    function createPLCAndHMI3D() {
+      const panelGroup = new THREE.Group();
+
+      const backPlate = roundedBox(
+        2.75,
+        2.65,
+        0.10,
+        new THREE.MeshStandardMaterial({
+          color: 0x2a3138,
+          metalness: 0.45,
+          roughness: 0.55
+        })
+      );
+      backPlate.position.set(-5.95, 1.65, 3.38);
+
+      const plcBody = roundedBox(
+        1.55,
+        2.05,
+        0.92,
+        new THREE.MeshStandardMaterial({
+          color: 0xe9ece6,
+          metalness: 0.08,
+          roughness: 0.82
+        })
+      );
+      plcBody.position.set(-5.95, 1.78, 2.95);
+
+      const topHood = roundedBox(
+        1.55,
+        0.48,
+        0.84,
+        new THREE.MeshStandardMaterial({
+          color: 0xf3f5f0,
+          metalness: 0.06,
+          roughness: 0.78
+        })
+      );
+      topHood.position.set(-5.95, 2.67, 2.90);
+      topHood.rotation.z = -0.10;
+
+      const serviceBay = roundedBox(
+        0.64,
+        0.58,
+        0.08,
+        new THREE.MeshStandardMaterial({
+          color: 0xc7cbc5,
+          metalness: 0.15,
+          roughness: 0.72
+        })
+      );
+      serviceBay.position.set(-6.18, 2.34, 2.46);
+
+      const ethernetPort = roundedBox(
+        0.38,
+        0.18,
+        0.12,
+        new THREE.MeshStandardMaterial({
+          color: 0x787b80,
+          metalness: 0.55,
+          roughness: 0.3
+        })
+      );
+      ethernetPort.position.set(-5.95, 2.46, 2.42);
+
+      const sdSlot = roundedBox(
+        0.18,
+        0.11,
+        0.03,
+        new THREE.MeshStandardMaterial({
+          color: 0x1c1f23,
+          metalness: 0.45,
+          roughness: 0.28
+        })
+      );
+      sdSlot.position.set(-6.38, 2.52, 2.48);
+
+      const blueWindow = roundedBox(
+        0.22,
+        0.46,
+        0.04,
+        new THREE.MeshStandardMaterial({
+          color: 0x2f6be0,
+          emissive: 0x113377,
+          emissiveIntensity: 0.25,
+          metalness: 0.18,
+          roughness: 0.35
+        })
+      );
+      blueWindow.position.set(-6.40, 1.93, 2.47);
+
+      const terminalBlocks = new THREE.Group();
+      const termMat = new THREE.MeshStandardMaterial({
+        color: 0x3eb16d,
+        metalness: 0.1,
+        roughness: 0.72
+      });
+      const copperMat = new THREE.MeshStandardMaterial({
+        color: 0xb8741a,
+        metalness: 0.4,
+        roughness: 0.42
+      });
+
+      for (let col = 0; col < 2; col++) {
+        for (let row = 0; row < 2; row++) {
+          const block = roundedBox(0.36, 0.56, 0.17, termMat);
+          block.position.set(-5.80 + col * 0.42, 1.40 - row * 0.62, 2.45);
+          terminalBlocks.add(block);
+
+          for (let n = 0; n < 7; n++) {
+            const terminal = roundedBox(0.035, 0.045, 0.05, copperMat);
+            terminal.position.set(-5.93 + col * 0.42 + n * 0.055, 1.58 - row * 0.62, 2.34);
+            terminalBlocks.add(terminal);
+          }
+        }
+      }
+
+      const ventGroup = new THREE.Group();
+      for (let i = 0; i < 5; i++) {
+        const vent = roundedBox(
+          0.10,
+          0.04,
+          0.34,
+          new THREE.MeshStandardMaterial({
+            color: 0xd7dbd6,
+            metalness: 0.05,
+            roughness: 0.82
+          })
+        );
+        vent.position.set(-5.18, 2.15 - i * 0.16, 2.86);
+        ventGroup.add(vent);
+      }
+
+      const bottomLatch = roundedBox(
+        0.18,
+        0.11,
+        0.10,
+        new THREE.MeshStandardMaterial({
+          color: 0xcf3d3d,
+          metalness: 0.18,
+          roughness: 0.45
+        })
+      );
+      bottomLatch.position.set(-6.44, 0.44, 2.56);
+
+      const sideLatch = roundedBox(
+        0.18,
+        0.11,
+        0.10,
+        new THREE.MeshStandardMaterial({
+          color: 0x4caf62,
+          metalness: 0.1,
+          roughness: 0.5
+        })
+      );
+      sideLatch.position.set(-6.44, 0.68, 2.56);
+
+      const plcShadowBase = roundedBox(1.68, 0.12, 1.0, materials.darkMetal);
+      plcShadowBase.position.set(-5.95, 0.28, 2.98);
+
+      const labelPLC = createTextSprite("PLC + 24VDC");
+      labelPLC.position.set(-5.95, 3.55, 2.8);
+      labelPLC.scale.set(0.95, 0.33, 1);
+
+      const statusLedColors = [0xff3d3d, 0x4beaff, 0x4beaff, 0x31ff9f];
+      statusLedColors.forEach((c, i) => {
+        const led = new THREE.Mesh(
+          new THREE.SphereGeometry(0.045, 18, 18),
+          new THREE.MeshStandardMaterial({
+            color: c,
+            emissive: c,
+            emissiveIntensity: 1.25
+          })
+        );
+        led.position.set(-6.26 + i * 0.22, 2.03, 2.42);
+        panelGroup.add(led);
+      });
+
+      const hmiDisplayTexture = createHMIScreenTexture();
+
+      const hmiDisplayFrame = roundedBox(
+        2.9,
+        1.75,
+        0.16,
+        new THREE.MeshStandardMaterial({
+          color: 0x0d1824,
+          metalness: 0.65,
+          roughness: 0.28
+        })
+      );
+      hmiDisplayFrame.position.set(-3.65, 2.28, 4.18);
+
+      const hmiDisplay = new THREE.Mesh(
+        new THREE.PlaneGeometry(2.55, 1.38),
+        new THREE.MeshBasicMaterial({
+          map: hmiDisplayTexture,
+          toneMapped: false
+        })
+      );
+      hmiDisplay.position.set(-3.65, 2.28, 4.27);
+
+      const hmiBase = roundedBox(0.35, 1.45, 0.35, materials.darkMetal);
+      hmiBase.position.set(-3.65, 0.82, 4.05);
+
+      hmiAlarmLamp = new THREE.Mesh(
+        new THREE.SphereGeometry(0.12, 24, 24),
+        new THREE.MeshStandardMaterial({
+          color: 0x22ff8a,
+          emissive: 0x22ff8a,
+          emissiveIntensity: 1.3
+        })
+      );
+      hmiAlarmLamp.position.set(-2.10, 3.15, 4.33);
+
+      const displayLabel = createTextSprite("HMI REGISTROS");
+      displayLabel.position.set(-3.65, 3.35, 4.28);
+
+      panelGroup.add(
+        backPlate,
+        plcBody,
+        topHood,
+        serviceBay,
+        ethernetPort,
+        sdSlot,
+        blueWindow,
+        terminalBlocks,
+        ventGroup,
+        bottomLatch,
+        sideLatch,
+        plcShadowBase,
+        labelPLC,
+        hmiDisplayFrame,
+        hmiDisplay,
+        hmiBase,
+        hmiAlarmLamp,
+        displayLabel
+      );
+      scene.add(panelGroup);
+
+      createCables();
+    }
+
+    function createCables() {
+      const cableMaterial = new THREE.LineBasicMaterial({
+        color: 0x0bd7ff,
+        transparent: true,
+        opacity: 0.65
+      });
+
+      const cablePoints = [
+        [
+          new THREE.Vector3(state.sensorX, 2.7, -1.7),
+          new THREE.Vector3(-5.55, 1.62, 2.48)
+        ],
+        [
+          new THREE.Vector3(state.sensorX, 2.7, 1.7),
+          new THREE.Vector3(-5.20, 1.62, 2.48)
+        ],
+        [
+          new THREE.Vector3(state.sensorX, 0.3, 0),
+          new THREE.Vector3(-5.78, 0.96, 2.44)
+        ],
+        [
+          new THREE.Vector3(state.cameraX, 3.0, 0),
+          new THREE.Vector3(-6.18, 2.40, 2.46)
+        ]
+      ];
+
+      cablePoints.forEach(([a, b]) => {
+        const curve = new THREE.CatmullRomCurve3([
+          a,
+          new THREE.Vector3((a.x + b.x) / 2, 3.1, (a.z + b.z) / 2),
+          b
+        ]);
+
+        const points = curve.getPoints(32);
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        const line = new THREE.Line(geometry, cableMaterial);
+
+        scene.add(line);
+      });
+    }
+
+    function createEnvironmentDetails() {
+      for (let i = 0; i < 12; i++) {
+        const crate = roundedBox(
+          0.5 + Math.random() * 0.4,
+          0.35 + Math.random() * 0.5,
+          0.5 + Math.random() * 0.4,
+          new THREE.MeshStandardMaterial({
+            color: 0x25323c,
+            metalness: 0.25,
+            roughness: 0.65
+          })
+        );
+
+        crate.position.set(
+          -8 + Math.random() * 16,
+          0.2,
+          Math.random() > 0.5
+            ? 4.2 + Math.random() * 2
+            : -4.2 - Math.random() * 2
+        );
+
+        scene.add(crate);
+      }
+
+      const warningPole = new THREE.Group();
+
+      const pole = roundedBox(0.08, 1.8, 0.08, materials.metal);
+      pole.position.y = 0.9;
+
+      const light1 = new THREE.Mesh(
+        new THREE.SphereGeometry(0.15, 24, 24),
+        new THREE.MeshStandardMaterial({
+          color: 0x22ff88,
+          emissive: 0x22ff88,
+          emissiveIntensity: 1.2
+        })
+      );
+
+      light1.position.y = 1.82;
+
+      const light2 = new THREE.Mesh(
+        new THREE.SphereGeometry(0.15, 24, 24),
+        new THREE.MeshStandardMaterial({
+          color: 0xff3333,
+          emissive: 0x330000,
+          emissiveIntensity: 0.2
+        })
+      );
+
+      light2.position.y = 2.18;
+
+      warningPole.add(pole, light1, light2);
+      warningPole.position.set(5.8, 0, -3.2);
+
+      scene.add(warningPole);
+    }
+
+    function spawnDefect(type = null) {
+      const chosenType = type || weightedRandomDefect();
+      const zone = Math.floor(Math.random() * 5);
+      const z = zoneZ[zone] + (Math.random() - 0.5) * 0.28;
+
+      let mesh;
+
+      if (chosenType === "wear") {
+        mesh = new THREE.Mesh(
+          new THREE.CircleGeometry(0.35 + Math.random() * 0.35, 32),
+          new THREE.MeshBasicMaterial({
+            color: 0xf5c542,
+            transparent: true,
+            opacity: 0.78,
+            side: THREE.DoubleSide
+          })
+        );
+
+        mesh.scale.z = 0.45;
+      } else if (chosenType === "tear") {
+        const shape = new THREE.Shape();
+
+        shape.moveTo(-0.08, -0.65);
+        shape.lineTo(0.08, -0.42);
+        shape.lineTo(-0.04, -0.15);
+        shape.lineTo(0.09, 0.15);
+        shape.lineTo(-0.06, 0.45);
+        shape.lineTo(0.07, 0.7);
+        shape.lineTo(-0.12, 0.42);
+        shape.lineTo(0.01, 0.1);
+        shape.lineTo(-0.14, -0.18);
+        shape.lineTo(0.02, -0.45);
+        shape.closePath();
+
+        mesh = new THREE.Mesh(
+          new THREE.ShapeGeometry(shape),
+          new THREE.MeshBasicMaterial({
+            color: Math.random() > 0.5 ? 0xff1616 : 0x020202,
+            transparent: true,
+            opacity: 0.95,
+            side: THREE.DoubleSide
+          })
+        );
+      } else {
+        mesh = new THREE.Mesh(
+          new THREE.CircleGeometry(0.12, 16),
+          new THREE.MeshBasicMaterial({
+            color: 0x444444,
+            transparent: true,
+            opacity: 0.55,
+            side: THREE.DoubleSide
+          })
+        );
+      }
+
+      mesh.rotation.x = -Math.PI / 2;
+      mesh.position.set(6.8, 1.295, z);
+      mesh.castShadow = false;
+
+      scene.add(mesh);
+
+      state.defects.push({
+        mesh,
+        type: chosenType,
+        zone,
+        z,
+        severity: chosenType === "wear" ? 2.0 + Math.random() * 6.5 : 0,
+        tearStrength: chosenType === "tear" ? 55 + Math.random() * 45 : 0
+      });
+    }
+
+    function weightedRandomDefect() {
+      const r = Math.random();
+
+      if (r < 0.50) return "normal";
+      if (r < 0.82) return "wear";
+
+      return "tear";
+    }
+
+    function mapDistanceToCurrent(distanceMM) {
+      const minD = 70;
+      const maxD = 150;
+
+      const n = THREE.MathUtils.clamp(
+        (distanceMM - minD) / (maxD - minD),
+        0,
+        1
+      );
+
+      return 4 + n * 16;
+    }
+
+    function mapCurrentToVoltage(ma) {
+      return THREE.MathUtils.clamp(
+        ((ma - 4) / 16) * 10,
+        0,
+        10
+      );
+    }
+
+    function updateMeasurements(time) {
+      const newThickness = [];
+
+      for (let i = 0; i < 5; i++) {
+        let g = state.nominalThickness;
+
+        g += Math.sin(time * 1.8 + i * 0.65) * 0.35;
+
+        for (const defect of state.defects) {
+          const dx = Math.abs(defect.mesh.position.x - state.sensorX);
+          const dz = Math.abs(defect.z - zoneZ[i]);
+
+          if (defect.type === "wear" && dx < 0.62 && dz < 0.55) {
+            const influence = 1 - dx / 0.62;
+            g -= defect.severity * influence;
+          }
+
+          if (defect.type === "tear" && dx < 0.48 && dz < 0.45) {
+            g -= 2.2;
+          }
+        }
+
+        g = THREE.MathUtils.clamp(g, 18, 31);
+        newThickness.push(g);
+
+        const x1 =
+          108 +
+          Math.sin(time * 2 + i) * 2.8 +
+          (state.nominalThickness - g) * 0.22;
+
+        const x2 = state.A - g - x1;
+
+        const maTop = mapDistanceToCurrent(x1);
+        const maBottom = mapDistanceToCurrent(x2);
+
+        const vTop = mapCurrentToVoltage(maTop);
+        const vBottom = mapCurrentToVoltage(maBottom);
+
+        sensorPairs[i].x1 = x1;
+        sensorPairs[i].x2 = x2;
+        sensorPairs[i].maTop = maTop;
+        sensorPairs[i].maBottom = maBottom;
+        sensorPairs[i].voltTop = vTop;
+        sensorPairs[i].voltBottom = vBottom;
+
+        const alarmScale = g < state.criticalThickness ? 1.3 : 1.0;
+
+        sensorPairs[i].beamTop.scale.setScalar(alarmScale);
+        sensorPairs[i].beamBottom.scale.setScalar(alarmScale);
+      }
+
+      state.thickness = newThickness;
+    }
+
+    function updateCameraInspection() {
+      let targetProbability = 0;
+
+      for (const defect of state.defects) {
+        const dx = Math.abs(defect.mesh.position.x - state.cameraX);
+        const inVisionZ = Math.abs(defect.z) < 2.1;
+
+        if (defect.type === "tear" && dx < 0.9 && inVisionZ) {
+          const influence = 1 - dx / 0.9;
+          targetProbability = Math.max(
+            targetProbability,
+            defect.tearStrength * influence
+          );
+        }
+
+        if (defect.type === "wear" && dx < 0.7 && inVisionZ) {
+          targetProbability = Math.max(
+            targetProbability,
+            15 + 15 * (1 - dx / 0.7)
+          );
+        }
+      }
+
+      state.tearProbability = THREE.MathUtils.lerp(
+        state.tearProbability,
+        targetProbability,
+        0.12
+      );
+    }
+
+    function updateDefects(dt) {
+      const beltTime = performance.now() * 0.001;
+
+      for (let i = state.defects.length - 1; i >= 0; i--) {
+        const defect = state.defects[i];
+
+        if (state.running) {
+          defect.mesh.position.x -= state.beltSpeed * dt;
+        }
+
+        const heightOffset = getBeltSurfaceOffset(
+          defect.mesh.position.x,
+          defect.mesh.position.z,
+          beltTime
+        );
+        defect.mesh.position.y = 1.295 + heightOffset * 0.92;
+        defect.mesh.rotation.z += dt * 0.25;
+
+        if (defect.mesh.position.x < -7.5) {
+          scene.remove(defect.mesh);
+          defect.mesh.geometry.dispose();
+          defect.mesh.material.dispose();
+          state.defects.splice(i, 1);
+        }
+      }
+
+      if (state.running && Math.random() < 0.008) {
+        spawnDefect();
+      }
+    }
+
+    function triggerCriticalTearStop() {
+      if (state.autoStopByTear) return;
+      state.running = false;
+      state.autoStopByTear = true;
+      addEvent("Parada automática: rotura crítica detectada por cámara", "alarm");
+    }
+
+    function updateHMI() {
+      const avg =
+        state.thickness.reduce((a, b) => a + b, 0) / state.thickness.length;
+
+      const min = Math.min(...state.thickness);
+
+      const wear = THREE.MathUtils.clamp(
+        ((state.nominalThickness - min) / state.nominalThickness) * 100,
+        0,
+        100
+      );
+
+      const tearAlarm = state.tearProbability >= state.tearAlarmThreshold;
+      const thicknessAlarm = min < state.criticalThickness;
+
+      if (tearAlarm && state.running) {
+        triggerCriticalTearStop();
+      }
+
+      if (!tearAlarm) {
+        state.autoStopByTear = false;
+      }
+      const wearAlarm = wear > state.maxAllowedWear;
+      const warning = min < state.warningThickness || wear > 10;
+
+      const activeAlarms = [];
+
+      if (thicknessAlarm) {
+        activeAlarms.push({
+          title: "Espesor crítico",
+          detail: `Espesor mínimo detectado: ${min.toFixed(1)} mm`,
+          type: "critical"
+        });
+      }
+
+      if (wearAlarm) {
+        activeAlarms.push({
+          title: "Desgaste excesivo",
+          detail: `Desgaste calculado: ${wear.toFixed(1)} %`,
+          type: "critical"
+        });
+      }
+
+      if (tearAlarm) {
+        activeAlarms.push({
+          title: "Desgarre detectado",
+          detail: `Probabilidad por cámara: ${state.tearProbability.toFixed(0)} %`,
+          type: "critical"
+        });
+      }
+
+      if (activeAlarms.length === 0 && warning) {
+        activeAlarms.push({
+          title: "Advertencia preventiva",
+          detail: `Revisar faja. Espesor mínimo: ${min.toFixed(1)} mm`,
+          type: "warning"
+        });
+      }
+
+      let status = "NORMAL";
+      let statusColor = "#0b9152";
+      let shadow = "0 0 12px rgba(0,255,140,.4)";
+
+      if (warning) {
+        status = "ALERTA";
+        statusColor = "#c79200";
+        shadow = "0 0 12px rgba(255,210,0,.45)";
+      }
+
+      if (tearAlarm || thicknessAlarm || wearAlarm) {
+        status = "ALARMA";
+        statusColor = "#be1e1e";
+        shadow = "0 0 15px rgba(255,0,0,.65)";
+      }
+
+      const alarmSnapshot = activeAlarms.map((alarm) => alarm.title).join("|") || "SIN_ALARMA";
+
+      if (state.lastStatus !== status) {
+        addEvent(`Estado general cambiado a ${status}`, status === "ALARMA" ? "alarm" : status === "ALERTA" ? "warning" : "ok");
+        state.lastStatus = status;
+      }
+
+      if (state.lastAlarmSnapshot !== alarmSnapshot) {
+        if (activeAlarms.length === 0) {
+          addEvent("Alarmas restablecidas", "ok");
+        } else {
+          addEvent(`Evento: ${activeAlarms[0].title}`, activeAlarms[0].type === "critical" ? "alarm" : "warning");
+        }
+        state.lastAlarmSnapshot = alarmSnapshot;
+      }
+
+      updateAlarmDOM(activeAlarms);
+      drawHMI3DScreen({
+        status,
+        activeAlarms,
+        avg,
+        min,
+        wear,
+        tearProbability: state.tearProbability
+      });
+
+      if (hmiAlarmLamp) {
+        const lampMaterial = hmiAlarmLamp.material;
+        const lampColor = status === "ALARMA" ? 0xff3333 : status === "ALERTA" ? 0xf5c542 : 0x22ff8a;
+        lampMaterial.color.setHex(lampColor);
+        lampMaterial.emissive.setHex(lampColor);
+        lampMaterial.emissiveIntensity = status === "NORMAL" ? 1.3 : 2.2;
+      }
+
+      document.getElementById("generalStatus").textContent = status;
+      document.getElementById("generalStatus").style.background = statusColor;
+      document.getElementById("generalStatus").style.boxShadow = shadow;
+
+      document.getElementById("avgThickness").textContent =
+        `${avg.toFixed(1)} mm`;
+
+      document.getElementById("minThickness").textContent =
+        `${min.toFixed(1)} mm`;
+
+      document.getElementById("wearPercent").textContent =
+        `${wear.toFixed(1)} %`;
+
+      document.getElementById("wearBar").style.width = `${wear}%`;
+
+      document.getElementById("beltState").textContent =
+        state.running ? "OPERANDO" : "DETENIDA";
+
+      for (let i = 0; i < 5; i++) {
+        const zone = document.getElementById(`zone${i}`);
+
+        zone.className = "zone";
+
+        if (state.thickness[i] < state.criticalThickness) {
+          zone.classList.add("critical");
+        } else if (state.thickness[i] < state.warningThickness) {
+          zone.classList.add("warning");
+        } else {
+          zone.classList.add("normal");
+        }
+
+        zone.querySelector("span").textContent =
+          `${state.thickness[i].toFixed(1)} mm`;
+      }
+
+      const tbody = document.getElementById("sensorTable");
+      tbody.innerHTML = "";
+
+      for (let i = 0; i < 5; i++) {
+        const s = sensorPairs[i];
+        const plcInput = (s.voltTop + s.voltBottom) / 2;
+
+        tbody.innerHTML += `
+          <tr>
+            <td>${i + 1}</td>
+            <td>${s.x1.toFixed(1)}</td>
+            <td>${s.x2.toFixed(1)}</td>
+            <td>${s.maTop.toFixed(1)}</td>
+            <td>${s.maBottom.toFixed(1)}</td>
+            <td>${plcInput.toFixed(2)}</td>
+            <td>${state.thickness[i].toFixed(1)}</td>
+          </tr>
+        `;
+      }
+
+      document.getElementById("tearProbability").textContent =
+        `${state.tearProbability.toFixed(0)} %`;
+
+      document.getElementById("tearBar").style.width =
+        `${THREE.MathUtils.clamp(state.tearProbability, 0, 100)}%`;
+
+      document.getElementById("cameraState").textContent =
+        tearAlarm ? "ROTURA CRÍTICA" : "OK";
+
+      document.getElementById("ledRun").className =
+        state.running ? "led on-green" : "led";
+
+      document.getElementById("ledSensor").className =
+        thicknessAlarm ? "led on-red" : "led on-blue";
+
+      document.getElementById("ledCamera").className =
+        tearAlarm ? "led on-red" : "led on-blue";
+
+      document.getElementById("ledAlarm").className =
+        tearAlarm || thicknessAlarm || wearAlarm
+          ? "led on-red"
+          : "led";
+
+      document.getElementById("alarm-banner").style.display =
+        tearAlarm || thicknessAlarm || wearAlarm
+          ? "block"
+          : "none";
+    }
+
+    function resetSimulation() {
+      for (const defect of state.defects) {
+        scene.remove(defect.mesh);
+        defect.mesh.geometry.dispose();
+        defect.mesh.material.dispose();
+      }
+
+      state.defects = [];
+      state.tearProbability = 0;
+      state.thickness = [30, 30, 30, 30, 30];
+      state.running = true;
+      state.lastStatus = "";
+      state.lastAlarmSnapshot = "";
+      state.autoStopByTear = false;
+      state.beltMotionTime = 0;
+      addEvent("Reset de simulación ejecutado", "ok");
+    }
+
+    function toggleSimulation() {
+      state.running = !state.running;
+      addEvent(state.running ? "Faja en operación" : "Faja detenida por operador", state.running ? "ok" : "warning");
+    }
+
+    function animateVisualEffects(time, dt) {
+      if (state.running) {
+        const visualSpeed = state.beltSpeed * dt;
+
+        state.beltMotionTime += dt;
+        beltTexture.offset.x -= visualSpeed * 0.48;
+        beltBumpTexture.offset.x -= visualSpeed * 0.48;
+        updateBeltGeometry(state.beltMotionTime);
+
+        conveyorRollers.forEach((roller) => {
+          roller.rotation.y -= visualSpeed * 2.9;
+        });
+      } else {
+        updateBeltGeometry(state.beltMotionTime);
+      }
+
+      sensorPairs.forEach((s, i) => {
+        const pulse = 0.55 + Math.sin(time * 7 + i) * 0.25;
+
+        s.beamTop.material.opacity = 0.45 + pulse * 0.35;
+        s.beamBottom.material.opacity = 0.45 + pulse * 0.35;
+      });
+
+      if (cameraVisionCone) {
+        cameraVisionCone.material.opacity =
+          0.12 + Math.sin(time * 4) * 0.035;
+      }
+
+      if (scanLine) {
+        scanLine.position.z = Math.sin(time * 4.2) * 1.55;
+        scanLine.material.opacity = 0.65 + Math.sin(time * 8) * 0.25;
+      }
+    }
+
+    function init() {
+      addLighting();
+      createFloor();
+      createConveyor();
+      createUltrasonicSystem();
+      createIndustrialCamera();
+      createPLCAndHMI3D();
+      createEnvironmentDetails();
+
+      for (let i = 0; i < 4; i++) {
+        spawnDefect(i % 2 === 0 ? "normal" : "wear");
+        state.defects[i].mesh.position.x = 4.5 - i * 2.2;
+      }
+
+      state.beltMotionTime = 0;
+      initViewControls();
+
+      document.getElementById("btnStart").addEventListener("click", toggleSimulation);
+
+      document.getElementById("btnDefect").addEventListener("click", () => {
+        const defectType = Math.random() > 0.5 ? "wear" : "tear";
+        spawnDefect(defectType);
+        addEvent(defectType === "tear" ? "Defecto manual: desgarre" : "Defecto manual: desgaste", "warning");
+      });
+
+      document.getElementById("btnReset").addEventListener("click", resetSimulation);
+
+      window.addEventListener("keydown", (e) => {
+        const arrowMap = {
+          ArrowUp: "up",
+          ArrowDown: "down",
+          ArrowLeft: "left",
+          ArrowRight: "right"
+        };
+
+        if (arrowMap[e.code]) {
+          e.preventDefault();
+          setViewControl(arrowMap[e.code], true);
+          return;
+        }
+
+        if (e.code === "Space") {
+          e.preventDefault();
+          toggleSimulation();
+        }
+
+        if (e.key.toLowerCase() === "d") {
+          const defectType = Math.random() > 0.5 ? "wear" : "tear";
+          spawnDefect(defectType);
+          addEvent(defectType === "tear" ? "Defecto por teclado: desgarre" : "Defecto por teclado: desgaste", "warning");
+        }
+
+        if (e.key.toLowerCase() === "r") {
+          resetSimulation();
+        }
+      });
+
+      window.addEventListener("keyup", (e) => {
+        const arrowMap = {
+          ArrowUp: "up",
+          ArrowDown: "down",
+          ArrowLeft: "left",
+          ArrowRight: "right"
+        };
+
+        if (arrowMap[e.code]) {
+          e.preventDefault();
+          setViewControl(arrowMap[e.code], false);
+        }
+      });
+
+      window.addEventListener("resize", onResize);
+
+      addEvent("Sistema HMI iniciado", "ok");
+      animate();
+    }
+
+    function onResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const dt = clock.getDelta();
+      const time = clock.elapsedTime;
+
+      updateDefects(dt);
+      updateMeasurements(time);
+      updateCameraInspection();
+      animateVisualEffects(time, dt);
+      updateHMI();
+      moveView(dt);
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    init();
+  </script>
+</body>
+</html>
