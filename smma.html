@@ -55,15 +55,15 @@
       position: fixed;
       top: 16px;
       right: 16px;
-      width: 470px;
+      width: 430px;
       max-height: calc(100vh - 32px);
       overflow-y: auto;
       z-index: 20;
-      padding: 18px;
+      padding: 16px;
       background: linear-gradient(145deg, rgba(8, 18, 34, 0.95), rgba(6, 28, 45, 0.92));
       border: 1px solid rgba(0, 200, 255, 0.35);
-      border-radius: 24px;
-      box-shadow: 0 18px 42px rgba(0, 120, 255, 0.22), 0 0 35px rgba(0, 180, 255, 0.16);
+      border-radius: 20px;
+      box-shadow: 0 0 35px rgba(0, 180, 255, 0.25);
       backdrop-filter: blur(12px);
     }
 
@@ -80,14 +80,9 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
-      border-bottom: 1px solid rgba(255,255,255,0.10);
-      padding-bottom: 12px;
-      position: sticky;
-      top: 0;
-      background: linear-gradient(180deg, rgba(9, 20, 36, 0.98), rgba(9, 20, 36, 0.82));
-      backdrop-filter: blur(10px);
-      z-index: 3;
+      margin-bottom: 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      padding-bottom: 10px;
     }
 
     .hmi-header h2 {
@@ -96,10 +91,10 @@
     }
 
     .status-box {
-      padding: 9px 14px;
-      border-radius: 999px;
+      padding: 8px 12px;
+      border-radius: 12px;
       font-weight: bold;
-      font-size: 12px;
+      font-size: 13px;
       letter-spacing: 1px;
       background: #0b9152;
       color: white;
@@ -108,21 +103,19 @@
 
     .section {
       margin-top: 14px;
-      padding: 14px;
-      border-radius: 18px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.04));
-      border: 1px solid rgba(120, 210, 255, 0.14);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 18px rgba(0,0,0,.16);
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.055);
+      border: 1px solid rgba(255,255,255,0.08);
     }
 
     .section h3 {
       font-size: 14px;
       color: #72dfff;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
       gap: 7px;
-      letter-spacing: .2px;
     }
 
     .grid2 {
@@ -132,24 +125,21 @@
     }
 
     .metric {
-      background: linear-gradient(180deg, rgba(8, 23, 40, 0.82), rgba(7, 18, 31, 0.92));
-      border-radius: 14px;
-      padding: 12px;
-      border: 1px solid rgba(120,200,255,0.10);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.035), 0 8px 16px rgba(0,0,0,.12);
+      background: rgba(0,0,0,.22);
+      border-radius: 10px;
+      padding: 9px;
+      border: 1px solid rgba(255,255,255,0.06);
     }
 
     .metric label {
       display: block;
       color: #9fb7c8;
       font-size: 11px;
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: .7px;
+      margin-bottom: 4px;
     }
 
     .metric span {
-      font-size: 18px;
+      font-size: 17px;
       color: #ffffff;
       font-weight: 700;
     }
@@ -396,233 +386,6 @@
       border-left: 3px solid #22ff8a;
     }
 
-    .speed-panel {
-      background:
-        radial-gradient(circle at top right, rgba(255, 160, 60, 0.14), transparent 32%),
-        linear-gradient(180deg, rgba(14, 34, 58, 0.92), rgba(8, 20, 36, 0.96));
-    }
-
-    .speed-panel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .speed-panel-subtitle {
-      font-size: 11px;
-      color: #9bb9c9;
-      line-height: 1.35;
-      margin-top: -3px;
-    }
-
-    .speed-badge {
-      padding: 8px 12px;
-      min-width: 92px;
-      text-align: center;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: .8px;
-      border: 1px solid rgba(255,255,255,.08);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
-    }
-
-    .speed-badge.ok {
-      background: rgba(34, 255, 138, .16);
-      color: #bffff0;
-      border-color: rgba(34,255,138,.28);
-    }
-
-    .speed-badge.stop {
-      background: rgba(255, 196, 66, .16);
-      color: #ffe7a1;
-      border-color: rgba(245,197,66,.3);
-    }
-
-    .speed-badge.fault {
-      background: rgba(255, 70, 70, .18);
-      color: #ffd7d7;
-      border-color: rgba(255,70,70,.32);
-    }
-
-    .speed-layout {
-      display: grid;
-      grid-template-columns: 1.15fr 1fr;
-      gap: 12px;
-      align-items: stretch;
-    }
-
-    .speed-main {
-      padding: 14px 12px;
-      border-radius: 16px;
-      background: rgba(2, 12, 22, .42);
-      border: 1px solid rgba(255,255,255,.06);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .speed-gauge-wrap {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 176px;
-    }
-
-    .speed-gauge-ring {
-      --gauge-angle: 210deg;
-      width: 156px;
-      height: 156px;
-      padding: 12px;
-      border-radius: 50%;
-      background:
-        radial-gradient(circle at center, rgba(255,255,255,.10), rgba(255,255,255,0) 54%),
-        conic-gradient(from 220deg, #1ad58f 0deg, #f0c53d 135deg, #ff5a45 var(--gauge-angle), rgba(255,255,255,.08) var(--gauge-angle), rgba(255,255,255,.08) 320deg, rgba(255,255,255,0) 320deg);
-      box-shadow: inset 0 0 18px rgba(255,255,255,.06), 0 0 24px rgba(0,0,0,.25);
-      position: relative;
-    }
-
-    .speed-gauge-ring::before {
-      content: "";
-      position: absolute;
-      inset: 8px;
-      border-radius: 50%;
-      border: 1px dashed rgba(255,255,255,.12);
-    }
-
-    .speed-gauge-inner {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      background: radial-gradient(circle at top, rgba(18,44,68,.98), rgba(5,15,26,.98));
-      border: 1px solid rgba(120,220,255,.18);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
-      text-align: center;
-    }
-
-    .speed-gauge-inner small {
-      font-size: 11px;
-      color: #9ac8dd;
-      letter-spacing: .8px;
-      text-transform: uppercase;
-      margin-bottom: 4px;
-    }
-
-    .speed-gauge-inner strong {
-      font-size: 30px;
-      line-height: 1;
-      color: #ffffff;
-      font-weight: 800;
-      text-shadow: 0 0 12px rgba(0, 180, 255, .18);
-    }
-
-    .speed-gauge-inner span {
-      margin-top: 6px;
-      font-size: 13px;
-      color: #8eeeff;
-      font-weight: 700;
-    }
-
-    .speed-track {
-      width: 100%;
-      height: 12px;
-      background: rgba(255,255,255,.08);
-      border-radius: 999px;
-      overflow: hidden;
-      box-shadow: inset 0 0 8px rgba(0,0,0,.35);
-    }
-
-    .speed-track-fill {
-      width: 0%;
-      height: 100%;
-      border-radius: 999px;
-      background: linear-gradient(90deg, #19d48e, #f1c548 62%, #ff5845);
-      box-shadow: 0 0 14px rgba(255, 172, 72, .3);
-      transition: width .18s linear;
-    }
-
-    .speed-scale {
-      display: flex;
-      justify-content: space-between;
-      font-size: 10px;
-      color: #7fa1b6;
-      letter-spacing: .3px;
-    }
-
-    .speed-caption {
-      font-size: 11px;
-      color: #9ab8c9;
-      line-height: 1.45;
-      background: rgba(255,255,255,.035);
-      border: 1px solid rgba(255,255,255,.05);
-      border-radius: 12px;
-      padding: 10px;
-    }
-
-    .speed-stats {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-    }
-
-    .speed-mini-card {
-      border-radius: 14px;
-      padding: 12px;
-      background: linear-gradient(180deg, rgba(8,22,38,.92), rgba(5,15,27,.96));
-      border: 1px solid rgba(120,200,255,.10);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
-    }
-
-    .speed-mini-card label {
-      display: block;
-      font-size: 10px;
-      color: #8faec0;
-      text-transform: uppercase;
-      letter-spacing: .8px;
-      margin-bottom: 6px;
-    }
-
-    .speed-mini-card strong,
-    .speed-status-text {
-      font-size: 22px;
-      color: #ffffff;
-      font-weight: 800;
-      line-height: 1.1;
-    }
-
-    .speed-mini-card small {
-      font-size: 11px;
-      color: #82a8bd;
-      display: block;
-      margin-top: 4px;
-    }
-
-    .speed-status-text.ok { color: #c2fff0; }
-    .speed-status-text.stop { color: #ffe7a1; }
-    .speed-status-text.fault { color: #ffd0d0; }
-
-    .speed-detail-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    @media (max-width: 1580px) {
-      .speed-layout {
-        grid-template-columns: 1fr;
-      }
-
-      .speed-stats {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
 
 
     #view-controls {
@@ -825,77 +588,6 @@
       </p>
     </div>
 
-    <div class="section speed-panel">
-      <div class="speed-panel-header">
-        <div>
-          <h3>🌀 Sensor de velocidad</h3>
-          <p class="speed-panel-subtitle">Encoder incremental industrial con rueda de contacto, lectura de pulsos al PLC y monitoreo visual en tiempo real.</p>
-        </div>
-        <div id="speedBadge" class="speed-badge ok">ONLINE</div>
-      </div>
-
-      <div class="speed-layout">
-        <div class="speed-main">
-          <div class="speed-gauge-wrap">
-            <div id="speedGaugeRing" class="speed-gauge-ring">
-              <div class="speed-gauge-inner">
-                <small>Velocidad de faja</small>
-                <strong id="speedGaugeValue">0.00</strong>
-                <span>m/s</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="speed-track">
-            <div id="speedBar" class="speed-track-fill"></div>
-          </div>
-          <div class="speed-scale">
-            <span>0 m/s</span>
-            <span>4 m/s</span>
-            <span>8 m/s</span>
-          </div>
-
-          <div class="speed-caption">
-            El encoder detecta la velocidad lineal de la faja mediante una rueda de contacto. La señal de pulsos se convierte en Hz y RPM para supervisión del sistema.
-          </div>
-        </div>
-
-        <div class="speed-stats">
-          <div class="speed-mini-card">
-            <label>Velocidad de línea</label>
-            <strong id="beltSpeedValue">0.00 m/s</strong>
-            <small>Lectura instantánea</small>
-          </div>
-
-          <div class="speed-mini-card">
-            <label>RPM del encoder</label>
-            <strong id="speedRPM">0 rpm</strong>
-            <small>Rotación del rodillo de medición</small>
-          </div>
-
-          <div class="speed-detail-grid">
-            <div class="speed-mini-card">
-              <label>Pulsos</label>
-              <strong id="speedPulses">0 Hz</strong>
-              <small>Frecuencia enviada al PLC</small>
-            </div>
-
-            <div class="speed-mini-card">
-              <label>Deslizamiento</label>
-              <strong id="speedSlip">0.0 %</strong>
-              <small>Diferencia respecto a la referencia</small>
-            </div>
-          </div>
-
-          <div class="speed-mini-card">
-            <label>Estado del sensor</label>
-            <div id="speedSensorState" class="speed-status-text ok">OK</div>
-            <small>Confirmación del tren de pulsos</small>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="section">
       <h3>⚙️ PLC industrial</h3>
 
@@ -946,7 +638,7 @@
       </div>
 
       <p class="small-note">
-        Teclado: ESPACIO iniciar/detener | D defecto | R resetear | Flechas mover vista | Mouse rotar cámara
+        Teclado: ESPACIO iniciar/detener | D defecto | E emergencia | R resetear | Flechas mover vista | Mouse rotar cámara
       </p>
     </div>
   </aside>
@@ -956,7 +648,6 @@
     <div><span class="key">Amarillo:</span> desgaste de faja</div>
     <div><span class="key">Rojo/Negro:</span> desgarre superficial</div>
     <div><span class="key">Verde:</span> visión artificial activa</div>
-    <div><span class="key">Naranja:</span> sensor de velocidad / encoder</div>
   </div>
 
   <div id="view-controls">
@@ -1088,6 +779,7 @@
 
     const state = {
       running: true,
+      nominalBeltSpeed: 1.5,
       beltSpeed: 1.5,
       nominalThickness: 27,
       criticalThickness: 20,
@@ -1105,12 +797,28 @@
       lastAlarmSnapshot: "",
       autoStopByTear: false,
       beltMotionTime: 0,
-      speedSensor: {
-        measuredSpeed: 0,
-        rpm: 0,
-        pulseHz: 0,
-        slipPercent: 0,
-        status: "OK"
+      cameraDetectedDefect: null,
+      emergencyTracking: {
+        active: false,
+        source: "SIN EVENTO",
+        detectedX: 0,
+        currentX: 0,
+        distanceToSensor: 0,
+        timeToSensor: null,
+        direction: "--"
+      },
+      vfd: {
+        analogVoltage: 10.0,
+        targetVoltage: 10.0,
+        maxVoltage: 10.0,
+        minVoltage: 0.0,
+        frequency: 60.0,
+        maxFrequency: 60.0,
+        accelRate: 2.0,
+        decelRate: 2.5,
+        emergencyDecelRate: 1.6,
+        emergencyStopActive: false,
+        status: "OPERANDO"
       }
     };
 
@@ -1378,12 +1086,6 @@
     let beltMesh;
     let beltBasePositions = null;
     const conveyorRollers = [];
-    let speedSensorGroup;
-    let speedEncoderWheel;
-    let speedPulseDisc;
-    let speedSensorBeam;
-    let speedSensorLed;
-    let speedSensorLabel;
 
     function getBeltSurfaceOffset(x, z, time = 0) {
       const trough = 0.016 - Math.pow(z / 2.08, 2) * 0.034;
@@ -1506,176 +1208,6 @@
       motor.add(motorBody, motorCap, shaft);
       motor.position.set(6.8, 1.05, 3.05);
       scene.add(motor);
-    }
-
-    function createSpeedSensorSystem() {
-      speedSensorGroup = new THREE.Group();
-
-      const sensorBodyMaterial = new THREE.MeshStandardMaterial({
-        color: 0x26384a,
-        metalness: 0.72,
-        roughness: 0.28,
-        emissive: 0x081825,
-        emissiveIntensity: 0.25
-      });
-
-      const orangeSignalMaterial = new THREE.MeshStandardMaterial({
-        color: 0xff9f1c,
-        emissive: 0xff6a00,
-        emissiveIntensity: 1.15,
-        metalness: 0.18,
-        roughness: 0.32
-      });
-
-      const darkPolymer = new THREE.MeshStandardMaterial({
-        color: 0x151d25,
-        metalness: 0.3,
-        roughness: 0.48
-      });
-
-      const base = roundedBox(0.96, 0.10, 0.72, materials.darkMetal);
-      base.position.set(5.25, 1.16, -2.95);
-
-      const leftPost = roundedBox(0.10, 0.90, 0.10, materials.metal);
-      leftPost.position.set(5.02, 1.60, -2.95);
-      const rightPost = roundedBox(0.10, 0.90, 0.10, materials.metal);
-      rightPost.position.set(5.48, 1.60, -2.95);
-      const topBridge = roundedBox(0.58, 0.10, 0.10, materials.metal);
-      topBridge.position.set(5.25, 2.02, -2.95);
-
-      const sensorColumn = roundedBox(0.14, 0.72, 0.14, materials.metal);
-      sensorColumn.position.set(5.25, 1.58, -2.46);
-
-      const arm = roundedBox(0.14, 0.14, 1.02, materials.metal);
-      arm.position.set(5.25, 1.92, -2.38);
-
-      const encoderBox = roundedBox(0.62, 0.38, 0.48, sensorBodyMaterial);
-      encoderBox.position.set(5.25, 1.74, -2.05);
-
-      const sensorHead = roundedBox(0.26, 0.24, 0.28, sensorBodyMaterial);
-      sensorHead.position.set(5.25, 1.72, -1.64);
-
-      speedEncoderWheel = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.29, 0.29, 0.12, 48),
-        darkPolymer
-      );
-      speedEncoderWheel.rotation.x = Math.PI / 2;
-      speedEncoderWheel.position.set(5.25, 1.43, -1.82);
-      speedEncoderWheel.castShadow = true;
-      speedEncoderWheel.receiveShadow = true;
-
-      const wheelHub = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.10, 0.10, 0.14, 32),
-        new THREE.MeshStandardMaterial({
-          color: 0x8e99a1,
-          metalness: 0.82,
-          roughness: 0.25
-        })
-      );
-      wheelHub.rotation.x = Math.PI / 2;
-      wheelHub.position.copy(speedEncoderWheel.position);
-
-      const spokeGroup = new THREE.Group();
-      for (let i = 0; i < 6; i++) {
-        const spoke = roundedBox(0.035, 0.035, 0.30, materials.metal);
-        spoke.position.set(0, 0, 0);
-        spoke.rotation.y = (Math.PI / 3) * i;
-        spokeGroup.add(spoke);
-      }
-      spokeGroup.position.copy(speedEncoderWheel.position);
-      spokeGroup.rotation.x = Math.PI / 2;
-
-      speedPulseDisc = new THREE.Mesh(
-        new THREE.TorusGeometry(0.32, 0.016, 12, 42),
-        orangeSignalMaterial
-      );
-      speedPulseDisc.rotation.x = Math.PI / 2;
-      speedPulseDisc.position.set(5.25, 1.43, -1.73);
-
-      const guardLeft = roundedBox(0.06, 0.44, 0.06, materials.metal);
-      guardLeft.position.set(5.04, 1.57, -1.90);
-      const guardRight = roundedBox(0.06, 0.44, 0.06, materials.metal);
-      guardRight.position.set(5.46, 1.57, -1.90);
-      const guardTop = roundedBox(0.48, 0.06, 0.06, materials.metal);
-      guardTop.position.set(5.25, 1.79, -1.90);
-
-      const pickupHead = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.075, 0.075, 0.44, 24),
-        orangeSignalMaterial
-      );
-      pickupHead.rotation.x = Math.PI / 2;
-      pickupHead.position.set(5.25, 1.72, -1.80);
-
-      speedSensorBeam = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.02, 0.05, 0.28, 20, 1, true),
-        new THREE.MeshBasicMaterial({
-          color: 0xffc067,
-          transparent: true,
-          opacity: 0.78,
-          side: THREE.DoubleSide,
-          depthWrite: false
-        })
-      );
-      speedSensorBeam.rotation.x = Math.PI / 2;
-      speedSensorBeam.position.set(5.25, 1.57, -1.82);
-
-      speedSensorLed = new THREE.Mesh(
-        new THREE.SphereGeometry(0.058, 18, 18),
-        new THREE.MeshStandardMaterial({
-          color: 0x22ff8a,
-          emissive: 0x22ff8a,
-          emissiveIntensity: 1.2
-        })
-      );
-      speedSensorLed.position.set(5.49, 1.84, -1.95);
-
-      const speedSensorAccent = new THREE.Mesh(
-        new THREE.BoxGeometry(0.12, 0.08, 0.04),
-        orangeSignalMaterial
-      );
-      speedSensorAccent.position.set(5.25, 1.86, -1.80);
-
-      speedSensorLabel = createTextSprite("ENCODER SPEED");
-      speedSensorLabel.position.set(5.25, 2.34, -2.02);
-      speedSensorLabel.scale.set(0.92, 0.26, 1);
-
-      const cableCurve = new THREE.CatmullRomCurve3([
-        new THREE.Vector3(5.25, 1.90, -2.25),
-        new THREE.Vector3(4.10, 2.65, -1.25),
-        new THREE.Vector3(0.20, 3.00, 1.25),
-        new THREE.Vector3(-6.00, 2.34, 2.46)
-      ]);
-      const cableGeometry = new THREE.BufferGeometry().setFromPoints(cableCurve.getPoints(40));
-      const cable = new THREE.Line(
-        cableGeometry,
-        new THREE.LineBasicMaterial({ color: 0xff9f1c, transparent: true, opacity: 0.48 })
-      );
-
-      speedSensorGroup.add(
-        base,
-        leftPost,
-        rightPost,
-        topBridge,
-        sensorColumn,
-        arm,
-        encoderBox,
-        sensorHead,
-        speedEncoderWheel,
-        wheelHub,
-        spokeGroup,
-        speedPulseDisc,
-        guardLeft,
-        guardRight,
-        guardTop,
-        pickupHead,
-        speedSensorBeam,
-        speedSensorLed,
-        speedSensorAccent,
-        speedSensorLabel,
-        cable
-      );
-
-      scene.add(speedSensorGroup);
     }
 
     const sensorPairs = [];
@@ -1908,6 +1440,12 @@
     let hmi3DScreenCtx;
     let hmiAlarmLamp;
 
+    let vfd3DScreenTexture;
+    let vfd3DScreenCanvas;
+    let vfd3DScreenCtx;
+    let vfdStatusLed3D;
+    let vfdCabinet3D;
+
     function createHMIScreenTexture() {
       hmi3DScreenCanvas = document.createElement("canvas");
       hmi3DScreenCanvas.width = 1024;
@@ -1923,10 +1461,7 @@
         avg: 30,
         min: 30,
         wear: 0,
-        tearProbability: 0,
-        beltSpeed: 0,
-        rpm: 0,
-        speedStatus: "OK"
+        tearProbability: 0
       });
 
       return hmi3DScreenTexture;
@@ -1987,101 +1522,70 @@
       const ctx = hmi3DScreenCtx;
       const w = hmi3DScreenCanvas.width;
       const h = hmi3DScreenCanvas.height;
-      const speed = data.beltSpeed || 0;
-      const rpm = data.rpm || 0;
-      const speedStatus = data.speedStatus || "OK";
 
       ctx.clearRect(0, 0, w, h);
 
-      const bg = ctx.createLinearGradient(0, 0, w, h);
-      bg.addColorStop(0, "#051624");
-      bg.addColorStop(0.55, "#0a2941");
-      bg.addColorStop(1, "#071b2e");
-      ctx.fillStyle = bg;
+      const gradient = ctx.createLinearGradient(0, 0, w, h);
+      gradient.addColorStop(0, "#041825");
+      gradient.addColorStop(1, "#062f45");
+      ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, w, h);
 
-      const glow = ctx.createRadialGradient(w * 0.8, h * 0.1, 0, w * 0.8, h * 0.1, 420);
-      glow.addColorStop(0, "rgba(79, 219, 255, 0.18)");
-      glow.addColorStop(1, "rgba(79, 219, 255, 0)");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, w, h);
-
-      ctx.strokeStyle = "rgba(80,220,255,.58)";
+      ctx.strokeStyle = "rgba(80,220,255,.65)";
       ctx.lineWidth = 8;
       ctx.strokeRect(12, 12, w - 24, h - 24);
 
-      ctx.fillStyle = "rgba(255,255,255,.05)";
-      ctx.fillRect(32, 30, w - 64, 66);
-
-      ctx.fillStyle = "#dff8ff";
-      ctx.font = "bold 31px Segoe UI, Arial";
-      ctx.fillText("PANEL HMI - CONDICIÓN DE FAJA", 50, 69);
+      ctx.fillStyle = "#9beeff";
+      ctx.font = "bold 42px Segoe UI, Arial";
+      ctx.fillText("PANTALLA HMI - REGISTROS Y ALARMAS", 42, 70);
 
       const statusColor = data.status === "ALARMA"
-        ? "#ff4f52"
+        ? "#ff4242"
         : data.status === "ALERTA"
           ? "#f5c542"
           : "#22ff8a";
 
       ctx.fillStyle = statusColor;
-      ctx.fillRect(792, 40, 170, 44);
-      ctx.fillStyle = "#021018";
-      ctx.font = "bold 16px Segoe UI, Arial";
+      ctx.fillRect(760, 34, 210, 54);
+      ctx.fillStyle = "#001018";
+      ctx.font = "bold 30px Segoe UI, Arial";
       ctx.textAlign = "center";
-      ctx.fillText(data.status, 877, 68);
+      ctx.fillText(data.status, 865, 70);
       ctx.textAlign = "left";
 
-      const card = (x, y, cw, ch, title) => {
-        ctx.fillStyle = "rgba(255,255,255,.065)";
-        ctx.strokeStyle = "rgba(120,220,255,.14)";
-        ctx.lineWidth = 2;
-        ctx.fillRect(x, y, cw, ch);
-        ctx.strokeRect(x, y, cw, ch);
-        ctx.fillStyle = "#8fe9ff";
-        ctx.font = "bold 16px Segoe UI, Arial";
-        ctx.fillText(title, x + 16, y + 28);
-      };
+      ctx.fillStyle = "rgba(255,255,255,.08)";
+      ctx.fillRect(42, 110, 420, 150);
+      ctx.fillRect(492, 110, 480, 150);
+      ctx.fillRect(42, 285, 930, 220);
 
-      card(42, 118, 300, 142, "ESPESOR Y DESGASTE");
-      card(362, 118, 270, 142, "VELOCIDAD");
-      card(652, 118, 320, 142, "ALARMAS ACTIVAS");
-      card(42, 284, 930, 216, "REGISTRO DE EVENTOS");
+      ctx.fillStyle = "#dff8ff";
+      ctx.font = "bold 28px Segoe UI, Arial";
+      ctx.fillText("VARIABLES", 65, 150);
+      ctx.fillText("ALARMAS ACTIVAS", 515, 150);
+      ctx.fillText("REGISTRO DE EVENTOS", 65, 325);
 
-      ctx.font = "bold 20px Consolas, monospace";
+      ctx.font = "24px Consolas, monospace";
       ctx.fillStyle = "#ffffff";
-      ctx.fillText(`Promedio : ${data.avg.toFixed(1)} mm`, 62, 172);
-      ctx.fillText(`Mínimo   : ${data.min.toFixed(1)} mm`, 62, 205);
-      ctx.fillText(`Desgaste : ${data.wear.toFixed(1)} %`, 62, 238);
+      ctx.fillText(`Espesor prom.: ${data.avg.toFixed(1)} mm`, 65, 188);
+      ctx.fillText(`Espesor mín.:  ${data.min.toFixed(1)} mm`, 65, 222);
+      ctx.fillText(`Desgaste:      ${data.wear.toFixed(1)} %`, 65, 256);
+      ctx.fillText(`Desgarre cam.: ${data.tearProbability.toFixed(0)} %`, 515, 255);
 
-      ctx.fillText(`Velocidad : ${speed.toFixed(2)} m/s`, 382, 172);
-      ctx.fillText(`RPM       : ${rpm.toFixed(0)} rpm`, 382, 205);
-      ctx.fillText(`Desgarre  : ${data.tearProbability.toFixed(0)} %`, 382, 238);
-
-      ctx.fillStyle = speedStatus === "OK" ? "#22ff8a" : speedStatus === "DETENIDO" ? "#f5c542" : "#ff4f52";
-      ctx.fillRect(514, 130, 100, 24);
-      ctx.fillStyle = "#03131d";
-      ctx.font = "bold 16px Segoe UI, Arial";
-      ctx.textAlign = "center";
-      ctx.fillText(speedStatus, 564, 147);
-      ctx.textAlign = "left";
-
-      ctx.font = "18px Segoe UI, Arial";
+      ctx.font = "22px Segoe UI, Arial";
       if (data.activeAlarms.length === 0) {
         ctx.fillStyle = "#bffff0";
-        ctx.fillText("Sin alarmas activas", 672, 176);
-        ctx.fillStyle = "rgba(34,255,138,.22)";
-        ctx.fillRect(670, 190, 260, 34);
+        ctx.fillText("Sistema sin alarmas activas", 515, 194);
       } else {
-        data.activeAlarms.slice(0, 4).forEach((alarm, index) => {
-          ctx.fillStyle = alarm.type === "critical" ? "#ffd2d2" : "#fff1ba";
-          ctx.fillText(`• ${alarm.title}`, 672, 170 + index * 28);
+        data.activeAlarms.slice(0, 3).forEach((alarm, index) => {
+          ctx.fillStyle = alarm.type === "critical" ? "#ffd0d0" : "#fff1ba";
+          ctx.fillText(`• ${alarm.title}`, 515, 194 + index * 34);
         });
       }
 
-      ctx.font = "16px Consolas, monospace";
+      ctx.font = "21px Consolas, monospace";
       if (state.eventLog.length === 0) {
-        ctx.fillStyle = "#c9f7ff";
-        ctx.fillText(`${getTimeStamp()}  Sistema listo`, 64, 324);
+        ctx.fillStyle = "#bffff0";
+        ctx.fillText(`${getTimeStamp()}  Sistema listo`, 65, 365);
       } else {
         state.eventLog.slice(0, 5).forEach((item, index) => {
           ctx.fillStyle = item.type === "alarm"
@@ -2089,7 +1593,7 @@
             : item.type === "warning"
               ? "#ffe59a"
               : "#c9f7ff";
-          ctx.fillText(`${item.time}  ${item.message}`, 64, 326 + index * 34);
+          ctx.fillText(`${item.time}  ${item.message}`, 65, 365 + index * 34);
         });
       }
 
@@ -2276,28 +1780,28 @@
       const hmiDisplayTexture = createHMIScreenTexture();
 
       const hmiDisplayFrame = roundedBox(
-        3.25,
-        1.95,
-        0.18,
+        2.9,
+        1.75,
+        0.16,
         new THREE.MeshStandardMaterial({
           color: 0x0d1824,
           metalness: 0.65,
           roughness: 0.28
         })
       );
-      hmiDisplayFrame.position.set(-3.70, 2.30, 4.18);
+      hmiDisplayFrame.position.set(-3.65, 2.28, 4.18);
 
       const hmiDisplay = new THREE.Mesh(
-        new THREE.PlaneGeometry(2.92, 1.62),
+        new THREE.PlaneGeometry(2.55, 1.38),
         new THREE.MeshBasicMaterial({
           map: hmiDisplayTexture,
           toneMapped: false
         })
       );
-      hmiDisplay.position.set(-3.70, 2.30, 4.29);
+      hmiDisplay.position.set(-3.65, 2.28, 4.27);
 
-      const hmiBase = roundedBox(0.40, 1.50, 0.40, materials.darkMetal);
-      hmiBase.position.set(-3.70, 0.82, 4.05);
+      const hmiBase = roundedBox(0.35, 1.45, 0.35, materials.darkMetal);
+      hmiBase.position.set(-3.65, 0.82, 4.05);
 
       hmiAlarmLamp = new THREE.Mesh(
         new THREE.SphereGeometry(0.12, 24, 24),
@@ -2307,11 +1811,10 @@
           emissiveIntensity: 1.3
         })
       );
-      hmiAlarmLamp.position.set(-1.95, 3.26, 4.33);
+      hmiAlarmLamp.position.set(-2.10, 3.15, 4.33);
 
-      const displayLabel = createTextSprite("HMI TOUCH PANEL");
-      displayLabel.position.set(-4.05, 3.48, 4.24);
-      displayLabel.scale.set(0.80, 0.22, 1);
+      const displayLabel = createTextSprite("HMI REGISTROS");
+      displayLabel.position.set(-3.65, 3.35, 4.28);
 
       panelGroup.add(
         backPlate,
@@ -2377,6 +1880,344 @@
 
         scene.add(line);
       });
+    }
+
+
+    function createVFDScreenTexture() {
+      vfd3DScreenCanvas = document.createElement("canvas");
+      vfd3DScreenCanvas.width = 768;
+      vfd3DScreenCanvas.height = 512;
+      vfd3DScreenCtx = vfd3DScreenCanvas.getContext("2d");
+
+      vfd3DScreenTexture = new THREE.CanvasTexture(vfd3DScreenCanvas);
+      vfd3DScreenTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      drawVFD3DScreen();
+
+      return vfd3DScreenTexture;
+    }
+
+    function drawVFD3DScreen() {
+      if (!vfd3DScreenCtx) return;
+
+      const ctx = vfd3DScreenCtx;
+      const w = vfd3DScreenCanvas.width;
+      const h = vfd3DScreenCanvas.height;
+      const vfd = state.vfd;
+      const emergency = state.emergencyTracking;
+
+      const speedRatio = THREE.MathUtils.clamp(
+        vfd.analogVoltage / vfd.maxVoltage,
+        0,
+        1
+      );
+
+      ctx.clearRect(0, 0, w, h);
+
+      const bg = ctx.createLinearGradient(0, 0, w, h);
+      bg.addColorStop(0, "#07141f");
+      bg.addColorStop(1, "#0b2a3f");
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.strokeStyle = "#58e6ff";
+      ctx.lineWidth = 8;
+      ctx.strokeRect(14, 14, w - 28, h - 28);
+
+      ctx.fillStyle = "#9beeff";
+      ctx.font = "bold 40px Segoe UI, Arial";
+      ctx.fillText("VARIADOR DE VELOCIDAD", 42, 66);
+
+      const statusColor = vfd.emergencyStopActive
+        ? "#ff4848"
+        : vfd.analogVoltage < 0.2
+          ? "#f5c542"
+          : "#22ff8a";
+
+      ctx.fillStyle = statusColor;
+      ctx.fillRect(520, 30, 190, 54);
+      ctx.fillStyle = "#001018";
+      ctx.font = "bold 26px Segoe UI, Arial";
+      ctx.textAlign = "center";
+      ctx.fillText(vfd.emergencyStopActive ? "EMERGENCIA" : "NORMAL", 615, 66);
+      ctx.textAlign = "left";
+
+      ctx.fillStyle = "rgba(255,255,255,.08)";
+      ctx.fillRect(42, 104, 670, 155);
+      ctx.fillRect(42, 285, 670, 170);
+
+      ctx.fillStyle = "#dff8ff";
+      ctx.font = "bold 30px Segoe UI, Arial";
+      ctx.fillText("SEÑAL 0-10 V", 64, 145);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 42px Consolas, monospace";
+      ctx.fillText(`${vfd.analogVoltage.toFixed(2)} V`, 64, 205);
+
+      ctx.fillStyle = "#9fb7c8";
+      ctx.font = "bold 20px Segoe UI, Arial";
+      ctx.fillText(`Objetivo: ${vfd.targetVoltage.toFixed(2)} V`, 330, 182);
+      ctx.fillText(`Frecuencia: ${vfd.frequency.toFixed(1)} Hz`, 330, 216);
+      ctx.fillText(`Velocidad: ${state.beltSpeed.toFixed(2)} m/s`, 330, 250);
+
+      ctx.fillStyle = "rgba(255,255,255,.14)";
+      ctx.fillRect(64, 228, 240, 22);
+      ctx.fillStyle = statusColor;
+      ctx.fillRect(64, 228, 240 * speedRatio, 22);
+      ctx.strokeStyle = "rgba(255,255,255,.28)";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(64, 228, 240, 22);
+
+      ctx.fillStyle = "#dff8ff";
+      ctx.font = "bold 30px Segoe UI, Arial";
+      ctx.fillText("UBICACIÓN DE EMERGENCIA", 64, 330);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 24px Consolas, monospace";
+
+      if (emergency.active) {
+        const timeText = emergency.timeToSensor === null
+          ? "--"
+          : `${emergency.timeToSensor.toFixed(2)} s`;
+
+        ctx.fillText(`Distancia a sensor US: ${emergency.distanceToSensor.toFixed(2)} m`, 64, 375);
+        ctx.fillText(`Tiempo estimado:      ${timeText}`, 64, 410);
+        ctx.fillText(`Posición X defecto:   ${emergency.currentX.toFixed(2)} m`, 64, 445);
+        ctx.fillStyle = emergency.direction === "ANTES DEL SENSOR" ? "#ffe59a" : "#ffb3b3";
+        ctx.fillText(`${emergency.direction}`, 430, 445);
+      } else {
+        ctx.fillStyle = "#bffff0";
+        ctx.fillText("Sin emergencia registrada", 64, 385);
+      }
+
+      vfd3DScreenTexture.needsUpdate = true;
+    }
+
+    function createVFD3DSystem() {
+      const group = new THREE.Group();
+
+      const cabinetMaterial = new THREE.MeshStandardMaterial({
+        color: 0x202934,
+        metalness: 0.65,
+        roughness: 0.36
+      });
+
+      vfdCabinet3D = roundedBox(1.20, 1.65, 0.48, cabinetMaterial);
+      vfdCabinet3D.position.set(5.35, 1.35, 3.45);
+
+      const frontPanel = roundedBox(
+        1.04,
+        1.42,
+        0.05,
+        new THREE.MeshStandardMaterial({
+          color: 0x0b1118,
+          metalness: 0.35,
+          roughness: 0.28
+        })
+      );
+      frontPanel.position.set(5.35, 1.35, 3.71);
+
+      const screenTexture = createVFDScreenTexture();
+      const screen = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.86, 0.58),
+        new THREE.MeshBasicMaterial({
+          map: screenTexture,
+          toneMapped: false
+        })
+      );
+      screen.position.set(5.35, 1.58, 3.742);
+
+      const keypad = new THREE.Group();
+      for (let row = 0; row < 3; row++) {
+        for (let col = 0; col < 3; col++) {
+          const key = roundedBox(
+            0.16,
+            0.09,
+            0.035,
+            new THREE.MeshStandardMaterial({
+              color: 0x3a4652,
+              metalness: 0.3,
+              roughness: 0.45
+            })
+          );
+          key.position.set(5.08 + col * 0.18, 1.02 - row * 0.12, 3.76);
+          keypad.add(key);
+        }
+      }
+
+      vfdStatusLed3D = new THREE.Mesh(
+        new THREE.SphereGeometry(0.07, 24, 24),
+        new THREE.MeshStandardMaterial({
+          color: 0x22ff8a,
+          emissive: 0x22ff8a,
+          emissiveIntensity: 1.8
+        })
+      );
+      vfdStatusLed3D.position.set(5.80, 2.08, 3.76);
+
+      const label = createTextSprite("VARIADOR 0-10V");
+      label.position.set(5.35, 2.45, 3.72);
+      label.scale.set(0.95, 0.32, 1);
+
+      const analogLabel = createTextSprite("AI1: REFERENCIA ANALOGICA");
+      analogLabel.position.set(4.80, 0.36, 3.70);
+      analogLabel.scale.set(1.15, 0.28, 1);
+
+      group.add(vfdCabinet3D, frontPanel, screen, keypad, vfdStatusLed3D, label, analogLabel);
+      scene.add(group);
+
+      createVFDCables3D();
+    }
+
+    function createVFDCables3D() {
+      const controlCableMaterial = new THREE.LineBasicMaterial({
+        color: 0x25d7ff,
+        transparent: true,
+        opacity: 0.78
+      });
+
+      const powerCableMaterial = new THREE.LineBasicMaterial({
+        color: 0xffaa33,
+        transparent: true,
+        opacity: 0.86
+      });
+
+      function addCable(points, material) {
+        const curve = new THREE.CatmullRomCurve3(points);
+        const geometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(40));
+        const line = new THREE.Line(geometry, material);
+        scene.add(line);
+      }
+
+      addCable([
+        new THREE.Vector3(-5.20, 1.35, 2.55),
+        new THREE.Vector3(-2.8, 0.55, 3.25),
+        new THREE.Vector3(1.2, 0.55, 3.55),
+        new THREE.Vector3(4.80, 0.72, 3.72)
+      ], controlCableMaterial);
+
+      addCable([
+        new THREE.Vector3(5.95, 1.10, 3.70),
+        new THREE.Vector3(6.50, 0.86, 3.55),
+        new THREE.Vector3(6.80, 1.05, 3.05)
+      ], powerCableMaterial);
+    }
+
+    function updateVFD3DSystem() {
+      drawVFD3DScreen();
+
+      if (!vfdStatusLed3D) return;
+
+      const vfd = state.vfd;
+      const color = vfd.emergencyStopActive
+        ? 0xff3333
+        : vfd.analogVoltage <= 0.2
+          ? 0xf5c542
+          : 0x22ff8a;
+
+      vfdStatusLed3D.material.color.setHex(color);
+      vfdStatusLed3D.material.emissive.setHex(color);
+      vfdStatusLed3D.material.emissiveIntensity = vfd.emergencyStopActive ? 2.5 : 1.8;
+    }
+
+    function moveTowards(current, target, maxDelta) {
+      if (Math.abs(target - current) <= maxDelta) {
+        return target;
+      }
+
+      return current + Math.sign(target - current) * maxDelta;
+    }
+
+    function updateEmergencyTracking(defect = null, source = null) {
+      const trackedDefect = defect || state.cameraDetectedDefect;
+
+      if (!trackedDefect || !trackedDefect.mesh) return;
+
+      const currentX = trackedDefect.mesh.position.x;
+      const rawDistance = currentX - state.sensorX;
+      const distanceToSensor = Math.abs(rawDistance);
+      const timeToSensor = state.beltSpeed > 0.01
+        ? distanceToSensor / state.beltSpeed
+        : null;
+
+      state.emergencyTracking.active = true;
+      state.emergencyTracking.source = source || state.emergencyTracking.source || "CAMARA";
+      state.emergencyTracking.currentX = currentX;
+      state.emergencyTracking.detectedX = state.emergencyTracking.detectedX || currentX;
+      state.emergencyTracking.distanceToSensor = distanceToSensor;
+      state.emergencyTracking.timeToSensor = timeToSensor;
+      state.emergencyTracking.direction = rawDistance >= 0
+        ? "ANTES DEL SENSOR"
+        : "DESPUES DEL SENSOR";
+    }
+
+    function triggerEmergencyStop(reason = "Emergencia activada", defect = null) {
+      if (defect) {
+        state.cameraDetectedDefect = defect;
+        state.emergencyTracking.detectedX = defect.mesh.position.x;
+        updateEmergencyTracking(defect, "CAMARA");
+      } else {
+        updateEmergencyTracking(null, "CAMARA");
+      }
+
+      if (state.vfd.emergencyStopActive) return;
+
+      state.vfd.emergencyStopActive = true;
+      state.vfd.targetVoltage = 0.0;
+      state.running = false;
+
+      addEvent(`${reason}: bajando referencia 0-10 V hasta detener la faja`, "alarm");
+    }
+
+    function updateVFD(dt) {
+      const vfd = state.vfd;
+
+      if (vfd.emergencyStopActive) {
+        vfd.targetVoltage = 0.0;
+      } else {
+        vfd.targetVoltage = state.running ? vfd.maxVoltage : 0.0;
+      }
+
+      const rate = vfd.emergencyStopActive
+        ? vfd.emergencyDecelRate
+        : vfd.analogVoltage > vfd.targetVoltage
+          ? vfd.decelRate
+          : vfd.accelRate;
+
+      vfd.analogVoltage = moveTowards(
+        vfd.analogVoltage,
+        vfd.targetVoltage,
+        rate * dt
+      );
+
+      const speedRatio = THREE.MathUtils.clamp(
+        vfd.analogVoltage / vfd.maxVoltage,
+        0,
+        1
+      );
+
+      state.beltSpeed = state.nominalBeltSpeed * speedRatio;
+      vfd.frequency = vfd.maxFrequency * speedRatio;
+
+      if (vfd.emergencyStopActive && vfd.analogVoltage <= 0.01) {
+        vfd.analogVoltage = 0;
+        state.beltSpeed = 0;
+        state.running = false;
+        vfd.status = "DETENIDA POR EMERGENCIA";
+      } else if (vfd.emergencyStopActive) {
+        vfd.status = "DESACELERANDO";
+      } else if (state.running && speedRatio > 0.05) {
+        vfd.status = "OPERANDO";
+      } else if (state.running && speedRatio <= 0.05) {
+        vfd.status = "ARRANCANDO";
+      } else if (!state.running && speedRatio > 0.05) {
+        vfd.status = "PARANDO";
+      } else {
+        vfd.status = "DETENIDA";
+      }
+
+      if (state.emergencyTracking.active) {
+        updateEmergencyTracking();
+      }
     }
 
     function createEnvironmentDetails() {
@@ -2591,8 +2432,10 @@
       state.thickness = newThickness;
     }
 
+    
     function updateCameraInspection() {
       let targetProbability = 0;
+      let detectedDefect = null;
 
       for (const defect of state.defects) {
         const dx = Math.abs(defect.mesh.position.x - state.cameraX);
@@ -2600,10 +2443,12 @@
 
         if (defect.type === "tear" && dx < 0.9 && inVisionZ) {
           const influence = 1 - dx / 0.9;
-          targetProbability = Math.max(
-            targetProbability,
-            defect.tearStrength * influence
-          );
+          const probability = defect.tearStrength * influence;
+
+          if (probability > targetProbability) {
+            targetProbability = probability;
+            detectedDefect = defect;
+          }
         }
 
         if (defect.type === "wear" && dx < 0.7 && inVisionZ) {
@@ -2614,69 +2459,13 @@
         }
       }
 
+      state.cameraDetectedDefect = detectedDefect;
+
       state.tearProbability = THREE.MathUtils.lerp(
         state.tearProbability,
         targetProbability,
         0.12
       );
-    }
-
-    function updateSpeedSensor(time, dt) {
-      const targetSpeed = state.running
-        ? state.beltSpeed * (1 + Math.sin(time * 4.4) * 0.018 + Math.sin(time * 10.2) * 0.007)
-        : 0;
-
-      state.speedSensor.measuredSpeed = THREE.MathUtils.lerp(
-        state.speedSensor.measuredSpeed,
-        targetSpeed,
-        0.18
-      );
-
-      const encoderWheelDiameter = 0.56;
-      const pulsesPerRevolution = 24;
-
-      state.speedSensor.rpm = state.speedSensor.measuredSpeed <= 0.02
-        ? 0
-        : (state.speedSensor.measuredSpeed / (Math.PI * encoderWheelDiameter)) * 60;
-
-      state.speedSensor.pulseHz = (state.speedSensor.rpm * pulsesPerRevolution) / 60;
-      state.speedSensor.slipPercent = state.beltSpeed > 0
-        ? ((state.speedSensor.measuredSpeed - state.beltSpeed) / state.beltSpeed) * 100
-        : 0;
-
-      state.speedSensor.status = state.running
-        ? (state.speedSensor.measuredSpeed > 0.25 ? "OK" : "SIN PULSOS")
-        : "DETENIDO";
-
-      if (speedEncoderWheel && state.running) {
-        speedEncoderWheel.rotation.z -= state.speedSensor.measuredSpeed * dt * 5.8;
-      }
-
-      if (speedPulseDisc && state.running) {
-        speedPulseDisc.rotation.z -= state.speedSensor.measuredSpeed * dt * 5.8;
-        speedPulseDisc.material.emissiveIntensity = 1.05 + Math.sin(time * 28) * 0.55;
-        speedPulseDisc.scale.setScalar(1 + Math.abs(Math.sin(time * 16)) * 0.025);
-      } else if (speedPulseDisc) {
-        speedPulseDisc.material.emissiveIntensity = 0.45;
-        speedPulseDisc.scale.setScalar(1);
-      }
-
-      if (speedSensorBeam) {
-        speedSensorBeam.material.opacity = state.running
-          ? 0.50 + Math.abs(Math.sin(time * 32)) * 0.40
-          : 0.14;
-      }
-
-      if (speedSensorLed) {
-        const color = state.running ? 0x22ff8a : 0xffb347;
-        speedSensorLed.material.color.setHex(color);
-        speedSensorLed.material.emissive.setHex(color);
-        speedSensorLed.material.emissiveIntensity = state.running ? 1.2 + Math.abs(Math.sin(time * 18)) * 0.8 : 0.65;
-      }
-
-      if (speedSensorLabel && speedSensorLabel.material) {
-        speedSensorLabel.material.opacity = state.running ? 0.98 : 0.72;
-      }
     }
 
     function updateDefects(dt) {
@@ -2685,7 +2474,7 @@
       for (let i = state.defects.length - 1; i >= 0; i--) {
         const defect = state.defects[i];
 
-        if (state.running) {
+        if (state.beltSpeed > 0.01) {
           defect.mesh.position.x -= state.beltSpeed * dt;
         }
 
@@ -2705,16 +2494,20 @@
         }
       }
 
-      if (state.running && Math.random() < 0.015) {
+      if (state.running && state.beltSpeed > 0.05 && Math.random() < 0.015) {
         spawnDefect();
       }
     }
 
+    
     function triggerCriticalTearStop() {
       if (state.autoStopByTear) return;
-      state.running = false;
+
       state.autoStopByTear = true;
-      addEvent("Parada automática: rotura crítica detectada por cámara", "alarm");
+      triggerEmergencyStop(
+        "Parada automática por rotura crítica detectada por cámara",
+        state.cameraDetectedDefect
+      );
     }
 
     function updateHMI() {
@@ -2732,7 +2525,7 @@
       const tearAlarm = state.tearProbability >= state.tearAlarmThreshold;
       const thicknessAlarm = min < state.criticalThickness;
 
-      if (tearAlarm && state.running) {
+      if (tearAlarm && !state.vfd.emergencyStopActive && !state.autoStopByTear) {
         triggerCriticalTearStop();
       }
 
@@ -2815,10 +2608,7 @@
         avg,
         min,
         wear,
-        tearProbability: state.tearProbability,
-        beltSpeed: state.speedSensor.measuredSpeed,
-        rpm: state.speedSensor.rpm,
-        speedStatus: state.speedSensor.status
+        tearProbability: state.tearProbability
       });
 
       if (hmiAlarmLamp) {
@@ -2845,7 +2635,11 @@
       document.getElementById("wearBar").style.width = `${wear}%`;
 
       document.getElementById("beltState").textContent =
-        state.running ? "OPERANDO" : "DETENIDA";
+        state.vfd.emergencyStopActive && state.beltSpeed > 0.01
+          ? "DESACELERANDO"
+          : state.beltSpeed > 0.01
+            ? "OPERANDO"
+            : "DETENIDA";
 
       for (let i = 0; i < 5; i++) {
         const zone = document.getElementById(`zone${i}`);
@@ -2893,42 +2687,8 @@
       document.getElementById("cameraState").textContent =
         tearAlarm ? "ROTURA CRÍTICA" : "OK";
 
-      const speedPercent = THREE.MathUtils.clamp((state.speedSensor.measuredSpeed / 8) * 100, 0, 100);
-      const speedGaugeAngle = 220 + speedPercent * 1.0;
-      const speedStateClass = state.speedSensor.status === "OK"
-        ? "ok"
-        : state.speedSensor.status === "DETENIDO"
-          ? "stop"
-          : "fault";
-
-      document.getElementById("beltSpeedValue").textContent =
-        `${state.speedSensor.measuredSpeed.toFixed(2)} m/s`;
-
-      document.getElementById("speedGaugeValue").textContent =
-        state.speedSensor.measuredSpeed.toFixed(2);
-
-      document.getElementById("speedRPM").textContent =
-        `${state.speedSensor.rpm.toFixed(0)} rpm`;
-
-      document.getElementById("speedPulses").textContent =
-        `${state.speedSensor.pulseHz.toFixed(0)} Hz`;
-
-      document.getElementById("speedSlip").textContent =
-        `${state.speedSensor.slipPercent.toFixed(1)} %`;
-
-      const speedStateEl = document.getElementById("speedSensorState");
-      speedStateEl.textContent = state.speedSensor.status;
-      speedStateEl.className = `speed-status-text ${speedStateClass}`;
-
-      const speedBadgeEl = document.getElementById("speedBadge");
-      speedBadgeEl.textContent = state.speedSensor.status === "OK" ? "ONLINE" : state.speedSensor.status;
-      speedBadgeEl.className = `speed-badge ${speedStateClass}`;
-
-      document.getElementById("speedBar").style.width = `${speedPercent}%`;
-      document.getElementById("speedGaugeRing").style.setProperty("--gauge-angle", `${speedGaugeAngle}deg`);
-
       document.getElementById("ledRun").className =
-        state.running ? "led on-green" : "led";
+        state.beltSpeed > 0.01 ? "led on-green" : "led";
 
       document.getElementById("ledSensor").className =
         thicknessAlarm ? "led on-red" : "led on-blue";
@@ -2962,30 +2722,52 @@
       state.lastAlarmSnapshot = "";
       state.autoStopByTear = false;
       state.beltMotionTime = 0;
-      state.speedSensor.measuredSpeed = 0;
-      state.speedSensor.rpm = 0;
-      state.speedSensor.pulseHz = 0;
-      state.speedSensor.slipPercent = 0;
-      state.speedSensor.status = "OK";
+      state.cameraDetectedDefect = null;
+      state.emergencyTracking = {
+        active: false,
+        source: "SIN EVENTO",
+        detectedX: 0,
+        currentX: 0,
+        distanceToSensor: 0,
+        timeToSensor: null,
+        direction: "--"
+      };
+      state.vfd.analogVoltage = state.vfd.maxVoltage;
+      state.vfd.targetVoltage = state.vfd.maxVoltage;
+      state.vfd.frequency = state.vfd.maxFrequency;
+      state.vfd.emergencyStopActive = false;
+      state.vfd.status = "OPERANDO";
+      state.beltSpeed = state.nominalBeltSpeed;
       addEvent("Reset de simulación ejecutado", "ok");
     }
 
+    
     function toggleSimulation() {
+      if (state.vfd.emergencyStopActive) {
+        addEvent("Emergencia activa: presione RESET para volver a arrancar", "warning");
+        return;
+      }
+
       state.running = !state.running;
-      addEvent(state.running ? "Faja en operación" : "Faja detenida por operador", state.running ? "ok" : "warning");
+      addEvent(
+        state.running
+          ? "Orden de marcha enviada al variador"
+          : "Orden de parada controlada enviada al variador",
+        state.running ? "ok" : "warning"
+      );
     }
 
     function animateVisualEffects(time, dt) {
-      if (state.running) {
+      if (state.beltSpeed > 0.01) {
         const visualSpeed = state.beltSpeed * dt;
 
-        state.beltMotionTime -= dt * 2.2;
-        beltTexture.offset.x += visualSpeed * 0.72;
-        beltBumpTexture.offset.x += visualSpeed * 0.72;
+        state.beltMotionTime += dt * 2.2;
+        beltTexture.offset.x -= visualSpeed * 0.72;
+        beltBumpTexture.offset.x -= visualSpeed * 0.72;
         updateBeltGeometry(state.beltMotionTime);
 
         conveyorRollers.forEach((roller) => {
-          roller.rotation.y += visualSpeed * 4.4;
+          roller.rotation.y -= visualSpeed * 4.4;
         });
       } else {
         updateBeltGeometry(state.beltMotionTime);
@@ -3013,10 +2795,10 @@
       addLighting();
       createFloor();
       createConveyor();
-      createSpeedSensorSystem();
       createUltrasonicSystem();
       createIndustrialCamera();
       createPLCAndHMI3D();
+      createVFD3DSystem();
       createEnvironmentDetails();
 
       for (let i = 0; i < 4; i++) {
@@ -3062,6 +2844,10 @@
           addEvent(defectType === "tear" ? "Defecto por teclado: desgarre" : "Defecto por teclado: desgaste", "warning");
         }
 
+        if (e.key.toLowerCase() === "e") {
+          triggerEmergencyStop("Emergencia manual por teclado", state.cameraDetectedDefect);
+        }
+
         if (e.key.toLowerCase() === "r") {
           resetSimulation();
         }
@@ -3099,12 +2885,13 @@
       const dt = clock.getDelta();
       const time = clock.elapsedTime;
 
+      updateVFD(dt);
       updateDefects(dt);
       updateMeasurements(time);
       updateCameraInspection();
-      updateSpeedSensor(time, dt);
       animateVisualEffects(time, dt);
       updateHMI();
+      updateVFD3DSystem();
       moveView(dt);
 
       controls.update();
