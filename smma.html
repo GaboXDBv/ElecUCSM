@@ -202,6 +202,15 @@
       transition: width .15s linear;
     }
 
+    .speed-fill {
+      background: linear-gradient(90deg, #ff3b3b, #f5c542, #12b76a);
+    }
+
+    #speedMode {
+      font-size: 14px;
+      line-height: 1.15;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -521,6 +530,19 @@
           <label>Faja</label>
           <span id="beltState">OPERANDO</span>
         </div>
+
+        <div class="metric">
+          <label>Velocidad de faja</label>
+          <span id="beltSpeedHMI">1.50 m/s</span>
+          <div class="bar">
+            <div id="speedBar" class="bar-fill speed-fill"></div>
+          </div>
+        </div>
+
+        <div class="metric">
+          <label>Modo velocidad</label>
+          <span id="speedMode">NOMINAL</span>
+        </div>
       </div>
 
       <div class="formula">
@@ -638,7 +660,7 @@
       </div>
 
       <p class="small-note">
-        Teclado: ESPACIO iniciar/detener | D defecto | E emergencia | R resetear | Flechas mover vista | Mouse rotar cámara
+        Teclado: ESPACIO iniciar/detener | D defecto | E emergencia | R resetear | Los errores automáticos son menos frecuentes | Falla crítica: apagado progresivo del variador | Flechas mover vista | Mouse rotar cámara
       </p>
     </div>
   </aside>
@@ -781,6 +803,18 @@
       running: true,
       nominalBeltSpeed: 1.5,
       beltSpeed: 1.5,
+      speedControl: {
+        targetSpeed: 1.5,
+        speedPercent: 100,
+        mode: "NOMINAL",
+        reason: "Sin falla detectada",
+        type: "ok"
+      },
+      lastSpeedMode: "",
+      nextAutoDefectTime: 8,
+      autoDefectMinInterval: 7,
+      autoDefectMaxInterval: 14,
+      autoDefectChance: 0.35,
       nominalThickness: 27,
       criticalThickness: 20,
       warningThickness: 24,
@@ -816,7 +850,7 @@
         maxFrequency: 60.0,
         accelRate: 2.0,
         decelRate: 2.5,
-        emergencyDecelRate: 1.6,
+        emergencyDecelRate: 1.2,
         emergencyStopActive: false,
         status: "OPERANDO"
       }
@@ -1958,6 +1992,7 @@
       ctx.fillText(`Objetivo: ${vfd.targetVoltage.toFixed(2)} V`, 330, 182);
       ctx.fillText(`Frecuencia: ${vfd.frequency.toFixed(1)} Hz`, 330, 216);
       ctx.fillText(`Velocidad: ${state.beltSpeed.toFixed(2)} m/s`, 330, 250);
+      ctx.fillText(`Modo: ${state.speedControl.mode}`, 64, 274);
 
       ctx.fillStyle = "rgba(255,255,255,.14)";
       ctx.fillRect(64, 228, 240, 22);
@@ -2168,14 +2203,91 @@
       addEvent(`${reason}: bajando referencia 0-10 V hasta detener la faja`, "alarm");
     }
 
+    function calculateSpeedControlSetpoint() {
+      const min = Math.min(...state.thickness);
+      const wear = THREE.MathUtils.clamp(
+        ((state.nominalThickness - min) / state.nominalThickness) * 100,
+        0,
+        100
+      );
+
+      let targetSpeed = state.nominalBeltSpeed;
+      let mode = "NOMINAL";
+      let reason = "Sin falla detectada";
+      let type = "ok";
+
+      if (!state.running) {
+        targetSpeed = 0;
+        mode = "PARADA";
+        reason = "Orden de parada controlada";
+        type = "warning";
+      }
+
+      if (state.running && (min < state.warningThickness || wear > 10 || state.tearProbability >= 35)) {
+        targetSpeed = 0.95;
+        mode = "VELOCIDAD MEDIA";
+        reason = "Advertencia preventiva por desgaste o prealarma de cámara";
+        type = "warning";
+      }
+
+      if (state.running && (min < state.criticalThickness || wear > state.maxAllowedWear)) {
+        targetSpeed = 0;
+        mode = "FALLA CRÍTICA";
+        reason = "Falla crítica de espesor/desgaste: parada progresiva del variador";
+        type = "alarm";
+      }
+
+      if (state.running && state.tearProbability >= 55 && targetSpeed > 0) {
+        targetSpeed = 0.35;
+        mode = "PREALARMA DESGARRE";
+        reason = "La cámara detecta alta probabilidad de desgarre";
+        type = "warning";
+      }
+
+      if (state.vfd.emergencyStopActive || state.tearProbability >= state.tearAlarmThreshold) {
+        targetSpeed = 0;
+        mode = "EMERGENCIA";
+        reason = "Falla crítica: referencia del variador a 0 V y apagado progresivo";
+        type = "alarm";
+      }
+
+      const speedPercent = THREE.MathUtils.clamp(
+        (targetSpeed / state.nominalBeltSpeed) * 100,
+        0,
+        100
+      );
+
+      return {
+        targetSpeed,
+        targetVoltage: (speedPercent / 100) * state.vfd.maxVoltage,
+        speedPercent,
+        mode,
+        reason,
+        type
+      };
+    }
+
+    function updateSpeedControl() {
+      const previousMode = state.speedControl.mode;
+      const nextControl = calculateSpeedControlSetpoint();
+      state.speedControl = nextControl;
+
+      if (previousMode !== nextControl.mode || state.lastSpeedMode !== nextControl.mode) {
+        addEvent(
+          `Control de velocidad: ${nextControl.mode} -> ${nextControl.targetSpeed.toFixed(2)} m/s. ${nextControl.reason}`,
+          nextControl.type
+        );
+        state.lastSpeedMode = nextControl.mode;
+      }
+
+      return nextControl;
+    }
+
     function updateVFD(dt) {
       const vfd = state.vfd;
+      const speedControl = updateSpeedControl();
 
-      if (vfd.emergencyStopActive) {
-        vfd.targetVoltage = 0.0;
-      } else {
-        vfd.targetVoltage = state.running ? vfd.maxVoltage : 0.0;
-      }
+      vfd.targetVoltage = speedControl.targetVoltage;
 
       const rate = vfd.emergencyStopActive
         ? vfd.emergencyDecelRate
@@ -2203,10 +2315,12 @@
         state.beltSpeed = 0;
         state.running = false;
         vfd.status = "DETENIDA POR EMERGENCIA";
-      } else if (vfd.emergencyStopActive) {
+      } else if (vfd.emergencyStopActive || speedControl.mode === "EMERGENCIA") {
         vfd.status = "DESACELERANDO";
       } else if (state.running && speedRatio > 0.05) {
-        vfd.status = "OPERANDO";
+        vfd.status = speedControl.mode === "NOMINAL"
+          ? "OPERANDO"
+          : `OPERANDO - ${speedControl.mode}`;
       } else if (state.running && speedRatio <= 0.05) {
         vfd.status = "ARRANCANDO";
       } else if (!state.running && speedRatio > 0.05) {
@@ -2351,8 +2465,10 @@
     function weightedRandomDefect() {
       const r = Math.random();
 
-      if (r < 0.50) return "normal";
-      if (r < 0.82) return "wear";
+      // Menor frecuencia de datos/fallas erróneas:
+      // la mayor parte del tiempo se genera condición normal.
+      if (r < 0.85) return "normal";
+      if (r < 0.97) return "wear";
 
       return "tear";
     }
@@ -2468,6 +2584,13 @@
       );
     }
 
+    function scheduleNextAutomaticDefect(now = clock.elapsedTime) {
+      const interval = state.autoDefectMinInterval +
+        Math.random() * (state.autoDefectMaxInterval - state.autoDefectMinInterval);
+
+      state.nextAutoDefectTime = now + interval;
+    }
+
     function updateDefects(dt) {
       const beltTime = performance.now() * 0.001;
 
@@ -2494,8 +2617,16 @@
         }
       }
 
-      if (state.running && state.beltSpeed > 0.05 && Math.random() < 0.015) {
-        spawnDefect();
+      if (state.running && !state.vfd.emergencyStopActive && state.beltSpeed > 0.05) {
+        const now = clock.elapsedTime;
+
+        if (now >= state.nextAutoDefectTime) {
+          if (Math.random() < state.autoDefectChance) {
+            spawnDefect();
+          }
+
+          scheduleNextAutomaticDefect(now);
+        }
       }
     }
 
@@ -2524,15 +2655,28 @@
 
       const tearAlarm = state.tearProbability >= state.tearAlarmThreshold;
       const thicknessAlarm = min < state.criticalThickness;
+      const wearAlarm = wear > state.maxAllowedWear;
+      const criticalFault = tearAlarm || thicknessAlarm || wearAlarm;
 
-      if (tearAlarm && !state.vfd.emergencyStopActive && !state.autoStopByTear) {
-        triggerCriticalTearStop();
+      if (criticalFault && !state.vfd.emergencyStopActive && !state.autoStopByTear) {
+        let stopReason = "Parada automática por falla crítica";
+
+        if (tearAlarm) {
+          stopReason = "Parada automática por rotura crítica detectada por cámara";
+        } else if (thicknessAlarm) {
+          stopReason = "Parada automática por espesor crítico detectado por ultrasonido";
+        } else if (wearAlarm) {
+          stopReason = "Parada automática por desgaste excesivo de la faja";
+        }
+
+        state.autoStopByTear = true;
+        triggerEmergencyStop(stopReason, tearAlarm ? state.cameraDetectedDefect : null);
       }
 
-      if (!tearAlarm) {
+      if (!criticalFault) {
         state.autoStopByTear = false;
       }
-      const wearAlarm = wear > state.maxAllowedWear;
+
       const warning = min < state.warningThickness || wear > 10;
 
       const activeAlarms = [];
@@ -2636,10 +2780,21 @@
 
       document.getElementById("beltState").textContent =
         state.vfd.emergencyStopActive && state.beltSpeed > 0.01
-          ? "DESACELERANDO"
-          : state.beltSpeed > 0.01
-            ? "OPERANDO"
-            : "DETENIDA";
+          ? "APAGANDO"
+          : !state.running && state.beltSpeed > 0.01
+            ? "PARANDO"
+            : state.beltSpeed > 0.01
+              ? "OPERANDO"
+              : "DETENIDA";
+
+      document.getElementById("beltSpeedHMI").textContent =
+        `${state.beltSpeed.toFixed(2)} m/s`;
+
+      document.getElementById("speedBar").style.width =
+        `${THREE.MathUtils.clamp((state.beltSpeed / state.nominalBeltSpeed) * 100, 0, 100)}%`;
+
+      document.getElementById("speedMode").textContent =
+        state.speedControl.mode;
 
       for (let i = 0; i < 5; i++) {
         const zone = document.getElementById(`zone${i}`);
@@ -2688,7 +2843,9 @@
         tearAlarm ? "ROTURA CRÍTICA" : "OK";
 
       document.getElementById("ledRun").className =
-        state.beltSpeed > 0.01 ? "led on-green" : "led";
+        state.running && !state.vfd.emergencyStopActive && state.beltSpeed > 0.01
+          ? "led on-green"
+          : "led";
 
       document.getElementById("ledSensor").className =
         thicknessAlarm ? "led on-red" : "led on-blue";
@@ -2738,6 +2895,15 @@
       state.vfd.emergencyStopActive = false;
       state.vfd.status = "OPERANDO";
       state.beltSpeed = state.nominalBeltSpeed;
+      state.speedControl = {
+        targetSpeed: state.nominalBeltSpeed,
+        speedPercent: 100,
+        mode: "NOMINAL",
+        reason: "Sin falla detectada",
+        type: "ok"
+      };
+      state.lastSpeedMode = "";
+      scheduleNextAutomaticDefect(clock.elapsedTime);
       addEvent("Reset de simulación ejecutado", "ok");
     }
 
@@ -2801,11 +2967,12 @@
       createVFD3DSystem();
       createEnvironmentDetails();
 
-      for (let i = 0; i < 4; i++) {
-        spawnDefect(i % 2 === 0 ? "normal" : "wear");
-        state.defects[i].mesh.position.x = 4.5 - i * 2.2;
+      for (let i = 0; i < 2; i++) {
+        spawnDefect("normal");
+        state.defects[i].mesh.position.x = 4.5 - i * 3.2;
       }
 
+      scheduleNextAutomaticDefect(clock.elapsedTime);
       state.beltMotionTime = 0;
       initViewControls();
 
