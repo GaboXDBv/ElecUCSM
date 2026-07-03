@@ -588,6 +588,55 @@
     </div>
 
     <div class="section">
+      <h3>🛞 Sensor de velocidad tipo encoder</h3>
+
+      <div class="grid2">
+        <div class="metric">
+          <label>Velocidad medida</label>
+          <span id="encoderSpeed">0.00 m/s</span>
+          <div class="bar">
+            <div id="encoderSpeedBar" class="bar-fill speed-fill"></div>
+          </div>
+        </div>
+
+        <div class="metric">
+          <label>RPM rueda</label>
+          <span id="encoderRPM">0 rpm</span>
+        </div>
+
+        <div class="metric">
+          <label>Frecuencia de pulsos</label>
+          <span id="encoderPulses">0 Hz</span>
+        </div>
+
+        <div class="metric">
+          <label>Estado encoder</label>
+          <span id="encoderState">OK</span>
+        </div>
+
+        <div class="metric">
+          <label>Deslizamiento estimado</label>
+          <span id="encoderSlip">0.0 %</span>
+        </div>
+
+        <div class="metric">
+          <label>Pulsos acumulados</label>
+          <span id="encoderTotalPulses">0</span>
+        </div>
+      </div>
+
+      <div class="formula">
+        RPM = (v / πD) × 60<br>
+        fp = (RPM × Np) / 60<br>
+        D = 0.56 m | Np = 24 pulsos/vuelta
+      </div>
+
+      <p class="small-note">
+        La rueda de contacto gira con la faja. El encoder convierte ese giro en pulsos para calcular velocidad, RPM y frecuencia.
+      </p>
+    </div>
+
+    <div class="section">
       <h3>🎥 Cámara industrial inteligente</h3>
 
       <div class="grid2">
@@ -853,6 +902,17 @@
         emergencyDecelRate: 1.2,
         emergencyStopActive: false,
         status: "OPERANDO"
+      },
+      speedSensor: {
+        wheelDiameter: 0.56,
+        pulsesPerRevolution: 24,
+        measuredSpeed: 0,
+        rpm: 0,
+        pulseFrequency: 0,
+        totalPulses: 0,
+        slipPercent: 0,
+        status: "OK",
+        ledColor: 0x22ff8a
       }
     };
 
@@ -1242,6 +1302,283 @@
       motor.add(motorBody, motorCap, shaft);
       motor.position.set(6.8, 1.05, 3.05);
       scene.add(motor);
+    }
+
+
+    // ==========================================================
+    // SENSOR DE VELOCIDAD TIPO ENCODER
+    // ==========================================================
+    // El encoder mide velocidad mediante una rueda de contacto.
+    // La rueda gira con el avance de la faja y se calcula:
+    // RPM = (v / (pi * D)) * 60
+    // fp  = (RPM * Np) / 60
+    let speedSensor3D = null;
+
+    function createSpeedSensorSystem() {
+      const group = new THREE.Group();
+
+      const supportMaterial = new THREE.MeshStandardMaterial({
+        color: 0x6d7884,
+        metalness: 0.78,
+        roughness: 0.28
+      });
+
+      const encoderMaterial = new THREE.MeshStandardMaterial({
+        color: 0x111923,
+        metalness: 0.55,
+        roughness: 0.32
+      });
+
+      const wheelMaterial = new THREE.MeshStandardMaterial({
+        color: 0x1f2933,
+        metalness: 0.35,
+        roughness: 0.62
+      });
+
+      const rubberMaterial = new THREE.MeshStandardMaterial({
+        color: 0x050505,
+        metalness: 0.02,
+        roughness: 0.92
+      });
+
+      const pulseMaterial = new THREE.MeshStandardMaterial({
+        color: 0xffa32b,
+        emissive: 0xaa4d00,
+        emissiveIntensity: 0.65,
+        metalness: 0.25,
+        roughness: 0.35
+      });
+
+      // Base y soporte mecánico del encoder
+      const base = roundedBox(1.05, 0.16, 0.78, materials.darkMetal);
+      base.position.set(3.45, 0.09, -3.05);
+
+      const columnA = roundedBox(0.12, 1.40, 0.12, supportMaterial);
+      columnA.position.set(3.08, 0.78, -2.92);
+
+      const columnB = roundedBox(0.12, 1.40, 0.12, supportMaterial);
+      columnB.position.set(3.82, 0.78, -2.92);
+
+      const upperArm = roundedBox(1.00, 0.12, 0.12, supportMaterial);
+      upperArm.position.set(3.45, 1.45, -2.92);
+
+      const encoderBox = roundedBox(0.62, 0.45, 0.42, encoderMaterial);
+      encoderBox.position.set(3.45, 1.52, -2.72);
+
+      const encoderHead = roundedBox(
+        0.34,
+        0.22,
+        0.16,
+        new THREE.MeshStandardMaterial({
+          color: 0x243444,
+          metalness: 0.55,
+          roughness: 0.35
+        })
+      );
+      encoderHead.position.set(3.45, 1.52, -2.43);
+
+      // Rotor visual: rueda de contacto + aro de pulsos
+      const rotor = new THREE.Group();
+      rotor.position.set(3.45, 1.54, -2.08);
+
+      const wheel = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.28, 0.28, 0.18, 48),
+        wheelMaterial
+      );
+      wheel.rotation.x = Math.PI / 2;
+      wheel.castShadow = true;
+      wheel.receiveShadow = true;
+
+      const tire = new THREE.Mesh(
+        new THREE.TorusGeometry(0.285, 0.035, 12, 60),
+        rubberMaterial
+      );
+      tire.rotation.x = Math.PI / 2;
+
+      const pulseRing = new THREE.Mesh(
+        new THREE.TorusGeometry(0.36, 0.018, 10, 72),
+        pulseMaterial
+      );
+      pulseRing.rotation.x = Math.PI / 2;
+      pulseRing.position.z = 0.13;
+
+      // Marcas pequeñas que representan los pulsos del encoder
+      const pulseMarkers = new THREE.Group();
+      for (let i = 0; i < state.speedSensor.pulsesPerRevolution; i++) {
+        const angle = (i / state.speedSensor.pulsesPerRevolution) * Math.PI * 2;
+        const marker = roundedBox(0.030, 0.115, 0.030, pulseMaterial);
+        marker.position.set(Math.cos(angle) * 0.36, Math.sin(angle) * 0.36, 0.13);
+        marker.rotation.z = angle;
+        pulseMarkers.add(marker);
+      }
+
+      rotor.add(wheel, tire, pulseRing, pulseMarkers);
+
+      const shaft = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.045, 0.045, 0.55, 24),
+        supportMaterial
+      );
+      shaft.rotation.x = Math.PI / 2;
+      shaft.position.set(3.45, 1.54, -2.36);
+
+      const readBeam = new THREE.Mesh(
+        new THREE.BoxGeometry(0.05, 0.05, 0.48),
+        new THREE.MeshBasicMaterial({
+          color: 0xffa32b,
+          transparent: true,
+          opacity: 0.65
+        })
+      );
+      readBeam.position.set(3.45, 1.54, -2.27);
+
+      const led = new THREE.Mesh(
+        new THREE.SphereGeometry(0.075, 24, 24),
+        new THREE.MeshStandardMaterial({
+          color: 0x22ff8a,
+          emissive: 0x22ff8a,
+          emissiveIntensity: 1.6
+        })
+      );
+      led.position.set(3.82, 1.78, -2.48);
+
+      const label = createTextSprite("ENCODER SPEED");
+      label.position.set(3.45, 2.18, -2.45);
+      label.scale.set(1.05, 0.33, 1);
+
+      const formulaLabel = createTextSprite("v = pulsos -> RPM -> m/s");
+      formulaLabel.position.set(3.45, 0.78, -3.35);
+      formulaLabel.scale.set(1.25, 0.30, 1);
+
+      group.add(
+        base,
+        columnA,
+        columnB,
+        upperArm,
+        encoderBox,
+        encoderHead,
+        shaft,
+        rotor,
+        readBeam,
+        led,
+        label,
+        formulaLabel
+      );
+
+      scene.add(group);
+
+      // Cable del encoder hacia el PLC
+      const encoderCableMaterial = new THREE.LineBasicMaterial({
+        color: 0xffa32b,
+        transparent: true,
+        opacity: 0.82
+      });
+
+      const curve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(3.45, 1.78, -2.72),
+        new THREE.Vector3(1.5, 2.35, -3.35),
+        new THREE.Vector3(-2.4, 2.55, -2.20),
+        new THREE.Vector3(-5.55, 1.42, 2.48)
+      ]);
+
+      const cableGeometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(56));
+      const cable = new THREE.Line(cableGeometry, encoderCableMaterial);
+      scene.add(cable);
+
+      speedSensor3D = {
+        group,
+        rotor,
+        wheel,
+        pulseRing,
+        pulseMarkers,
+        led,
+        readBeam
+      };
+    }
+
+    function updateSpeedSensor(time, dt) {
+      const sensor = state.speedSensor;
+      const circumference = Math.PI * sensor.wheelDiameter;
+
+      // Deslizamiento simulado: bajo en operación normal, mayor durante prealarma o desaceleración.
+      let slip = 0;
+      if (state.beltSpeed > 0.02) {
+        slip = 0.6 + Math.sin(time * 1.7) * 0.25;
+
+        if (state.speedControl.mode !== "NOMINAL") {
+          slip += 1.2;
+        }
+
+        if (state.vfd.emergencyStopActive) {
+          slip += 2.2;
+        }
+      }
+
+      slip = THREE.MathUtils.clamp(slip, 0, 6);
+      sensor.slipPercent = slip;
+
+      const measuredSpeed = state.beltSpeed * (1 - slip / 100);
+      sensor.measuredSpeed = measuredSpeed;
+
+      sensor.rpm = circumference > 0
+        ? (measuredSpeed / circumference) * 60
+        : 0;
+
+      sensor.pulseFrequency = (sensor.rpm * sensor.pulsesPerRevolution) / 60;
+      sensor.totalPulses += sensor.pulseFrequency * dt;
+
+      if (state.vfd.emergencyStopActive && state.beltSpeed <= 0.02) {
+        sensor.status = "DETENIDO";
+        sensor.ledColor = 0xf5c542;
+      } else if (state.vfd.emergencyStopActive || state.speedControl.mode !== "NOMINAL") {
+        sensor.status = "DESACELERANDO";
+        sensor.ledColor = 0xf5c542;
+      } else if (measuredSpeed > 0.05) {
+        sensor.status = "OK";
+        sensor.ledColor = 0x22ff8a;
+      } else {
+        sensor.status = "SIN MOVIMIENTO";
+        sensor.ledColor = 0x35d7ff;
+      }
+
+      // Animación física de la rueda: w = v / r.
+      if (speedSensor3D) {
+        const radius = sensor.wheelDiameter / 2;
+        const angularSpeed = radius > 0 ? measuredSpeed / radius : 0;
+        speedSensor3D.rotor.rotation.z -= angularSpeed * dt;
+
+        const pulse = 0.55 + Math.sin(time * 18) * 0.35;
+        speedSensor3D.readBeam.material.opacity = 0.35 + pulse * 0.45;
+
+        speedSensor3D.led.material.color.setHex(sensor.ledColor);
+        speedSensor3D.led.material.emissive.setHex(sensor.ledColor);
+        speedSensor3D.led.material.emissiveIntensity = sensor.status === "OK" ? 1.7 : 2.3;
+
+        speedSensor3D.pulseMarkers.children.forEach((marker, index) => {
+          marker.scale.setScalar(1 + Math.sin(time * 12 + index * 0.55) * 0.10);
+        });
+      }
+
+      updateSpeedSensorHMI();
+    }
+
+    function updateSpeedSensorHMI() {
+      const sensor = state.speedSensor;
+      const speedPercent = THREE.MathUtils.clamp(
+        (sensor.measuredSpeed / state.nominalBeltSpeed) * 100,
+        0,
+        100
+      );
+
+      const encoderSpeed = document.getElementById("encoderSpeed");
+      if (!encoderSpeed) return;
+
+      encoderSpeed.textContent = `${sensor.measuredSpeed.toFixed(2)} m/s`;
+      document.getElementById("encoderRPM").textContent = `${sensor.rpm.toFixed(0)} rpm`;
+      document.getElementById("encoderPulses").textContent = `${sensor.pulseFrequency.toFixed(1)} Hz`;
+      document.getElementById("encoderSlip").textContent = `${sensor.slipPercent.toFixed(1)} %`;
+      document.getElementById("encoderState").textContent = sensor.status;
+      document.getElementById("encoderTotalPulses").textContent = `${Math.floor(sensor.totalPulses)}`;
+      document.getElementById("encoderSpeedBar").style.width = `${speedPercent}%`;
     }
 
     const sensorPairs = [];
@@ -2894,6 +3231,13 @@
       state.vfd.frequency = state.vfd.maxFrequency;
       state.vfd.emergencyStopActive = false;
       state.vfd.status = "OPERANDO";
+      state.speedSensor.measuredSpeed = 0;
+      state.speedSensor.rpm = 0;
+      state.speedSensor.pulseFrequency = 0;
+      state.speedSensor.totalPulses = 0;
+      state.speedSensor.slipPercent = 0;
+      state.speedSensor.status = "OK";
+      state.speedSensor.ledColor = 0x22ff8a;
       state.beltSpeed = state.nominalBeltSpeed;
       state.speedControl = {
         targetSpeed: state.nominalBeltSpeed,
@@ -2961,6 +3305,7 @@
       addLighting();
       createFloor();
       createConveyor();
+      createSpeedSensorSystem();
       createUltrasonicSystem();
       createIndustrialCamera();
       createPLCAndHMI3D();
@@ -3053,6 +3398,7 @@
       const time = clock.elapsedTime;
 
       updateVFD(dt);
+      updateSpeedSensor(time, dt);
       updateDefects(dt);
       updateMeasurements(time);
       updateCameraInspection();
