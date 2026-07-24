@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Modelo 3D – Simulación de Incubadora Neonatal</title>
+  <style>
+    :root{
+      --bg:#ffffff;
+      --panel:#111827;
+      --line:rgba(255,255,255,.14);
+      --text:#f9fbff;
+      --muted:#d6dee8;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;overflow:hidden;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg)}
+    #app{display:grid;grid-template-columns:minmax(0,1fr) 370px;height:100%}
+    #viewer{position:relative;min-width:0;background:#ffffff}
+    #scene{position:absolute;inset:0}
+    aside{
+      background:linear-gradient(180deg,#111827,#0f172a);
+      color:var(--text);
+      border-left:1px solid rgba(0,0,0,.1);
+      padding:16px;
+      overflow-y:auto;
+    }
+    .top{
+      position:absolute;left:16px;right:16px;top:16px;display:flex;justify-content:space-between;gap:12px;z-index:20;pointer-events:none
+    }
+    .floating{
+      pointer-events:auto;
+      background:rgba(17,24,39,.88);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:14px;
+      padding:12px 14px;
+      backdrop-filter:blur(8px);
+      box-shadow:0 10px 26px rgba(0,0,0,.15)
+    }
+    .floating h1{margin:0 0 4px;font-size:18px}
+    .floating p{margin:0;font-size:12px;color:#dbe4ef}
+    .help{
+      position:absolute;left:16px;bottom:16px;z-index:20;
+      background:rgba(17,24,39,.88);
+      color:#dbe4ef;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:999px;padding:10px 14px;font-size:12px;
+      backdrop-filter:blur(8px)
+    }
+    .section{
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
+      margin-bottom:14px;
+    }
+    .section h2{margin:0 0 12px;font-size:14px}
+    .section p{margin:0;color:#d6dee8;font-size:12px;line-height:1.5}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    button{
+      border:1px solid rgba(255,255,255,.15);
+      background:rgba(255,255,255,.06);
+      color:#fff;cursor:pointer;
+      border-radius:10px;padding:10px;font-size:12px;font-weight:600;
+      transition:.18s ease
+    }
+    button:hover{background:rgba(56,189,248,.16);border-color:rgba(56,189,248,.42);transform:translateY(-1px)}
+    button.active{background:rgba(56,189,248,.2);border-color:rgba(56,189,248,.6)}
+    .row{
+      display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:center;
+      padding:8px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:12px
+    }
+    .row:last-child{border-bottom:0}
+    .dot{width:9px;height:9px;border-radius:50%}
+    .note{
+      background:rgba(56,189,248,.08);
+      border:1px solid rgba(56,189,248,.24);
+      color:#d9f5ff;
+      border-radius:12px;
+      padding:10px;
+      font-size:11px;
+      line-height:1.5;
+    }
+    @media (max-width: 980px){
+      #app{grid-template-columns:1fr;grid-template-rows:60vh 40vh}
+      aside{border-left:0;border-top:1px solid rgba(0,0,0,.1)}
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <main id="viewer">
+    <div id="scene"></div>
+    <div class="top">
+      <div class="floating">
+        <h1>Modelo 3D – Simulación</h1>
+        <p>Representación tridimensional interactiva de una incubadora neonatal con sistema de pesaje, supervisión térmica y circulación de aire.</p>
+      </div>
+      <div class="floating">
+        <p>La simulación integra la cámara acrílica, la plataforma de pesaje, las celdas de carga, los sensores laterales y el módulo de calefacción en una sola estructura técnica.</p>
+      </div>
+    </div>
+    <div class="help">Arrastra para rotar · Rueda para zoom · Clic derecho para desplazar</div>
+  </main>
+
+  <aside>
+    <section class="section">
+      <h2>Panel de visualización</h2>
+      <div class="grid2">
+        <button id="resetView">Vista inicial</button>
+        <button id="thermalView">Enfoque térmico</button>
+        <button id="explode">Vista de despiece</button>
+        <button id="labels">Identificación</button>
+        <button id="dimsBtn">Cotas</button>
+        <button id="baseBtn" class="active">Estructura base</button>
+        <button id="platformBtn" class="active">Plataforma de pesaje</button>
+        <button id="cellsBtn" class="active">Celdas de carga</button>
+        <button id="linksBtn" class="active">Soportes de unión</button>
+        <button id="frameBtn" class="active">Placa estructural</button>
+        <button id="babyBtn" class="active">Modelo neonatal</button>
+        <button id="acrylicBtn" class="active">Cámara acrílica</button>
+        <button id="sensorsBtn" class="active">Sensores térmicos</button>
+        <button id="padsBtn" class="active">Protección acolchada</button>
+        <button id="supportBtn" class="active">Estructura móvil</button>
+        <button id="thermalBtn" class="active">Módulo térmico</button>
+        <button id="drawerBtn">Extraer módulo inferior</button>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Especificaciones geométricas</h2>
+      <div class="row"><span class="dot" style="background:#93c5fd"></span><span>Estructura base</span><strong>90 × 65 × 8 cm</strong></div>
+      <div class="row"><span class="dot" style="background:#bfdbfe"></span><span>Cámara de aislamiento</span><strong>90 × 65 × 40 cm</strong></div>
+      <div class="row"><span class="dot" style="background:#f8fafc"></span><span>Plataforma de pesaje</span><strong>60 × 40 × 0.35 cm</strong></div>
+      <div class="row"><span class="dot" style="background:#fcd34d"></span><span>Altura de la plataforma</span><strong>10.92 cm</strong></div>
+      <div class="row"><span class="dot" style="background:#fca5a5"></span><span>Modelo neonatal referencial</span><strong>45 × 16 × 9 cm</strong></div>
+      <div class="row"><span class="dot" style="background:#a7f3d0"></span><span>Celda de carga tipo viga</span><strong>11.5 × 2.9 × 3 cm</strong></div>
+      <div class="row"><span class="dot" style="background:#6b7280"></span><span>Gabinete inferior</span><strong>gabinete cerrado limpio</strong></div>
+      <div class="row"><span class="dot" style="background:#fb923c"></span><span>Módulo de acondicionamiento térmico</span><strong>ventilador + resistencia + ducto ascendente</strong></div>
+    </section>
+
+    <section class="section">
+      <h2>Distribución de sensores térmicos</h2>
+      <div class="row"><span class="dot" style="background:#111111"></span><span>Sensor térmico resistivo</span><strong>2 esquinas</strong></div>
+      <div class="row"><span class="dot" style="background:#3b82f6"></span><span>Módulo térmico con comparador</span><strong>2 esquinas</strong></div>
+      <div class="row"><span class="dot" style="background:#22c55e"></span><span>Distribución espacial</span><strong>4 puntos laterales</strong></div>
+      <div class="row"><span class="dot" style="background:#f9a8d4"></span><span>Protección acolchada perimetral</span><strong>4 piezas alrededor</strong></div>
+    </section>
+
+    <section class="section">
+      <h2>Descripción del sistema</h2>
+      <p>
+        El modelo representa la arquitectura funcional de una incubadora neonatal mediante una cámara acrílica de aislamiento, una plataforma de pesaje suspendida y un conjunto de sensores térmicos distribuidos en las paredes laterales. La plataforma se vincula con cuatro celdas de carga tipo viga ubicadas cerca de sus esquinas, permitiendo visualizar el principio de medición del peso y la transmisión de la carga hacia la estructura fija.
+      </p>
+      <div style="height:10px"></div>
+      <p>
+        En la sección inferior se incorpora un módulo de acondicionamiento térmico compuesto por un ventilador de circulación, un elemento calefactor y un conducto ascendente de distribución. El gabinete inferior protege estos componentes y permite extraer visualmente el módulo para examinar su disposición interna. La simulación puede rotarse, ampliarse y presentarse en vista de despiece para facilitar el análisis de cada subsistema.
+      </p>
+      <div style="height:10px"></div>
+      <div class="note">
+        La representación tiene finalidad académica y permite estudiar de manera integrada la estructura mecánica, el sistema de pesaje, la distribución de sensores y el recorrido previsto del aire acondicionado dentro del prototipo.
+      </div>
+    </section>
+  </aside>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(() => {
+  const container = document.getElementById('scene');
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xffffff);
+
+  const camera = new THREE.PerspectiveCamera(42, container.clientWidth / container.clientHeight, 0.1, 1000);
+  camera.position.set(144, 100, 156);
+
+  const renderer = new THREE.WebGLRenderer({ antialias:true });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  container.appendChild(renderer.domElement);
+
+  const controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.06;
+  controls.target.set(0, 4, 0);
+  controls.minDistance = 45;
+  controls.maxDistance = 340;
+  controls.maxPolarAngle = Math.PI * 0.495;
+
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xe5e7eb, 1.28));
+  const dir = new THREE.DirectionalLight(0xffffff, 1.08);
+  dir.position.set(100, 130, 90);
+  dir.castShadow = true;
+  dir.shadow.mapSize.set(2048, 2048);
+  dir.shadow.camera.left = -170;
+  dir.shadow.camera.right = 170;
+  dir.shadow.camera.top = 170;
+  dir.shadow.camera.bottom = -170;
+  scene.add(dir);
+
+  const matBase = new THREE.MeshStandardMaterial({ color:0xe8edf2, roughness:0.75, metalness:0.04 });
+  const matPlate = new THREE.MeshStandardMaterial({ color:0xf6f8fb, roughness:0.80, metalness:0.02 });
+  const matPlatform = new THREE.MeshStandardMaterial({ color:0xeaf4ff, roughness:0.70, metalness:0.03 });
+  const matCell = new THREE.MeshStandardMaterial({ color:0xbfc9d4, roughness:0.34, metalness:0.72 });
+  const matFixed = new THREE.MeshStandardMaterial({ color:0xb8f0d2, roughness:0.35, metalness:0.08 });
+  const matFree = new THREE.MeshStandardMaterial({ color:0xffd8b3, roughness:0.35, metalness:0.08 });
+  const matBolt = new THREE.MeshStandardMaterial({ color:0x4e5660, roughness:0.18, metalness:0.92 });
+  const matDark = new THREE.MeshStandardMaterial({ color:0x6b7280, roughness:0.25, metalness:0.8 });
+  const matHeater = new THREE.MeshStandardMaterial({ color:0xff9b45, emissive:0x7c2d12, emissiveIntensity:1.0, roughness:0.34, metalness:0.58 });
+  const matFanFrame = new THREE.MeshStandardMaterial({ color:0x374151, roughness:0.36, metalness:0.44 });
+  const matDuct = new THREE.MeshStandardMaterial({ color:0xaeb8c4, roughness:0.35, metalness:0.42 });
+  const matCeramic = new THREE.MeshStandardMaterial({ color:0xf3ead7, roughness:0.76, metalness:0.04 });
+  const matSkin = new THREE.MeshStandardMaterial({ color:0xe9b295, roughness:0.85, metalness:0.02 });
+  const matPad = new THREE.MeshStandardMaterial({ color:0xf9a8d4, roughness:0.92, metalness:0.01 });
+  const matSensorBlack = new THREE.MeshStandardMaterial({ color:0x1f2937, roughness:0.38, metalness:0.22 });
+  const matSensorSilver = new THREE.MeshStandardMaterial({ color:0xd1d5db, roughness:0.25, metalness:0.75 });
+  const matSensorBlue = new THREE.MeshStandardMaterial({ color:0x3b82f6, roughness:0.36, metalness:0.10 });
+  const matSensorBlueDark = new THREE.MeshStandardMaterial({ color:0x1d4ed8, roughness:0.35, metalness:0.06 });
+  const matSensorPot = new THREE.MeshStandardMaterial({ color:0x60a5fa, roughness:0.36, metalness:0.08 });
+  const acrylicMat = new THREE.MeshPhysicalMaterial({
+    color:0xbde7ff, transparent:true, opacity:0.18, roughness:0.06,
+    metalness:0.0, clearcoat:1, clearcoatRoughness:0.06, side:THREE.DoubleSide, depthWrite:false
+  });
+  const acrylicEdgeMat = new THREE.LineBasicMaterial({ color:0x5ea8d8, transparent:true, opacity:0.85 });
+  const edgeMat = new THREE.LineBasicMaterial({ color:0x111111, transparent:true, opacity:0.95 });
+
+  function addOutlined(mesh, parent=scene, customEdgeMat=null){
+    parent.add(mesh);
+    const edges = new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry), customEdgeMat || edgeMat);
+    edges.position.copy(mesh.position);
+    edges.rotation.copy(mesh.rotation);
+    edges.scale.copy(mesh.scale);
+    parent.add(edges);
+    return {mesh, edges};
+  }
+  function createBox(w,h,d, x,y,z, mat, parent=scene, customEdgeMat=null){
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), mat);
+    mesh.position.set(x,y,z);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    return addOutlined(mesh, parent, customEdgeMat);
+  }
+  function createCylinder(r1,r2,h, x,y,z, mat, parent=scene, rx=0,ry=0,rz=0, seg=24, customEdgeMat=null){
+    const mesh = new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,seg), mat);
+    mesh.position.set(x,y,z);
+    mesh.rotation.set(rx,ry,rz);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    return addOutlined(mesh, parent, customEdgeMat);
+  }
+  function roundRect(ctx,x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
+    ctx.quadraticCurveTo(x+w,y,x+w,y+r); ctx.lineTo(x+w,y+h-r);
+    ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h); ctx.lineTo(x+r,y+h);
+    ctx.quadraticCurveTo(x,y+h,x,y+h-r); ctx.lineTo(x,y+r);
+    ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+  }
+  function makeLabel(text, scale=6.2){
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.font = '700 46px Arial';
+    const w = Math.ceil(ctx.measureText(text).width + 34);
+    canvas.width = w; canvas.height = 78;
+    ctx.font = '700 46px Arial';
+    ctx.fillStyle = 'rgba(255,255,255,0.96)';
+    ctx.strokeStyle = 'rgba(0,0,0,0.18)';
+    ctx.lineWidth = 2.5;
+    roundRect(ctx,2,2,w-4,74,16);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#111111';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, 16, 39);
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.minFilter = THREE.LinearFilter;
+    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map:tex, transparent:true, depthTest:false }));
+    sprite.scale.set(scale*(w/160), scale*0.52, 1);
+    sprite.renderOrder = 999;
+    return sprite;
+  }
+  function calloutLine(points, color=0x111111){
+    const g = new THREE.BufferGeometry().setFromPoints(points);
+    return new THREE.Line(g, new THREE.LineBasicMaterial({ color }));
+  }
+  function simpleLine(a,b,color=0x3b82f6){
+    const g = new THREE.BufferGeometry().setFromPoints([a,b]);
+    return new THREE.Line(g, new THREE.LineBasicMaterial({color}));
+  }
+  function addDimension(a,b,label,offset,color=0x2563eb,parent=scene){
+    const group = new THREE.Group();
+    group.add(simpleLine(a,b,color));
+    const dirv = new THREE.Vector3().subVectors(b,a).normalize();
+    const perp = Math.abs(dirv.x) > 0.5 ? new THREE.Vector3(0,1,0) : new THREE.Vector3(1,0,0);
+    group.add(simpleLine(a.clone().addScaledVector(perp,-1.5), a.clone().addScaledVector(perp,1.5), color));
+    group.add(simpleLine(b.clone().addScaledVector(perp,-1.5), b.clone().addScaledVector(perp,1.5), color));
+    const lbl = makeLabel(label, 5.2);
+    lbl.position.copy(a.clone().lerp(b,0.5).add(offset));
+    group.add(lbl);
+    parent.add(group);
+    return group;
+  }
+
+  const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(380,380),
+    new THREE.ShadowMaterial({ opacity:0.08 })
+  );
+  floor.rotation.x = -Math.PI/2;
+  floor.position.y = -46.01;
+  floor.receiveShadow = true;
+  scene.add(floor);
+
+  const baseGroup = new THREE.Group(); scene.add(baseGroup);
+  const frameGroup = new THREE.Group(); scene.add(frameGroup);
+  const platformGroup = new THREE.Group(); scene.add(platformGroup);
+  const cellsGroup = new THREE.Group(); scene.add(cellsGroup);
+  const linksGroup = new THREE.Group(); scene.add(linksGroup);
+  const labelsGroup = new THREE.Group(); scene.add(labelsGroup);
+  const babyGroup = new THREE.Group(); scene.add(babyGroup);
+  const dimsGroup = new THREE.Group(); scene.add(dimsGroup);
+  const acrylicGroup = new THREE.Group(); scene.add(acrylicGroup);
+  const sensorsGroup = new THREE.Group(); scene.add(sensorsGroup);
+  const padsGroup = new THREE.Group(); scene.add(padsGroup);
+  const supportGroup = new THREE.Group(); scene.add(supportGroup);
+  const thermalGroup = new THREE.Group(); scene.add(thermalGroup);
+  const lowerShellGroup = new THREE.Group(); scene.add(lowerShellGroup);
+  const drawerGroup = new THREE.Group(); scene.add(drawerGroup);
+  drawerGroup.add(thermalGroup);
+  drawerGroup.add(lowerShellGroup);
+
+  // Base, plate, platform
+  createBox(90, 8, 65, 0, -4, 0, matBase, baseGroup);
+  createBox(84, 1.4, 59, 0, 0.75, 0, matPlate, frameGroup);
+  createBox(60, 0.35, 40, 0, 10.92, 0, matPlatform, platformGroup);
+  // faldón perimetral más corto para que la plataforma se vea menos gruesa
+  createBox(61.8, 3.0, 1.0, 0, 8.85, 20.5, matPlate, platformGroup);
+  createBox(61.8, 3.0, 1.0, 0, 8.85, -20.5, matPlate, platformGroup);
+  createBox(1.0, 3.0, 41.0, 30.8, 8.85, 0, matPlate, platformGroup);
+  createBox(1.0, 3.0, 41.0, -30.8, 8.85, 0, matPlate, platformGroup);
+
+  // Patotas y ruedas añadidas debajo de la base, manteniendo el diseño original
+  createBox(68, 2.6, 8, 0, -27.5, -22, matDark, supportGroup);   // travesaño trasero
+  createBox(68, 2.6, 8, 0, -27.5, 22, matDark, supportGroup);    // travesaño delantero
+  createBox(8, 2.6, 40, -30, -27.5, 0, matDark, supportGroup);   // lateral izquierdo
+  createBox(8, 2.6, 40, 30, -27.5, 0, matDark, supportGroup);    // lateral derecho
+
+  createBox(5.2, 18, 5.2, -30, -37.0, -22, matDark, supportGroup);
+  createBox(5.2, 18, 5.2,  30, -37.0, -22, matDark, supportGroup);
+  createBox(5.2, 18, 5.2, -30, -37.0,  22, matDark, supportGroup);
+  createBox(5.2, 18, 5.2,  30, -37.0,  22, matDark, supportGroup);
+
+  function addCaster(x,z){
+    const g = new THREE.Group();
+    supportGroup.add(g);
+
+    // placa superior de montaje
+    createBox(5.0, 1.2, 5.0, x, -46.6, z, matDark, g);
+
+    // cuello / eje vertical
+    createCylinder(0.55,0.55,2.0, x, -47.9, z, matBolt, g);
+
+    // horquilla de la rueda
+    createBox(0.9, 4.6, 1.0, x-1.8, -50.8, z, matDark, g);
+    createBox(0.9, 4.6, 1.0, x+1.8, -50.8, z, matDark, g);
+    createBox(4.5, 0.9, 1.0, x, -48.9, z, matDark, g);
+
+    // eje de la rueda
+    createCylinder(0.22,0.22,3.6, x, -50.8, z, matBolt, g, 0,0,Math.PI/2);
+
+    // rueda principal
+    createCylinder(2.7,2.7,2.2, x, -50.8, z, matDark, g, 0,0,Math.PI/2);
+
+    // centro de rueda
+    createCylinder(0.9,0.9,2.35, x, -50.8, z, matSensorSilver, g, 0,0,Math.PI/2);
+
+    // pequeña base inferior visual
+    createBox(4.2, 0.6, 1.0, x, -53.3, z, matDark, g);
+  }
+
+  addCaster(-30, -22);
+  addCaster( 30, -22);
+  addCaster(-30,  22);
+  addCaster( 30,  22);
+
+  // Zona de calefacción elevada y ordenada debajo de la base
+  // Módulo compacto y centrado para no interferir con las patitas
+  createBox(38, 1.0, 20, 0, -16.0, 0, matBase, thermalGroup);      // bandeja inferior
+  createBox(38, 1.0, 20, 0, -7.2, 0, matBase, thermalGroup);       // tapa superior
+  createBox(1.0, 8.8, 20, -18.5, -11.6, 0, matBase, thermalGroup); // lateral izquierdo
+  createBox(1.0, 8.8, 20, 18.5, -11.6, 0, matBase, thermalGroup);  // lateral derecho
+  createBox(38, 8.8, 1.0, 0, -11.6, -10.0, matBase, thermalGroup); // pared posterior
+
+  // Ventilador axial al fondo, centrado y un poco más alto
+  createBox(13.5, 13.5, 1.0, 0, -11.6, -8.8, matFanFrame, thermalGroup);
+  const fanRing = new THREE.Mesh(new THREE.TorusGeometry(4.8, 0.52, 16, 40), matDark);
+  fanRing.position.set(0, -11.6, -8.2);
+  fanRing.castShadow = true; fanRing.receiveShadow = true;
+  addOutlined(fanRing, thermalGroup);
+
+  const fanHub = new THREE.Mesh(new THREE.CylinderGeometry(1.0,1.0,1.45,22), matDark);
+  fanHub.position.set(0, -11.6, -8.2);
+  fanHub.rotation.x = Math.PI/2;
+  fanHub.castShadow = true; fanHub.receiveShadow = true;
+  addOutlined(fanHub, thermalGroup);
+
+  const fanBlades = new THREE.Group();
+  fanBlades.position.set(0, -11.6, -8.2);
+  thermalGroup.add(fanBlades);
+  for(let i=0;i<7;i++){
+    const blade = new THREE.Mesh(new THREE.BoxGeometry(0.58, 4.5, 1.0), matSensorSilver);
+    blade.rotation.z = i*(Math.PI/3.5) + 0.18;
+    blade.castShadow = true; blade.receiveShadow = true;
+    addOutlined(blade, fanBlades);
+  }
+
+  // Resistencia pequeña delante del ventilador
+  const heaterCurve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(-4.2, -9.0, -1.2),
+    new THREE.Vector3( 4.2, -9.0, -1.2),
+    new THREE.Vector3( 6.0, -11.6, -1.2),
+    new THREE.Vector3( 4.2, -14.2, -1.2),
+    new THREE.Vector3(-4.2, -14.2, -1.2)
+  ]);
+  const heaterTube = new THREE.Mesh(new THREE.TubeGeometry(heaterCurve, 70, 0.48, 14, false), matHeater);
+  heaterTube.castShadow = true; heaterTube.receiveShadow = true;
+  addOutlined(heaterTube, thermalGroup);
+
+  createBox(2.2, 2.2, 2.2, -5.8, -9.0, -1.2, matCeramic, thermalGroup);
+  createBox(2.2, 2.2, 2.2, -5.8, -14.2, -1.2, matCeramic, thermalGroup);
+
+  // Cámara de mezcla y ducto ascendente
+  createBox(10, 5.0, 6.4, 0, -11.6, 3.8, matDuct, thermalGroup);
+  createBox(8.0, 13.5, 8.0, 0, -1.4, 4.2, matDuct, thermalGroup); // columna vertical
+  createBox(14.0, 2.0, 10.0, 0, 6.0, 4.2, matDuct, thermalGroup); // difusor bajo plataforma
+  createBox(14.0, 0.9, 10.0, 0, 7.4, 4.2, matPlate, thermalGroup);
+
+  for (let i=-3; i<=3; i++) {
+    createBox(1.0, 0.35, 8.0, i*1.9, 7.9, 4.2, matDark, thermalGroup);
+  }
+
+  // Gabinete inferior más limpio, sin cajones laterales visibles
+  createBox(72, 1.2, 52, 0, -10.2, 0, matPlate, lowerShellGroup);           // tapa superior del gabinete
+  createBox(72, 15.5, 2.0, 0, -17.9, 25.0, matBase, lowerShellGroup);        // frente
+  createBox(72, 15.5, 2.0, 0, -17.9, -25.0, matBase, lowerShellGroup);       // fondo
+  createBox(2.0, 15.5, 52, -35.0, -17.9, 0, matBase, lowerShellGroup);       // lado izq liso
+  createBox(2.0, 15.5, 52, 35.0, -17.9, 0, matBase, lowerShellGroup);        // lado der liso
+  createBox(68, 1.0, 48, 0, -25.6, 0, matBase, lowerShellGroup);             // base inferior
+
+  // frente central liso
+  createBox(26, 9.5, 1.0, 0, -17.6, 24.0, matPlate, lowerShellGroup);
+
+  // rejillas frontales
+  for (let i=-3; i<=3; i++) {
+    createBox(2.4, 0.45, 0.8, i*3.8, -18.0, 24.7, matDark, lowerShellGroup);
+  }
+
+  // cajoneras solo al frente
+  createBox(16, 12.0, 16, -23.0, -18.0, 18.0, matPlate, lowerShellGroup);    // bloque izq frontal
+  createBox(16, 12.0, 16, 23.0, -18.0, 18.0, matPlate, lowerShellGroup);     // bloque der frontal
+
+  createBox(13.5, 4.4, 1.0, -23.0, -15.1, 26.1, matBase, lowerShellGroup);
+  createBox(13.5, 4.4, 1.0, -23.0, -21.2, 26.1, matBase, lowerShellGroup);
+  createBox(5.0, 0.55, 0.8, -23.0, -15.1, 26.9, matDark, lowerShellGroup);
+  createBox(5.0, 0.55, 0.8, -23.0, -21.2, 26.9, matDark, lowerShellGroup);
+
+  createBox(13.5, 4.4, 1.0, 23.0, -15.1, 26.1, matBase, lowerShellGroup);
+  createBox(13.5, 4.4, 1.0, 23.0, -21.2, 26.1, matBase, lowerShellGroup);
+  createBox(5.0, 0.55, 0.8, 23.0, -15.1, 26.9, matDark, lowerShellGroup);
+  createBox(5.0, 0.55, 0.8, 23.0, -21.2, 26.9, matDark, lowerShellGroup);
+
+  // paneles laterales lisos / traseros
+  createBox(1.0, 8.2, 24.0, -34.0, -17.6, -6.0, matPlate, lowerShellGroup);
+  createBox(1.0, 8.2, 24.0, 34.0, -17.6, -6.0, matPlate, lowerShellGroup);
+  createBox(40.0, 8.2, 1.0, 0, -17.6, -24.0, matPlate, lowerShellGroup);
+
+  // faldones inferiores para cerrar mejor
+  createBox(10.0, 6.2, 1.2, -22.0, -22.5, 23.0, matBase, lowerShellGroup);
+  createBox(10.0, 6.2, 1.2, 22.0, -22.5, 23.0, matBase, lowerShellGroup);
+  createBox(10.0, 6.2, 1.2, -22.0, -22.5, -23.0, matBase, lowerShellGroup);
+  createBox(10.0, 6.2, 1.2, 22.0, -22.5, -23.0, matBase, lowerShellGroup);
+
+  // detalles azules tipo equipo médico
+  createBox(6.0, 0.8, 5.0, -24.0, -24.9, 19.0, matSensorBlue, lowerShellGroup);
+  createBox(6.0, 0.8, 5.0, 24.0, -24.9, 19.0, matSensorBlue, lowerShellGroup);
+  createBox(6.0, 0.8, 5.0, -24.0, -24.9, -19.0, matSensorBlue, lowerShellGroup);
+  createBox(6.0, 0.8, 5.0, 24.0, -24.9, -19.0, matSensorBlue, lowerShellGroup);
+
+
+
+  function slenderBeam(length, x, y, z){
+    const beam = new THREE.Mesh(new THREE.BoxGeometry(length, 0.7, 0.7), matDark);
+    beam.position.set(x,y,z);
+    beam.castShadow = true; beam.receiveShadow = true;
+    addOutlined(beam, linksGroup);
+  }
+
+  function loadCellAssembly(side, zPos){
+    const g = new THREE.Group();
+    cellsGroup.add(g);
+
+    // más esquinadas: se acercan más a las esquinas reales de la plataforma
+    const cornerZ = zPos;
+    const fixedX = side < 0 ? -37.0 : 37.0;     // extremo fijo un poco más afuera
+    const barCenterX = side < 0 ? -31.6 : 31.6; // cuerpo de la celda más esquinado
+    const freeX = side < 0 ? -26.0 : 26.0;      // soporte vertical más cerca de la esquina
+    const cellCenterY = 4.8;
+
+    // extremo fijo a la base
+    createBox(4.2, 0.8, 5.0, fixedX, 0.9, cornerZ, matFixed, g);
+    createBox(0.9, 4.8, 4.0, fixedX + (side < 0 ? -0.95 : 0.95), 3.1, cornerZ, matFixed, g);
+    createBox(1.6, 0.7, 4.0, fixedX + (side < 0 ? 0.15 : -0.15), 5.6, cornerZ, matFixed, g);
+    createCylinder(0.28,0.28,0.6, fixedX, 6.0, cornerZ+0.95, matBolt, g);
+    createCylinder(0.28,0.28,0.6, fixedX, 6.0, cornerZ-0.95, matBolt, g);
+
+    // celda de carga
+    createBox(11.5, 2.9, 3.0, barCenterX, cellCenterY, cornerZ, matCell, g);
+
+    const hole = new THREE.Mesh(new THREE.CylinderGeometry(1.0,1.0,3.1,22), matDark);
+    hole.position.set(barCenterX + (side < 0 ? -1.15 : 1.15), cellCenterY, cornerZ);
+    hole.rotation.x = Math.PI/2;
+    hole.castShadow = true;
+    hole.receiveShadow = true;
+    addOutlined(hole, g);
+
+    createCylinder(0.22,0.22,0.45, barCenterX - 4.3, cellCenterY + 1.2, cornerZ+0.9, matBolt, g);
+    createCylinder(0.22,0.22,0.45, barCenterX - 4.3, cellCenterY + 1.2, cornerZ-0.9, matBolt, g);
+    createCylinder(0.22,0.22,0.45, barCenterX + 4.3, cellCenterY + 1.2, cornerZ+0.9, matBolt, g);
+    createCylinder(0.22,0.22,0.45, barCenterX + 4.3, cellCenterY + 1.2, cornerZ-0.9, matBolt, g);
+
+    // agarre simple atornillado a la plataforma
+    createBox(2.0, 0.7, 2.4, freeX, 6.0, cornerZ, matFree, g);                    // zapata del extremo libre
+    createBox(0.95, 4.2, 1.4, freeX, 8.55, cornerZ, matFree, linksGroup);            // soporte vertical
+    createBox(2.0, 0.45, 2.0, freeX, 10.72, cornerZ, matFree, linksGroup);           // placa bajo plataforma
+    createCylinder(0.26,0.26,0.45, freeX, 10.98, cornerZ, matBolt, linksGroup);      // tornillo superior
+
+    return { fixedX, freeX, zPos: cornerZ, cellCenterY };
+  }
+
+  const rt = loadCellAssembly( 1,  19.8);
+  const lt = loadCellAssembly(-1,  19.8);
+  const rb = loadCellAssembly( 1, -19.8);
+  const lb = loadCellAssembly(-1, -19.8);
+
+  // Acrylic chamber same footprint as lower base: 90 x 65 x 40
+  function acrylicPanel(w,h,d,x,y,z){
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), acrylicMat);
+    mesh.position.set(x,y,z);
+    mesh.castShadow = false;
+    mesh.receiveShadow = false;
+    addOutlined(mesh, acrylicGroup, acrylicEdgeMat);
+  }
+  const acrylicCenterY = 21;
+  acrylicPanel(90,40,0.5, 0, acrylicCenterY, -32.25); // back
+  acrylicPanel(0.5,40,65, -45, acrylicCenterY, 0);    // left
+  acrylicPanel(0.5,40,65, 45, acrylicCenterY, 0);     // right
+  acrylicPanel(90,0.5,65, 0, 41, 0);                  // top
+  acrylicPanel(90,12,0.5, 0, 7, 32.25);               // front lower frame
+  acrylicPanel(90,8,0.5, 0, 37, 32.25);               // front upper frame
+
+  // Baby
+  const baby = new THREE.Group();
+  babyGroup.add(baby);
+  baby.position.set(0, 16.0, 0);
+
+  const body = new THREE.Mesh(new THREE.SphereGeometry(1, 40, 28), matSkin);
+  body.scale.set(18, 5.5, 6.5);
+  body.position.set(2, 0, 0);
+  body.castShadow = true; body.receiveShadow = true;
+  addOutlined(body, baby);
+
+  const head = new THREE.Mesh(new THREE.SphereGeometry(4.6, 36, 24), matSkin);
+  head.position.set(-18, 1.8, 0);
+  head.castShadow = true; head.receiveShadow = true;
+  addOutlined(head, baby);
+
+  function limb(start, end, radius=1.0){
+    const dirv = new THREE.Vector3().subVectors(end, start);
+    const len = dirv.length();
+    const mesh = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius*0.88, len, 18), matSkin);
+    mesh.position.copy(start.clone().lerp(end, 0.5));
+    mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), dirv.clone().normalize());
+    mesh.castShadow = true; mesh.receiveShadow = true;
+    addOutlined(mesh, baby);
+  }
+  limb(new THREE.Vector3(-10, 0.6, 3.4), new THREE.Vector3(2, -1, 8), 1.2);
+  limb(new THREE.Vector3(-10, 0.6,-3.4), new THREE.Vector3(2, -1,-8), 1.2);
+  limb(new THREE.Vector3(9, -0.6, 2.8), new THREE.Vector3(20, -2.2, 6.5), 1.35);
+  limb(new THREE.Vector3(9, -0.6,-2.8), new THREE.Vector3(20, -2.2,-6.5), 1.35);
+
+  // Sensor modules in 4 corners
+  function blackSensorModule(x,y,z, rotY=0){
+    const g = new THREE.Group();
+    g.position.set(x,y,z);
+    g.rotation.y = rotY;
+    sensorsGroup.add(g);
+    createBox(8.0, 0.6, 3.0, 0,0,0, matSensorBlack, g);
+    createBox(1.2, 2.0, 1.6, 2.4,0.9,0, matSensorBlack, g); // transistor body
+    createCylinder(0.12,0.12,2.0, 1.8,0.9,-0.35, matSensorSilver, g, 0,0,0);
+    createCylinder(0.12,0.12,2.0, 2.2,0.9,0.0, matSensorSilver, g, 0,0,0);
+    createCylinder(0.12,0.12,2.0, 2.6,0.9,0.35, matSensorSilver, g, 0,0,0);
+    // pins
+    createCylinder(0.12,0.12,1.7, -3.1,0,-0.7, matSensorSilver, g, 0,0,Math.PI/2);
+    createCylinder(0.12,0.12,1.7, -3.1,0,0.0, matSensorSilver, g, 0,0,Math.PI/2);
+    createCylinder(0.12,0.12,1.7, -3.1,0,0.7, matSensorSilver, g, 0,0,Math.PI/2);
+  }
+  function blueSensorModule(x,y,z, rotY=0){
+    const g = new THREE.Group();
+    g.position.set(x,y,z);
+    g.rotation.y = rotY;
+    sensorsGroup.add(g);
+    createBox(8.0, 0.6, 3.4, 0,0,0, matSensorBlue, g);
+    createBox(1.8, 1.2, 1.8, -1.0,0.9,0, matSensorPot, g); // potentiometer
+    createCylinder(0.38,0.38,0.4, -1.0,1.5,0, matSensorSilver, g);
+    createBox(1.7, 0.9, 1.3, 1.4,0.8,0, matSensorBlueDark, g); // comparator chip
+    createCylinder(0.12,0.12,1.7, 3.1,0,-0.8, matSensorSilver, g, 0,0,Math.PI/2);
+    createCylinder(0.12,0.12,1.7, 3.1,0,0.0, matSensorSilver, g, 0,0,Math.PI/2);
+    createCylinder(0.12,0.12,1.7, 3.1,0,0.8, matSensorSilver, g, 0,0,Math.PI/2);
+    createCylinder(0.22,0.22,0.8, -3.2,-0.05,0.9, matSensorBlack, g, Math.PI/2,0,0); // thermistor head
+    createCylinder(0.22,0.22,0.8, -3.2,-0.05,-0.9, matSensorBlack, g, Math.PI/2,0,0);
+  }
+
+  // Place them on the side walls, near the 4 corners, at mid-height for easier cable routing
+  const sensorY = 19;
+  blackSensorModule(-41.3, sensorY, -24, Math.PI/2);
+  blueSensorModule( 41.3, sensorY, -24, -Math.PI/2);
+  blueSensorModule( -41.3, sensorY, 24, Math.PI/2);
+  blackSensorModule( 41.3, sensorY, 24, -Math.PI/2);
+
+  // Perimeter padded cushions around the platform to hide load cells and lower structure
+  createBox(6.0, 4.0, 52.0, -34.0, 12.8, 0, matPad, padsGroup);   // left
+  createBox(6.0, 4.0, 52.0,  34.0, 12.8, 0, matPad, padsGroup);   // right
+  createBox(74.0, 4.0, 6.0,  0, 12.8, 24.0, matPad, padsGroup);   // front
+  createBox(74.0, 4.0, 6.0,  0, 12.8, -24.0, matPad, padsGroup);  // back
+
+  function addCallout(text, labelPos, dotPos, bendPos=null){
+    const label = makeLabel(text, 6.1);
+    label.position.copy(labelPos);
+    labelsGroup.add(label);
+    const start = labelPos.clone().add(new THREE.Vector3(-3.8,-1.4,0));
+    const pts = bendPos ? [start, bendPos, dotPos] : [start, dotPos];
+    labelsGroup.add(calloutLine(pts));
+    const dot = new THREE.Mesh(new THREE.SphereGeometry(0.28, 14, 10), new THREE.MeshBasicMaterial({ color:0x111111 }));
+    dot.position.copy(dotPos);
+    labelsGroup.add(dot);
+  }
+
+  addCallout('Extremo móvil', new THREE.Vector3(-32, 28, 27), new THREE.Vector3(rt.freeX, 8.2, 19.8), new THREE.Vector3(-14, 25, 23));
+  addCallout('Anclaje fijo', new THREE.Vector3(-24, 20, 17), new THREE.Vector3(rt.fixedX, 3.2, 19.8), new THREE.Vector3(-10, 18, 18));
+  addCallout('Plataforma de pesaje', new THREE.Vector3(8, 24, 0), new THREE.Vector3(5, 11.0, 0));
+  addCallout('Base estructural', new THREE.Vector3(-10, 2.5, -10), new THREE.Vector3(-6, -0.8, -10));
+  addCallout('Modelo neonatal', new THREE.Vector3(18, 34, -8), new THREE.Vector3(4, 18.2, 0), new THREE.Vector3(12, 29, -5));
+  addCallout('Cámara acrílica 90×65×40', new THREE.Vector3(-60, 44, -12), new THREE.Vector3(-45, 24, -12), new THREE.Vector3(-52, 38, -12));
+  addCallout('Sensor térmico lateral', new THREE.Vector3(-66, 34, -28), new THREE.Vector3(-41.3, sensorY, -24), new THREE.Vector3(-54, 31, -27));
+  addCallout('Módulo térmico lateral', new THREE.Vector3(55, 34, -28), new THREE.Vector3(41.3, sensorY, -24), new THREE.Vector3(48, 31, -27));
+  addCallout('Módulo térmico lateral', new THREE.Vector3(-66, 30, 28), new THREE.Vector3(-41.3, sensorY, 24), new THREE.Vector3(-54, 28, 27));
+  addCallout('Sensor térmico lateral', new THREE.Vector3(55, 30, 28), new THREE.Vector3(41.3, sensorY, 24), new THREE.Vector3(48, 28, 27));
+  addCallout('Protección acolchada', new THREE.Vector3(35, 24, 18), new THREE.Vector3(34, 12.8, 8), new THREE.Vector3(35, 20, 15));
+  addCallout('Estructura rodante', new THREE.Vector3(50, -18, 25), new THREE.Vector3(30, -50.8, 22), new THREE.Vector3(43, -26, 24));
+  addCallout('Gabinete inferior', new THREE.Vector3(49, -1, 10), new THREE.Vector3(0, -17.9, 25.0), new THREE.Vector3(34, -6, 15));
+  addCallout('Módulo de calefacción', new THREE.Vector3(49, -5, -12), new THREE.Vector3(0, -11.6, 1.5), new THREE.Vector3(34, -7, -10));
+  addCallout('Ventilador de circulación', new THREE.Vector3(-40, -8, -20), new THREE.Vector3(0, -11.6, -8.2), new THREE.Vector3(-24, -10, -15));
+  addCallout('Elemento calefactor', new THREE.Vector3(37, -8, -20), new THREE.Vector3(0, -11.6, -1.2), new THREE.Vector3(24, -10, -15));
+  addCallout('Conducto de distribución', new THREE.Vector3(42, -2, 4), new THREE.Vector3(0, -1.4, 4.2), new THREE.Vector3(28, -4, 5));
+
+  // Dimensions
+  addDimension(new THREE.Vector3(-45,-9,34), new THREE.Vector3(45,-9,34), '90 cm — longitud de base', new THREE.Vector3(0,4,0), 0x2563eb, dimsGroup);
+  addDimension(new THREE.Vector3(48,-4,-32), new THREE.Vector3(48,-4,32), '65 cm — ancho de base', new THREE.Vector3(6,3,0), 0x2563eb, dimsGroup);
+  addDimension(new THREE.Vector3(-30,12,24), new THREE.Vector3(30,12,24), '60 cm — longitud de plataforma', new THREE.Vector3(0,4,0), 0x0891b2, dimsGroup);
+  addDimension(new THREE.Vector3(34,10.4,-20), new THREE.Vector3(34,10.4,20), '40 cm — ancho de plataforma', new THREE.Vector3(6,4,0), 0x0891b2, dimsGroup);
+  addDimension(new THREE.Vector3(-52,-4,0), new THREE.Vector3(-52,10.4,0), 'Altura del conjunto de pesaje', new THREE.Vector3(-5,0,0), 0xd97706, dimsGroup);
+  addDimension(new THREE.Vector3(-45,44,-37), new THREE.Vector3(45,44,-37), '90 cm — longitud de cámara', new THREE.Vector3(0,4,0), 0x0ea5e9, dimsGroup);
+  addDimension(new THREE.Vector3(50,21,-32.5), new THREE.Vector3(50,21,32.5), '65 cm — ancho de cámara', new THREE.Vector3(6,3,0), 0x0ea5e9, dimsGroup);
+  addDimension(new THREE.Vector3(-49,1,-35), new THREE.Vector3(-49,41,-35), '40 cm — altura de cámara', new THREE.Vector3(-5,0,0), 0x0ea5e9, dimsGroup);
+  addDimension(new THREE.Vector3(-25,18,-15), new THREE.Vector3(20,18,-15), '45 cm — modelo neonatal', new THREE.Vector3(0,4,0), 0xdc2626, dimsGroup);
+  addDimension(new THREE.Vector3(24,14.6,-8), new THREE.Vector3(24,14.6,8), '16 cm — ancho referencial', new THREE.Vector3(6,3,0), 0xdc2626, dimsGroup);
+  addDimension(new THREE.Vector3(-31.8,9,-30), new THREE.Vector3(-20.3,9,-30), '11.5 cm — celda de carga', new THREE.Vector3(0,3.5,0), 0x16a34a, dimsGroup);
+  addDimension(new THREE.Vector3(-37,17,24), new THREE.Vector3(37,17,24), '74 cm — protección longitudinal', new THREE.Vector3(0,3.5,0), 0xec4899, dimsGroup);
+  addDimension(new THREE.Vector3(-34,17,-26), new THREE.Vector3(-34,17,26), '52 cm — protección transversal', new THREE.Vector3(-6,3.5,0), 0xec4899, dimsGroup);
+  addDimension(new THREE.Vector3(-30,-46.0,-22), new THREE.Vector3(-30,-28.0,-22), '18 cm — soporte vertical', new THREE.Vector3(-7,0,0), 0x6b7280, dimsGroup);
+  addDimension(new THREE.Vector3(-30,-53.3,-22), new THREE.Vector3(-30,-46.6,-22), '6.7 cm — rueda', new THREE.Vector3(-7,0,0), 0x6b7280, dimsGroup);
+  addDimension(new THREE.Vector3(-34,-17.5,-22), new THREE.Vector3(34,-17.5,-22), '68 cm — bastidor móvil', new THREE.Vector3(0,4,0), 0x6b7280, dimsGroup);
+  addDimension(new THREE.Vector3(-19,-16.0,13), new THREE.Vector3(19,-16.0,13), '38 cm — módulo térmico', new THREE.Vector3(0,3.5,0), 0xfb923c, dimsGroup);
+  addDimension(new THREE.Vector3(-36.0,-10.2,29), new THREE.Vector3(36.0,-10.2,29), '72 cm — gabinete inferior', new THREE.Vector3(0,3.5,0), 0x2563eb, dimsGroup);
+
+  // UI toggles
+  let exploded = false;
+  let drawerOpen = false;
+  let showLabels = false, showDims = false, showBase = true, showPlatform = true, showCells = true,
+      showLinks = true, showFrame = true, showBaby = true, showAcrylic = true, showSensors = true, showPads = true, showSupport = true, showThermal = true;
+
+  labelsGroup.visible = false;
+  dimsGroup.visible = false;
+
+  function setToggle(id, getter, setter, targets){
+    document.getElementById(id).addEventListener('click', e => {
+      const nv = !getter();
+      setter(nv);
+      e.currentTarget.classList.toggle('active', nv);
+      (Array.isArray(targets) ? targets : [targets]).forEach(t => t.visible = nv);
+    });
+  }
+
+  document.getElementById('resetView').addEventListener('click', () => {
+    camera.position.set(138,92,150);
+    controls.target.set(0,0,0);
+    controls.update();
+  });
+
+  document.getElementById('thermalView').addEventListener('click', () => {
+    camera.position.set(0, 10, 102);
+    controls.target.set(0, -10, 2);
+    controls.update();
+  });
+
+  document.getElementById('drawerBtn').addEventListener('click', e => {
+    drawerOpen = !drawerOpen;
+    e.currentTarget.classList.toggle('active', drawerOpen);
+    e.currentTarget.textContent = drawerOpen ? 'Reintegrar módulo inferior' : 'Extraer módulo inferior';
+  });
+
+  document.getElementById('explode').addEventListener('click', e => {
+    exploded = !exploded;
+    e.currentTarget.classList.toggle('active', exploded);
+  });
+
+  setToggle('labels', () => showLabels, v => showLabels=v, labelsGroup);
+  setToggle('dimsBtn', () => showDims, v => showDims=v, dimsGroup);
+  setToggle('baseBtn', () => showBase, v => showBase=v, baseGroup);
+  setToggle('platformBtn', () => showPlatform, v => showPlatform=v, platformGroup);
+  setToggle('cellsBtn', () => showCells, v => showCells=v, cellsGroup);
+  setToggle('linksBtn', () => showLinks, v => showLinks=v, linksGroup);
+  setToggle('frameBtn', () => showFrame, v => showFrame=v, frameGroup);
+  setToggle('babyBtn', () => showBaby, v => showBaby=v, babyGroup);
+  setToggle('acrylicBtn', () => showAcrylic, v => showAcrylic=v, acrylicGroup);
+  setToggle('sensorsBtn', () => showSensors, v => showSensors=v, sensorsGroup);
+  setToggle('padsBtn', () => showPads, v => showPads=v, padsGroup);
+  setToggle('supportBtn', () => showSupport, v => showSupport=v, supportGroup);
+  setToggle('thermalBtn', () => showThermal, v => showThermal=v, [thermalGroup, lowerShellGroup]);
+
+  function animate(){
+    requestAnimationFrame(animate);
+    controls.update();
+
+    if (typeof fanBlades !== 'undefined') fanBlades.rotation.z -= 0.10;
+
+    const frameY = exploded ? -1 : 0;
+    const cellsY = exploded ? 1.2 : 0;
+    const linksY = exploded ? 4.2 : 0;
+    const platformY = exploded ? 8 : 0;
+    const babyY = exploded ? 10 : 0;
+    const acrylicY = exploded ? 12 : 0;
+    const sensorsY = exploded ? 14 : 0;
+    const padsY = exploded ? 8 : 0;
+    const supportY = exploded ? -6 : 0;
+    const thermalY = exploded ? -3 : 0;
+    const shellY = exploded ? -4 : 0;
+    const drawerZ = drawerOpen ? 36 : 0;
+    const labelsY = exploded ? 5 : 0;
+    const dimsY = exploded ? 5 : 0;
+
+    frameGroup.position.y += (frameY - frameGroup.position.y) * 0.07;
+    cellsGroup.position.y += (cellsY - cellsGroup.position.y) * 0.07;
+    linksGroup.position.y += (linksY - linksGroup.position.y) * 0.07;
+    platformGroup.position.y += (platformY - platformGroup.position.y) * 0.07;
+    babyGroup.position.y += (babyY - babyGroup.position.y) * 0.07;
+    padsGroup.position.y += (padsY - padsGroup.position.y) * 0.07;
+    supportGroup.position.y += (supportY - supportGroup.position.y) * 0.07;
+    thermalGroup.position.y += (thermalY - thermalGroup.position.y) * 0.07;
+    lowerShellGroup.position.y += (shellY - lowerShellGroup.position.y) * 0.07;
+    drawerGroup.position.z += (drawerZ - drawerGroup.position.z) * 0.08;
+    acrylicGroup.position.y += (acrylicY - acrylicGroup.position.y) * 0.07;
+    sensorsGroup.position.y += (sensorsY - sensorsGroup.position.y) * 0.07;
+    labelsGroup.position.y += (labelsY - labelsGroup.position.y) * 0.07;
+    dimsGroup.position.y += (dimsY - dimsGroup.position.y) * 0.07;
+
+    // Al sacar el compartimento, se ocultan tapa y panel frontal para ver el ducto
+    const hideIndices = new Set([0,1,2,3,4,5]);
+    lowerShellGroup.children.forEach((child, idx) => {
+      if (hideIndices.has(idx)) child.visible = !drawerOpen;
+      else child.visible = true;
+    });
+
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', () => {
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  });
+})();
+</script>
+</body>
+</html>
