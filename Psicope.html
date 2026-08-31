@@ -75,157 +75,376 @@ button:hover{background:#374151}
 
 <script>
 const questions = [
+  // =========================
+  // LÓGICA CONDICIONAL
+  // =========================
+
   {
-    q:"Un padre tiene 4 veces la edad de su hijo. Entre ambos suman 50 años. ¿Cuántos años tiene el hijo?",
-    o:["8","10","12","14"], a:1,
-    e:"Si el hijo tiene x, el padre tiene 4x. Entonces 5x = 50 → x = 10."
-  },
-  {
-    q:"¿Qué número continúa? 81 — 27 — 9 — 3 — ?",
-    o:["0","1","2","6"], a:1,
-    e:"Cada número se divide entre 3: 3 ÷ 3 = 1."
-  },
-  {
-    q:"Una caja contiene 5 bolas rojas, 3 azules y 2 verdes. ¿Cuántas bolas hay en total?",
-    o:["8","9","10","12"], a:2,
-    e:"5 + 3 + 2 = 10."
-  },
-  {
-    q:"Si algunos médicos son profesores y todos los profesores son lectores, ¿qué conclusión es válida?",
-    o:["Todos los médicos son lectores","Algunos médicos son lectores","Ningún médico es lector","Todos los lectores son médicos"], a:1,
-    e:"Los médicos que además son profesores necesariamente son lectores."
-  },
-  {
-    q:"Una persona compra 4 cuadernos a S/ 7 cada uno y paga con S/ 50. ¿Cuánto recibe de vuelto?",
-    o:["S/ 18","S/ 20","S/ 22","S/ 24"], a:2,
-    e:"4 × 7 = 28. Entonces 50 − 28 = 22."
-  },
-  {
-    q:"¿Cuál es el número diferente? 21, 35, 49, 63, 76",
-    o:["21","35","63","76"], a:3,
-    e:"21, 35, 49 y 63 son múltiplos de 7; 76 no."
-  },
-  {
-    q:"Un reloj marca las 3:00. ¿Qué ángulo aproximado forman las manecillas?",
-    o:["45°","90°","120°","180°"], a:1,
-    e:"A las 3:00, las manecillas forman un ángulo recto de 90°."
-  },
-  {
-    q:"Completa la serie: 6 — 11 — 21 — 41 — ?",
-    o:["61","71","81","91"], a:2,
-    e:"Cada término es el anterior ×2 −1. 41 × 2 − 1 = 81."
-  },
-  {
-    q:"Una reunión comienza a las 14:35 y dura 1 hora y 45 minutos. ¿A qué hora termina?",
-    o:["15:50","16:10","16:20","16:30"], a:1,
-    e:"14:35 + 1:45 = 16:20."
-  },
-  {
-    q:"Si 12 lápices cuestan S/ 18, ¿cuánto cuestan 20 lápices al mismo precio?",
-    o:["S/ 24","S/ 27","S/ 30","S/ 32"], a:2,
-    e:"Cada lápiz cuesta 18/12 = 1.5. Entonces 20 × 1.5 = 30."
+    q:"Un préstamo solo se aprueba si el cliente tiene ingresos mayores a S/ 2500 y no tiene deudas pendientes. Carla gana S/ 3200 y no tiene deudas. ¿Qué se concluye?",
+    o:[
+      "El préstamo debe rechazarse",
+      "Carla cumple las condiciones de aprobación",
+      "Carla no puede solicitar el préstamo",
+      "No se puede saber si cumple las condiciones"
+    ],
+    a:1,
+    e:"Carla supera S/ 2500 y no tiene deudas, por lo que cumple ambas condiciones."
   },
 
   {
-    q:"¿Qué letra sigue? D — G — K — P — ?",
-    o:["T","U","V","W"], a:2,
-    e:"Los saltos son +3, +4, +5; sigue +6. P + 6 = V."
-  },
-  {
-    q:"En una carrera, Luis llega antes que Pedro, y Pedro antes que Juan. ¿Quién llega último entre los tres?",
-    o:["Luis","Pedro","Juan","No se puede saber"], a:2,
-    e:"El orden es Luis → Pedro → Juan."
-  },
-  {
-    q:"Una botella tiene 2 litros de agua. Se consumen 750 mL. ¿Cuánta agua queda?",
-    o:["1.15 L","1.20 L","1.25 L","1.30 L"], a:2,
-    e:"2 L = 2000 mL. 2000 − 750 = 1250 mL = 1.25 L."
-  },
-  {
-    q:"¿Qué número completa la relación? 4 : 16 :: 7 : ?",
-    o:["28","35","49","56"], a:2,
-    e:"La relación es elevar al cuadrado: 4² = 16; 7² = 49."
-  },
-  {
-    q:"Un estudiante obtuvo 18 puntos de 24 posibles. ¿Qué porcentaje obtuvo?",
-    o:["65%","70%","75%","80%"], a:2,
-    e:"18/24 = 0.75 = 75%."
-  },
-  {
-    q:"¿Cuál palabra es diferente de las demás?",
-    o:["Triángulo","Cuadrado","Círculo","Rectángulo"], a:2,
-    e:"Triángulo, cuadrado y rectángulo tienen lados rectos; el círculo no."
-  },
-  {
-    q:"Si 3 máquinas fabrican 90 unidades en una hora, ¿cuántas fabrican 5 máquinas al mismo ritmo?",
-    o:["120","135","150","180"], a:2,
-    e:"Cada máquina produce 30 unidades por hora. 5 × 30 = 150."
-  },
-  {
-    q:"¿Qué número sigue? 64 — 32 — 16 — 8 — ?",
-    o:["2","4","6","12"], a:1,
-    e:"Cada término se divide entre 2."
-  },
-  {
-    q:"Un libro tiene 240 páginas. Una persona ha leído el 40%. ¿Cuántas páginas le faltan?",
-    o:["120","132","144","160"], a:2,
-    e:"Ha leído 96 páginas. 240 − 96 = 144."
-  },
-  {
-    q:"Todos los X son Y. Algunos Z son X. ¿Qué afirmación necesariamente es cierta?",
-    o:["Todos los Z son Y","Algunos Z son Y","Ningún Z es Y","Todos los Y son Z"], a:1,
-    e:"Los Z que pertenecen a X también pertenecen a Y."
+    q:"Para contratar un seguro, una persona debe tener entre 18 y 65 años y presentar DNI vigente. Luis tiene 42 años y su DNI está vigente. ¿Cumple los requisitos?",
+    o:[
+      "Sí, cumple ambos requisitos",
+      "No, solo cumple la edad",
+      "No, solo cumple el DNI",
+      "No se puede determinar"
+    ],
+    a:0,
+    e:"Tiene 42 años, dentro del rango, y presenta DNI vigente."
   },
 
   {
-    q:"Una persona camina 3 km al norte y luego 4 km al este. ¿Qué distancia total recorrió?",
-    o:["5 km","6 km","7 km","12 km"], a:2,
-    e:"La distancia recorrida es 3 + 4 = 7 km."
+    q:"Un celular está cubierto por una póliza si cuesta menos de $2500 y fue comprado después del 1 de enero. Un celular costó $2300 y fue comprado el 12 de septiembre. ¿Está cubierto?",
+    o:[
+      "Sí",
+      "No, porque costó menos de $2500",
+      "No, porque fue comprado en septiembre",
+      "No se puede determinar"
+    ],
+    a:0,
+    e:"Cumple ambas condiciones: $2300 < $2500 y septiembre es posterior al 1 de enero."
   },
+
   {
-    q:"¿Cuál es el siguiente número? 2 — 3 — 5 — 8 — 12 — ?",
-    o:["15","16","17","18"], a:2,
-    e:"Las diferencias son +1, +2, +3, +4; sigue +5 → 17."
+    q:"Un préstamo requiere tener contrato laboral o ser trabajador independiente registrado. Pedro no tiene contrato laboral, pero sí está registrado como trabajador independiente. ¿Puede solicitarlo?",
+    o:[
+      "No",
+      "Sí",
+      "Solo si tiene contrato laboral",
+      "No se puede saber"
+    ],
+    a:1,
+    e:"La condición es contrato laboral O trabajador independiente registrado. Pedro cumple la segunda."
   },
+
   {
-    q:"Una tienda aplica primero un descuento de S/ 20 y luego otro de S/ 10 sobre un producto de S/ 100. ¿Cuál es el precio final?",
-    o:["S/ 60","S/ 70","S/ 75","S/ 80"], a:1,
-    e:"100 − 20 − 10 = 70."
+    q:"Una promoción aplica únicamente a compras mayores a S/ 300 realizadas con tarjeta. Rosa compra por S/ 350 y paga con tarjeta. ¿Aplica la promoción?",
+    o:[
+      "Sí",
+      "No, porque la compra supera S/ 300",
+      "No, porque debía pagar en efectivo",
+      "No se puede saber"
+    ],
+    a:0,
+    e:"La compra es mayor a S/ 300 y fue pagada con tarjeta."
   },
+
   {
-    q:"Si ayer fue lunes, ¿qué día será pasado mañana?",
-    o:["Martes","Miércoles","Jueves","Viernes"], a:2,
-    e:"Si ayer fue lunes, hoy es martes; pasado mañana será jueves."
+    q:"Un seguro cubre robos únicamente cuando el vehículo estaba estacionado en una zona autorizada. El vehículo fue robado mientras estaba estacionado en una zona autorizada. ¿Qué se puede concluir?",
+    o:[
+      "El seguro necesariamente pagará",
+      "El seguro no cubre el robo",
+      "El robo cumple esa condición de cobertura",
+      "La póliza queda anulada"
+    ],
+    a:2,
+    e:"La única conclusión segura es que se cumple la condición de estar en una zona autorizada."
   },
+
   {
-    q:"Una familia tiene 3 hijos. Cada hijo tiene 2 hermanas. ¿Cuántos hijos tiene la familia en total?",
-    o:["4","5","6","7"], a:1,
-    e:"Los 3 hijos comparten las mismas 2 hermanas. Total: 3 + 2 = 5."
+    q:"Una empresa acepta candidatos si tienen título universitario y experiencia mayor a 2 años. Julia tiene título universitario pero solo 1 año de experiencia. ¿Cumple los requisitos?",
+    o:[
+      "Sí",
+      "No",
+      "Solo si tiene más de 25 años",
+      "No se puede saber"
+    ],
+    a:1,
+    e:"Falla la condición de tener más de 2 años de experiencia."
   },
+
   {
-    q:"¿Qué elemento completa la serie? AB — DE — GH — JK — ?",
-    o:["LM","MN","NO","OP"], a:2,
-    e:"Las parejas avanzan de 3 en 3: AB, DE, GH, JK, NO."
+    q:"Un beneficio está disponible para quienes tengan más de 21 años o sean empleados de la empresa. Marcos tiene 20 años y es empleado. ¿Puede acceder?",
+    o:[
+      "Sí",
+      "No",
+      "Solo si tiene más de 21 años",
+      "No se puede determinar"
+    ],
+    a:0,
+    e:"La condición usa OR. Marcos cumple por ser empleado."
   },
+
   {
-    q:"Un depósito tiene capacidad para 500 litros y está lleno al 60%. ¿Cuántos litros contiene?",
-    o:["250","280","300","320"], a:2,
-    e:"60% de 500 = 300 litros."
+    q:"Para recibir un reembolso se necesita presentar factura y realizar la solicitud dentro de 30 días. Ana tiene factura, pero presentó la solicitud después de 35 días. ¿Cumple los requisitos?",
+    o:[
+      "Sí",
+      "No",
+      "Sí, porque tiene factura",
+      "No se puede saber"
+    ],
+    a:1,
+    e:"No cumple el plazo máximo de 30 días."
   },
+
   {
-    q:"Si 8 personas comparten por igual una cuenta de S/ 360, ¿cuánto paga cada una?",
-    o:["S/ 40","S/ 45","S/ 50","S/ 55"], a:1,
-    e:"360 ÷ 8 = 45."
+    q:"Una tarjeta es gratuita si el cliente mantiene un saldo promedio superior a S/ 1000 o tiene ingresos mensuales superiores a S/ 4000. Diego tiene saldo promedio de S/ 800 e ingresos de S/ 4500. ¿La tarjeta es gratuita?",
+    o:[
+      "Sí",
+      "No",
+      "Solo si aumenta su saldo",
+      "No se puede determinar"
+    ],
+    a:0,
+    e:"Aunque no cumple la primera condición, cumple la segunda: ingresos > S/ 4000."
   },
+
+  // =========================
+  // FECHAS / INTERVALOS
+  // =========================
+
   {
-    q:"Un número es mayor que 20, menor que 30 y divisible entre 4. ¿Cuál puede ser?",
-    o:["21","24","26","28"], a:1,
-    e:"24 está entre 20 y 30 y es divisible entre 4."
+    q:"Una promoción es válida desde el 12 de septiembre hasta el 25 de diciembre, inclusive. ¿Cuál de estas fechas está dentro del periodo?",
+    o:[
+      "10 de septiembre",
+      "11 de septiembre",
+      "20 de noviembre",
+      "30 de diciembre"
+    ],
+    a:2,
+    e:"El 20 de noviembre está entre el 12 de septiembre y el 25 de diciembre."
   },
+
   {
-    q:"¿Qué número falta? 10 — 13 — 19 — 28 — 40 — ?",
-    o:["52","53","54","55"], a:3,
-    e:"Las diferencias son +3, +6, +9, +12; sigue +15 → 55."
+    q:"Una póliza inicia el 5 de marzo y termina el 5 de septiembre. ¿Cuál de estas fechas NO está cubierta?",
+    o:[
+      "10 de marzo",
+      "1 de junio",
+      "5 de septiembre",
+      "10 de septiembre"
+    ],
+    a:3,
+    e:"El 10 de septiembre ocurre después de la fecha final."
+  },
+
+  {
+    q:"Un producto puede devolverse dentro de los 15 días posteriores a la compra. Si se compró el 10 de agosto, ¿hasta qué fecha puede devolverse, considerando 15 días después?",
+    o:[
+      "20 de agosto",
+      "23 de agosto",
+      "25 de agosto",
+      "30 de agosto"
+    ],
+    a:2,
+    e:"10 de agosto + 15 días = 25 de agosto."
+  },
+
+  {
+    q:"Una inscripción está abierta desde el 3 hasta el 18 de noviembre. ¿Cuál fecha está fuera del periodo?",
+    o:[
+      "5 de noviembre",
+      "12 de noviembre",
+      "18 de noviembre",
+      "20 de noviembre"
+    ],
+    a:3,
+    e:"El 20 de noviembre es posterior al 18 de noviembre."
+  },
+
+  {
+    q:"Un seguro comienza el 1 de enero y dura exactamente 6 meses. ¿Cuál de estas fechas está claramente dentro del periodo?",
+    o:[
+      "15 de febrero",
+      "10 de agosto",
+      "20 de septiembre",
+      "31 de diciembre"
+    ],
+    a:0,
+    e:"El 15 de febrero está dentro de los primeros seis meses del año."
+  },
+
+  // =========================
+  // RAZONAMIENTO NUMÉRICO
+  // =========================
+
+  {
+    q:"Un equipo cuesta S/ 1800. Se paga una inicial de S/ 600 y el resto se divide en 4 cuotas iguales. ¿Cuánto vale cada cuota?",
+    o:[
+      "S/ 250",
+      "S/ 275",
+      "S/ 300",
+      "S/ 350"
+    ],
+    a:2,
+    e:"1800 − 600 = 1200. 1200 ÷ 4 = 300."
+  },
+
+  {
+    q:"Una tienda vende 3 productos por S/ 240. Si todos cuestan lo mismo, ¿cuánto costarán 5 productos?",
+    o:[
+      "S/ 320",
+      "S/ 360",
+      "S/ 400",
+      "S/ 420"
+    ],
+    a:2,
+    e:"240 ÷ 3 = 80 por producto. 5 × 80 = 400."
+  },
+
+  {
+    q:"Un trabajador recibe S/ 2400 y ahorra el 15%. ¿Cuánto dinero ahorra?",
+    o:[
+      "S/ 300",
+      "S/ 320",
+      "S/ 360",
+      "S/ 400"
+    ],
+    a:2,
+    e:"15% de 2400 = 360."
+  },
+
+  {
+    q:"Un producto de S/ 500 tiene un descuento del 12%. ¿Cuál es su precio final?",
+    o:[
+      "S/ 420",
+      "S/ 430",
+      "S/ 440",
+      "S/ 450"
+    ],
+    a:2,
+    e:"12% de 500 = 60. 500 − 60 = 440."
+  },
+
+  {
+    q:"Un automóvil recorre 360 km utilizando 30 litros. ¿Cuántos kilómetros recorre por litro?",
+    o:[
+      "10 km",
+      "12 km",
+      "14 km",
+      "15 km"
+    ],
+    a:1,
+    e:"360 ÷ 30 = 12 km por litro."
+  },
+
+  // =========================
+  // ATENCIÓN / LÓGICA
+  // =========================
+
+  {
+    q:"En una fila, Pedro está delante de Luis. Luis está delante de Carlos. ¿Quién está más atrás?",
+    o:[
+      "Pedro",
+      "Luis",
+      "Carlos",
+      "No se puede saber"
+    ],
+    a:2,
+    e:"El orden es Pedro → Luis → Carlos."
+  },
+
+  {
+    q:"Cinco personas tienen diferentes edades. Ana es mayor que Bruno, Bruno es mayor que Carla y Carla es mayor que Diego. ¿Quién es necesariamente menor que Carla?",
+    o:[
+      "Ana",
+      "Bruno",
+      "Diego",
+      "No se puede determinar"
+    ],
+    a:2,
+    e:"Como Carla > Diego, Diego es necesariamente menor que Carla."
+  },
+
+  // =========================
+  // SECUENCIAS VISUALES
+  // =========================
+
+  {
+    q:"Observa la secuencia: ▲ → ▲▲ → ▲▲▲ → ▲▲▲▲ → ¿qué sigue?",
+    o:[
+      "▲▲",
+      "▲▲▲▲",
+      "▲▲▲▲▲",
+      "▲▲▲▲▲▲"
+    ],
+    a:2,
+    e:"Se agrega un triángulo en cada paso. Sigue una secuencia de 5 triángulos."
+  },
+
+  {
+    q:"Observa: ● ○ ● ○ ● ○ ¿qué símbolo sigue?",
+    o:[
+      "●",
+      "○",
+      "▲",
+      "■"
+    ],
+    a:0,
+    e:"Los símbolos alternan entre ● y ○. Después de ○ sigue ●."
+  },
+
+  {
+    q:"Observa la secuencia: ■ → ■■ → ■■■ → ¿qué sigue?",
+    o:[
+      "■■",
+      "■■■",
+      "■■■■",
+      "■■■■■"
+    ],
+    a:2,
+    e:"Se añade un cuadrado en cada paso."
+  },
+
+  {
+    q:"Observa: ▲ ● ▲ ● ▲ ● ¿qué figura ocupa la posición 7?",
+    o:[
+      "▲",
+      "●",
+      "■",
+      "○"
+    ],
+    a:0,
+    e:"La secuencia alterna ▲ y ●. Las posiciones impares son ▲."
+  },
+
+  {
+    q:"Observa: ◆ ◆ ○ ◆ ◆ ○ ◆ ◆ ¿qué símbolo sigue?",
+    o:[
+      "◆",
+      "○",
+      "▲",
+      "■"
+    ],
+    a:1,
+    e:"El patrón es ◆, ◆, ○ repetido. Después de dos ◆ sigue ○."
+  },
+
+  // =========================
+  // LÓGICA COMBINADA
+  // =========================
+
+  {
+    q:"Un banco acepta solicitudes de crédito si el cliente tiene ingresos superiores a S/ 3000 y una antigüedad laboral mínima de 1 año. Laura gana S/ 3500 y lleva 8 meses trabajando. ¿Qué ocurre?",
+    o:[
+      "Cumple todos los requisitos",
+      "No cumple el requisito de antigüedad",
+      "No cumple el requisito de ingresos",
+      "Debe ser rechazada por ambos motivos"
+    ],
+    a:1,
+    e:"Supera S/ 3000, pero solo tiene 8 meses de antigüedad, menos de 1 año."
+  },
+
+  {
+    q:"Un seguro cubre daños causados por accidente si el conductor tiene licencia vigente y el vehículo tiene revisión técnica vigente. El conductor tiene licencia vigente, pero la revisión técnica está vencida. ¿Qué se concluye?",
+    o:[
+      "Cumple todas las condiciones",
+      "No cumple todas las condiciones de cobertura",
+      "La licencia deja de ser válida",
+      "El seguro necesariamente paga"
+    ],
+    a:1,
+    e:"Falla una de las dos condiciones necesarias: la revisión técnica vigente."
   }
 ];
 let current=0, score=0, selected=null, timer=null, remaining=10, answers=[];
