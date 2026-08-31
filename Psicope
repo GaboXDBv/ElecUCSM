@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador Cognitivo</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f4f6;color:#111827}
+.top{position:sticky;top:0;z-index:10;background:#111827;color:#fff;padding:14px 20px}
+.topin{max-width:850px;margin:auto;display:flex;justify-content:space-between;align-items:center}
+.title{font-weight:800}
+.timer{font-size:24px;font-weight:900;background:#fff;color:#111827;padding:7px 14px;border-radius:10px;min-width:85px;text-align:center}
+.timer.danger{background:#fee2e2;color:#b91c1c}
+main{max-width:850px;margin:30px auto;padding:0 16px}
+.card{background:white;border-radius:16px;padding:26px;box-shadow:0 5px 20px rgba(0,0,0,.08)}
+.start{text-align:center}
+h1{margin-top:0}
+.muted{color:#6b7280;line-height:1.5}
+button{border:0;background:#111827;color:white;font-weight:800;font-size:16px;border-radius:10px;padding:13px 24px;cursor:pointer}
+button:hover{background:#374151}
+#quiz{display:none}
+.qhead{display:flex;justify-content:space-between;gap:10px;color:#6b7280;font-size:14px;font-weight:800}
+.question{font-size:22px;font-weight:800;line-height:1.4;margin:20px 0}
+.options{display:grid;gap:12px}
+.opt{border:2px solid #e5e7eb;border-radius:12px;padding:14px;cursor:pointer;background:white}
+.opt:hover{background:#f9fafb}
+.opt.selected{border-color:#111827;background:#f3f4f6}
+.opt input{display:none}
+.actions{margin-top:22px;display:flex;justify-content:flex-end}
+#result{display:none;text-align:center}
+.score{font-size:54px;font-weight:900}
+.review{text-align:left;margin-top:20px}
+.review div{padding:10px 12px;border-radius:9px;margin:7px 0;background:#f9fafb}
+.ok{border-left:5px solid #16a34a}.bad{border-left:5px solid #dc2626}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="topin">
+    <div class="title">🧠 Simulador Cognitivo · 10 preguntas</div>
+    <div id="timer" class="timer">10</div>
+  </div>
+</header>
+
+<main>
+<section id="start" class="card start">
+  <h1>Prepárate 😈</h1>
+  <p class="muted">Tendrás <strong>10 segundos por pregunta</strong>. Son 10 preguntas, así que dispones de 100 segundos en total, pero el contador se reinicia a 10 s en cada pregunta.</p>
+  <p class="muted">Cuando el tiempo de una pregunta llegue a cero, avanzará automáticamente.</p>
+  <button id="startBtn">Comenzar examen</button>
+</section>
+
+<section id="quiz" class="card">
+  <div class="qhead">
+    <span id="counter">Pregunta 1 de 10</span>
+    <span>⏱️ <span id="qtime">10</span>s</span>
+  </div>
+  <div id="question" class="question"></div>
+  <div id="options" class="options"></div>
+  <div class="actions">
+    <button id="nextBtn">Siguiente →</button>
+  </div>
+</section>
+
+<section id="result" class="card">
+  <h1>Resultado</h1>
+  <div id="score" class="score"></div>
+  <p id="summary" class="muted"></p>
+  <div id="review" class="review"></div>
+  <br>
+  <button onclick="location.reload()">Reintentar</button>
+</section>
+</main>
+
+<script>
+const questions = [
+  {
+    q:"¿Cuál es el siguiente número? 2 — 6 — 12 — 20 — 30 — ?",
+    o:["40","42","44","46"], a:1,
+    e:"Las diferencias son +4, +6, +8, +10; sigue +12 → 42."
+  },
+  {
+    q:"Un producto cuesta S/ 80 y tiene 25% de descuento. ¿Cuál es el precio final?",
+    o:["S/ 55","S/ 60","S/ 65","S/ 70"], a:1,
+    e:"25% de 80 = 20. Entonces 80 − 20 = 60."
+  },
+  {
+    q:"Completa la serie: 3 — 9 — 27 — 81 — ?",
+    o:["162","189","216","243"], a:3,
+    e:"Cada número se multiplica por 3."
+  },
+  {
+    q:"Ana es mayor que Bruno. Bruno es mayor que Carla. Diego es menor que Ana pero mayor que Bruno. ¿Quién es el segundo mayor?",
+    o:["Ana","Bruno","Carla","Diego"], a:3,
+    e:"Orden: Ana > Diego > Bruno > Carla."
+  },
+  {
+    q:"Un tren recorre 180 km en 3 horas. A la misma velocidad, ¿cuánto recorre en 5 horas?",
+    o:["240 km","270 km","300 km","330 km"], a:2,
+    e:"180/3 = 60 km/h. En 5 horas: 60 × 5 = 300 km."
+  },
+  {
+    q:"¿Cuál número NO pertenece al grupo? 16, 25, 36, 49, 63",
+    o:["16","25","49","63"], a:3,
+    e:"16, 25, 36 y 49 son cuadrados perfectos; 63 no."
+  },
+  {
+    q:"Si TODOS los A son B y NINGÚN B es C, ¿qué conclusión es necesariamente cierta?",
+    o:["Algunos A son C","Ningún A es C","Todos C son A","Todos A son C"], a:1,
+    e:"Como A está dentro de B y B no es C, A tampoco puede ser C."
+  },
+  {
+    q:"Completa: A — C — F — J — O — ?",
+    o:["T","U","V","W"], a:1,
+    e:"Los saltos son +2, +3, +4, +5; sigue +6 → U."
+  },
+  {
+    q:"Una máquina produce 120 piezas en 4 horas. ¿Cuántas producirá en 7 horas al mismo ritmo?",
+    o:["180","200","210","240"], a:2,
+    e:"120/4 = 30 piezas por hora. 30 × 7 = 210."
+  },
+  {
+    q:"¿Qué número sigue? 5 — 8 — 14 — 26 — 50 — ?",
+    o:["74","86","98","102"], a:2,
+    e:"Las diferencias son +3, +6, +12, +24; sigue +48 → 98."
+  }
+];
+
+let current=0, score=0, selected=null, timer=null, remaining=10, answers=[];
+
+const start=document.getElementById("start");
+const quiz=document.getElementById("quiz");
+const result=document.getElementById("result");
+const timerEl=document.getElementById("timer");
+const qtime=document.getElementById("qtime");
+const counter=document.getElementById("counter");
+const question=document.getElementById("question");
+const options=document.getElementById("options");
+const nextBtn=document.getElementById("nextBtn");
+
+document.getElementById("startBtn").onclick=()=>{
+  start.style.display="none";
+  quiz.style.display="block";
+  loadQuestion();
+};
+
+function loadQuestion(){
+  clearInterval(timer);
+  selected=null;
+  remaining=10;
+  timerEl.classList.remove("danger");
+  timerEl.textContent=remaining;
+  qtime.textContent=remaining;
+  counter.textContent=`Pregunta ${current+1} de ${questions.length}`;
+  question.textContent=questions[current].q;
+  options.innerHTML="";
+  questions[current].o.forEach((text,i)=>{
+    const label=document.createElement("label");
+    label.className="opt";
+    label.innerHTML=`<input type="radio" name="answer" value="${i}"><strong>${String.fromCharCode(65+i)}.</strong> ${text}`;
+    label.onclick=()=>{
+      selected=i;
+      document.querySelectorAll(".opt").forEach(x=>x.classList.remove("selected"));
+      label.classList.add("selected");
+    };
+    options.appendChild(label);
+  });
+  nextBtn.textContent=current===questions.length-1?"Finalizar":"Siguiente →";
+  timer=setInterval(()=>{
+    remaining--;
+    timerEl.textContent=remaining;
+    qtime.textContent=remaining;
+    if(remaining<=3) timerEl.classList.add("danger");
+    if(remaining<=0){
+      clearInterval(timer);
+      goNext();
+    }
+  },1000);
+}
+
+function goNext(){
+  clearInterval(timer);
+  answers.push(selected);
+  if(selected===questions[current].a) score++;
+  current++;
+  if(current<questions.length) loadQuestion();
+  else showResult();
+}
+
+nextBtn.onclick=goNext;
+
+function showResult(){
+  quiz.style.display="none";
+  result.style.display="block";
+  document.getElementById("score").textContent=`${score} / ${questions.length}`;
+  const pct=score*10;
+  document.getElementById("summary").textContent=`Puntaje: ${pct}%. Revisa tus respuestas para identificar en qué tipo de razonamiento fallaste.`;
+  const review=document.getElementById("review");
+  review.innerHTML="";
+  questions.forEach((x,i)=>{
+    const div=document.createElement("div");
+    const ok=answers[i]===x.a;
+    div.className=ok?"ok":"bad";
+    const chosen=answers[i]===null||answers[i]===undefined?"Sin responder":x.o[answers[i]];
+    div.innerHTML=`<strong>${i+1}. ${ok?"✅ Correcta":"❌ Incorrecta"}</strong><br>
+      Tu respuesta: ${chosen}<br>
+      Correcta: ${x.o[x.a]}<br>
+      <span class="muted">${x.e}</span>`;
+    review.appendChild(div);
+  });
+}
+</script>
+</body>
+</html>
