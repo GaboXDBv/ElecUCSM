@@ -76,159 +76,158 @@ button:hover{background:#374151}
 <script>
 const questions = [
   {
-    q:"¿Cuál es el siguiente número? 2 — 6 — 12 — 20 — 30 — ?",
-    o:["40","42","44","46"], a:1,
-    e:"Las diferencias son +4, +6, +8, +10; sigue +12 → 42."
+    q:"Un padre tiene 4 veces la edad de su hijo. Entre ambos suman 50 años. ¿Cuántos años tiene el hijo?",
+    o:["8","10","12","14"], a:1,
+    e:"Si el hijo tiene x, el padre tiene 4x. Entonces 5x = 50 → x = 10."
   },
   {
-    q:"Un producto cuesta S/ 80 y tiene 25% de descuento. ¿Cuál es el precio final?",
-    o:["S/ 55","S/ 60","S/ 65","S/ 70"], a:1,
-    e:"25% de 80 = 20. Entonces 80 − 20 = 60."
+    q:"¿Qué número continúa? 81 — 27 — 9 — 3 — ?",
+    o:["0","1","2","6"], a:1,
+    e:"Cada número se divide entre 3: 3 ÷ 3 = 1."
   },
   {
-    q:"Completa la serie: 3 — 9 — 27 — 81 — ?",
-    o:["162","189","216","243"], a:3,
-    e:"Cada número se multiplica por 3."
+    q:"Una caja contiene 5 bolas rojas, 3 azules y 2 verdes. ¿Cuántas bolas hay en total?",
+    o:["8","9","10","12"], a:2,
+    e:"5 + 3 + 2 = 10."
   },
   {
-    q:"Ana es mayor que Bruno. Bruno es mayor que Carla. Diego es menor que Ana pero mayor que Bruno. ¿Quién es el segundo mayor?",
-    o:["Ana","Bruno","Carla","Diego"], a:3,
-    e:"Orden: Ana > Diego > Bruno > Carla."
+    q:"Si algunos médicos son profesores y todos los profesores son lectores, ¿qué conclusión es válida?",
+    o:["Todos los médicos son lectores","Algunos médicos son lectores","Ningún médico es lector","Todos los lectores son médicos"], a:1,
+    e:"Los médicos que además son profesores necesariamente son lectores."
   },
   {
-    q:"Un tren recorre 180 km en 3 horas. A la misma velocidad, ¿cuánto recorre en 5 horas?",
-    o:["240 km","270 km","300 km","330 km"], a:2,
-    e:"180/3 = 60 km/h. En 5 horas: 60 × 5 = 300 km."
+    q:"Una persona compra 4 cuadernos a S/ 7 cada uno y paga con S/ 50. ¿Cuánto recibe de vuelto?",
+    o:["S/ 18","S/ 20","S/ 22","S/ 24"], a:2,
+    e:"4 × 7 = 28. Entonces 50 − 28 = 22."
   },
   {
-    q:"¿Cuál número NO pertenece al grupo? 16, 25, 36, 49, 63",
-    o:["16","25","49","63"], a:3,
-    e:"16, 25, 36 y 49 son cuadrados perfectos; 63 no."
+    q:"¿Cuál es el número diferente? 21, 35, 49, 63, 76",
+    o:["21","35","63","76"], a:3,
+    e:"21, 35, 49 y 63 son múltiplos de 7; 76 no."
   },
   {
-    q:"Si TODOS los A son B y NINGÚN B es C, ¿qué conclusión es necesariamente cierta?",
-    o:["Algunos A son C","Ningún A es C","Todos C son A","Todos A son C"], a:1,
-    e:"Como A está dentro de B y B no es C, A tampoco puede ser C."
+    q:"Un reloj marca las 3:00. ¿Qué ángulo aproximado forman las manecillas?",
+    o:["45°","90°","120°","180°"], a:1,
+    e:"A las 3:00, las manecillas forman un ángulo recto de 90°."
   },
   {
-    q:"Completa: A — C — F — J — O — ?",
-    o:["T","U","V","W"], a:1,
-    e:"Los saltos son +2, +3, +4, +5; sigue +6 → U."
+    q:"Completa la serie: 6 — 11 — 21 — 41 — ?",
+    o:["61","71","81","91"], a:2,
+    e:"Cada término es el anterior ×2 −1. 41 × 2 − 1 = 81."
   },
   {
-    q:"Una máquina produce 120 piezas en 4 horas. ¿Cuántas producirá en 7 horas al mismo ritmo?",
-    o:["180","200","210","240"], a:2,
-    e:"120/4 = 30 piezas por hora. 30 × 7 = 210."
+    q:"Una reunión comienza a las 14:35 y dura 1 hora y 45 minutos. ¿A qué hora termina?",
+    o:["15:50","16:10","16:20","16:30"], a:1,
+    e:"14:35 + 1:45 = 16:20."
   },
   {
-    q:"¿Qué número sigue? 5 — 8 — 14 — 26 — 50 — ?",
-    o:["74","86","98","102"], a:2,
-    e:"Las diferencias son +3, +6, +12, +24; sigue +48 → 98."
-  },
-
-  {
-    q:"¿Cuál es el siguiente número? 4 — 8 — 16 — 32 — ?",
-    o:["48","56","64","72"], a:2,
-    e:"Cada número se multiplica por 2."
-  },
-  {
-    q:"Un artículo cuesta S/ 200 y aumenta su precio en 15%. ¿Cuál es el nuevo precio?",
-    o:["S/ 215","S/ 225","S/ 230","S/ 235"], a:2,
-    e:"15% de 200 = 30. Entonces 200 + 30 = 230."
-  },
-  {
-    q:"Completa la serie: 100 — 90 — 81 — 73 — 66 — ?",
-    o:["58","60","61","62"], a:2,
-    e:"Las diferencias son −10, −9, −8, −7; sigue −6 → 60."
-  },
-  {
-    q:"Si 5 trabajadores realizan un trabajo en 12 días, manteniendo el mismo ritmo, ¿cuántos días necesitarían 10 trabajadores?",
-    o:["3","5","6","8"], a:2,
-    e:"Al duplicar los trabajadores, el tiempo se reduce a la mitad: 12/2 = 6 días."
-  },
-  {
-    q:"¿Cuál palabra NO pertenece al grupo?",
-    o:["Perro","Gato","Caballo","Águila"], a:3,
-    e:"Perro, gato y caballo son mamíferos; águila es un ave."
-  },
-  {
-    q:"Si todos los ingenieros son profesionales y algunos profesionales son músicos, ¿qué afirmación es necesariamente cierta?",
-    o:["Todos los ingenieros son músicos","Algunos ingenieros son músicos","Ningún ingeniero es músico","Todos los ingenieros son profesionales"], a:3,
-    e:"La única conclusión garantizada es que todos los ingenieros son profesionales."
-  },
-  {
-    q:"¿Qué número falta? 7 — 14 — 28 — 56 — ?",
-    o:["84","98","112","120"], a:2,
-    e:"Cada término se multiplica por 2: 56 × 2 = 112."
-  },
-  {
-    q:"Un automóvil consume 8 litros de combustible cada 100 km. ¿Cuántos litros necesita para recorrer 250 km?",
-    o:["16 L","18 L","20 L","24 L"], a:2,
-    e:"8/100 × 250 = 20 litros."
-  },
-  {
-    q:"Completa: B — E — I — N — ?",
-    o:["R","S","T","U"], a:2,
-    e:"Los saltos son +3, +4, +5; sigue +6. N + 6 = T."
-  },
-  {
-    q:"Si hoy es miércoles, ¿qué día será dentro de 10 días?",
-    o:["Viernes","Sábado","Domingo","Lunes"], a:1,
-    e:"10 mod 7 = 3. Miércoles + 3 días = sábado."
+    q:"Si 12 lápices cuestan S/ 18, ¿cuánto cuestan 20 lápices al mismo precio?",
+    o:["S/ 24","S/ 27","S/ 30","S/ 32"], a:2,
+    e:"Cada lápiz cuesta 18/12 = 1.5. Entonces 20 × 1.5 = 30."
   },
 
   {
-    q:"¿Cuál es el siguiente número? 1 — 4 — 9 — 16 — 25 — ?",
-    o:["30","32","36","49"], a:2,
-    e:"Son cuadrados perfectos: 1², 2², 3², 4², 5²; sigue 6² = 36."
+    q:"¿Qué letra sigue? D — G — K — P — ?",
+    o:["T","U","V","W"], a:2,
+    e:"Los saltos son +3, +4, +5; sigue +6. P + 6 = V."
   },
   {
-    q:"Un examen tiene 40 preguntas. Una persona responde correctamente el 75%. ¿Cuántas respondió correctamente?",
-    o:["25","30","32","35"], a:1,
-    e:"75% de 40 = 30."
+    q:"En una carrera, Luis llega antes que Pedro, y Pedro antes que Juan. ¿Quién llega último entre los tres?",
+    o:["Luis","Pedro","Juan","No se puede saber"], a:2,
+    e:"El orden es Luis → Pedro → Juan."
   },
   {
-    q:"¿Qué número NO pertenece al grupo? 8, 27, 64, 100, 125",
-    o:["27","64","100","125"], a:2,
-    e:"8, 27, 64 y 125 son cubos perfectos; 100 no."
+    q:"Una botella tiene 2 litros de agua. Se consumen 750 mL. ¿Cuánta agua queda?",
+    o:["1.15 L","1.20 L","1.25 L","1.30 L"], a:2,
+    e:"2 L = 2000 mL. 2000 − 750 = 1250 mL = 1.25 L."
   },
   {
-    q:"Pedro tiene el doble de edad que Luis. Si Luis tiene 12 años, ¿cuántos años tiene Pedro?",
-    o:["18","20","24","26"], a:2,
-    e:"El doble de 12 es 24."
+    q:"¿Qué número completa la relación? 4 : 16 :: 7 : ?",
+    o:["28","35","49","56"], a:2,
+    e:"La relación es elevar al cuadrado: 4² = 16; 7² = 49."
   },
   {
-    q:"Completa la serie: 2 — 5 — 10 — 17 — 26 — ?",
-    o:["35","36","37","38"], a:2,
-    e:"Las diferencias son +3, +5, +7, +9; sigue +11 → 37."
+    q:"Un estudiante obtuvo 18 puntos de 24 posibles. ¿Qué porcentaje obtuvo?",
+    o:["65%","70%","75%","80%"], a:2,
+    e:"18/24 = 0.75 = 75%."
   },
   {
-    q:"Una tienda vende 3 productos por S/ 45. Al mismo precio unitario, ¿cuánto cuestan 8 productos?",
-    o:["S/ 100","S/ 110","S/ 120","S/ 135"], a:2,
-    e:"Cada producto cuesta 45/3 = 15. Entonces 8 × 15 = 120."
+    q:"¿Cuál palabra es diferente de las demás?",
+    o:["Triángulo","Cuadrado","Círculo","Rectángulo"], a:2,
+    e:"Triángulo, cuadrado y rectángulo tienen lados rectos; el círculo no."
   },
   {
-    q:"Si A > B, B > C y C > D, ¿cuál es necesariamente el menor?",
-    o:["A","B","C","D"], a:3,
-    e:"El orden es A > B > C > D, por lo tanto D es el menor."
+    q:"Si 3 máquinas fabrican 90 unidades en una hora, ¿cuántas fabrican 5 máquinas al mismo ritmo?",
+    o:["120","135","150","180"], a:2,
+    e:"Cada máquina produce 30 unidades por hora. 5 × 30 = 150."
   },
   {
-    q:"¿Qué letra sigue? Z — W — S — N — H — ?",
-    o:["A","B","C","D"], a:0,
-    e:"Los saltos son −3, −4, −5, −6; sigue −7. H − 7 = A."
+    q:"¿Qué número sigue? 64 — 32 — 16 — 8 — ?",
+    o:["2","4","6","12"], a:1,
+    e:"Cada término se divide entre 2."
   },
   {
-    q:"Una cantidad de S/ 500 se reduce en 20%. ¿Cuál es el nuevo valor?",
-    o:["S/ 380","S/ 400","S/ 420","S/ 450"], a:1,
-    e:"20% de 500 = 100. Entonces 500 − 100 = 400."
+    q:"Un libro tiene 240 páginas. Una persona ha leído el 40%. ¿Cuántas páginas le faltan?",
+    o:["120","132","144","160"], a:2,
+    e:"Ha leído 96 páginas. 240 − 96 = 144."
   },
   {
-    q:"¿Cuál es el siguiente número? 3 — 6 — 11 — 18 — 27 — ?",
-    o:["36","37","38","39"], a:2,
-    e:"Las diferencias son +3, +5, +7, +9; sigue +11 → 38."
+    q:"Todos los X son Y. Algunos Z son X. ¿Qué afirmación necesariamente es cierta?",
+    o:["Todos los Z son Y","Algunos Z son Y","Ningún Z es Y","Todos los Y son Z"], a:1,
+    e:"Los Z que pertenecen a X también pertenecen a Y."
+  },
+
+  {
+    q:"Una persona camina 3 km al norte y luego 4 km al este. ¿Qué distancia total recorrió?",
+    o:["5 km","6 km","7 km","12 km"], a:2,
+    e:"La distancia recorrida es 3 + 4 = 7 km."
+  },
+  {
+    q:"¿Cuál es el siguiente número? 2 — 3 — 5 — 8 — 12 — ?",
+    o:["15","16","17","18"], a:2,
+    e:"Las diferencias son +1, +2, +3, +4; sigue +5 → 17."
+  },
+  {
+    q:"Una tienda aplica primero un descuento de S/ 20 y luego otro de S/ 10 sobre un producto de S/ 100. ¿Cuál es el precio final?",
+    o:["S/ 60","S/ 70","S/ 75","S/ 80"], a:1,
+    e:"100 − 20 − 10 = 70."
+  },
+  {
+    q:"Si ayer fue lunes, ¿qué día será pasado mañana?",
+    o:["Martes","Miércoles","Jueves","Viernes"], a:2,
+    e:"Si ayer fue lunes, hoy es martes; pasado mañana será jueves."
+  },
+  {
+    q:"Una familia tiene 3 hijos. Cada hijo tiene 2 hermanas. ¿Cuántos hijos tiene la familia en total?",
+    o:["4","5","6","7"], a:1,
+    e:"Los 3 hijos comparten las mismas 2 hermanas. Total: 3 + 2 = 5."
+  },
+  {
+    q:"¿Qué elemento completa la serie? AB — DE — GH — JK — ?",
+    o:["LM","MN","NO","OP"], a:2,
+    e:"Las parejas avanzan de 3 en 3: AB, DE, GH, JK, NO."
+  },
+  {
+    q:"Un depósito tiene capacidad para 500 litros y está lleno al 60%. ¿Cuántos litros contiene?",
+    o:["250","280","300","320"], a:2,
+    e:"60% de 500 = 300 litros."
+  },
+  {
+    q:"Si 8 personas comparten por igual una cuenta de S/ 360, ¿cuánto paga cada una?",
+    o:["S/ 40","S/ 45","S/ 50","S/ 55"], a:1,
+    e:"360 ÷ 8 = 45."
+  },
+  {
+    q:"Un número es mayor que 20, menor que 30 y divisible entre 4. ¿Cuál puede ser?",
+    o:["21","24","26","28"], a:1,
+    e:"24 está entre 20 y 30 y es divisible entre 4."
+  },
+  {
+    q:"¿Qué número falta? 10 — 13 — 19 — 28 — 40 — ?",
+    o:["52","53","54","55"], a:3,
+    e:"Las diferencias son +3, +6, +9, +12; sigue +15 → 55."
   }
 ];
-
 let current=0, score=0, selected=null, timer=null, remaining=10, answers=[];
 
 const start=document.getElementById("start");
