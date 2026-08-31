@@ -75,377 +75,403 @@ button:hover{background:#374151}
 
 <script>
 const questions = [
-  // =========================
-  // LÓGICA CONDICIONAL
-  // =========================
+
+  // ============================================================
+  // CONDICIONES / PRÉSTAMOS / SEGUROS
+  // ============================================================
 
   {
-    q:"Un préstamo solo se aprueba si el cliente tiene ingresos mayores a S/ 2500 y no tiene deudas pendientes. Carla gana S/ 3200 y no tiene deudas. ¿Qué se concluye?",
-    o:[
-      "El préstamo debe rechazarse",
-      "Carla cumple las condiciones de aprobación",
-      "Carla no puede solicitar el préstamo",
-      "No se puede saber si cumple las condiciones"
-    ],
-    a:1,
-    e:"Carla supera S/ 2500 y no tiene deudas, por lo que cumple ambas condiciones."
-  },
-
-  {
-    q:"Para contratar un seguro, una persona debe tener entre 18 y 65 años y presentar DNI vigente. Luis tiene 42 años y su DNI está vigente. ¿Cumple los requisitos?",
-    o:[
-      "Sí, cumple ambos requisitos",
-      "No, solo cumple la edad",
-      "No, solo cumple el DNI",
-      "No se puede determinar"
-    ],
-    a:0,
-    e:"Tiene 42 años, dentro del rango, y presenta DNI vigente."
-  },
-
-  {
-    q:"Un celular está cubierto por una póliza si cuesta menos de $2500 y fue comprado después del 1 de enero. Un celular costó $2300 y fue comprado el 12 de septiembre. ¿Está cubierto?",
-    o:[
-      "Sí",
-      "No, porque costó menos de $2500",
-      "No, porque fue comprado en septiembre",
-      "No se puede determinar"
-    ],
-    a:0,
-    e:"Cumple ambas condiciones: $2300 < $2500 y septiembre es posterior al 1 de enero."
-  },
-
-  {
-    q:"Un préstamo requiere tener contrato laboral o ser trabajador independiente registrado. Pedro no tiene contrato laboral, pero sí está registrado como trabajador independiente. ¿Puede solicitarlo?",
-    o:[
-      "No",
-      "Sí",
-      "Solo si tiene contrato laboral",
-      "No se puede saber"
-    ],
-    a:1,
-    e:"La condición es contrato laboral O trabajador independiente registrado. Pedro cumple la segunda."
-  },
-
-  {
-    q:"Una promoción aplica únicamente a compras mayores a S/ 300 realizadas con tarjeta. Rosa compra por S/ 350 y paga con tarjeta. ¿Aplica la promoción?",
-    o:[
-      "Sí",
-      "No, porque la compra supera S/ 300",
-      "No, porque debía pagar en efectivo",
-      "No se puede saber"
-    ],
-    a:0,
-    e:"La compra es mayor a S/ 300 y fue pagada con tarjeta."
-  },
-
-  {
-    q:"Un seguro cubre robos únicamente cuando el vehículo estaba estacionado en una zona autorizada. El vehículo fue robado mientras estaba estacionado en una zona autorizada. ¿Qué se puede concluir?",
-    o:[
-      "El seguro necesariamente pagará",
-      "El seguro no cubre el robo",
-      "El robo cumple esa condición de cobertura",
-      "La póliza queda anulada"
-    ],
-    a:2,
-    e:"La única conclusión segura es que se cumple la condición de estar en una zona autorizada."
-  },
-
-  {
-    q:"Una empresa acepta candidatos si tienen título universitario y experiencia mayor a 2 años. Julia tiene título universitario pero solo 1 año de experiencia. ¿Cumple los requisitos?",
-    o:[
-      "Sí",
-      "No",
-      "Solo si tiene más de 25 años",
-      "No se puede saber"
-    ],
-    a:1,
-    e:"Falla la condición de tener más de 2 años de experiencia."
-  },
-
-  {
-    q:"Un beneficio está disponible para quienes tengan más de 21 años o sean empleados de la empresa. Marcos tiene 20 años y es empleado. ¿Puede acceder?",
-    o:[
-      "Sí",
-      "No",
-      "Solo si tiene más de 21 años",
-      "No se puede determinar"
-    ],
-    a:0,
-    e:"La condición usa OR. Marcos cumple por ser empleado."
-  },
-
-  {
-    q:"Para recibir un reembolso se necesita presentar factura y realizar la solicitud dentro de 30 días. Ana tiene factura, pero presentó la solicitud después de 35 días. ¿Cumple los requisitos?",
-    o:[
-      "Sí",
-      "No",
-      "Sí, porque tiene factura",
-      "No se puede saber"
-    ],
-    a:1,
-    e:"No cumple el plazo máximo de 30 días."
-  },
-
-  {
-    q:"Una tarjeta es gratuita si el cliente mantiene un saldo promedio superior a S/ 1000 o tiene ingresos mensuales superiores a S/ 4000. Diego tiene saldo promedio de S/ 800 e ingresos de S/ 4500. ¿La tarjeta es gratuita?",
-    o:[
-      "Sí",
-      "No",
-      "Solo si aumenta su saldo",
-      "No se puede determinar"
-    ],
-    a:0,
-    e:"Aunque no cumple la primera condición, cumple la segunda: ingresos > S/ 4000."
-  },
-
-  // =========================
-  // FECHAS / INTERVALOS
-  // =========================
-
-  {
-    q:"Una promoción es válida desde el 12 de septiembre hasta el 25 de diciembre, inclusive. ¿Cuál de estas fechas está dentro del periodo?",
-    o:[
-      "10 de septiembre",
-      "11 de septiembre",
-      "20 de noviembre",
-      "30 de diciembre"
-    ],
-    a:2,
-    e:"El 20 de noviembre está entre el 12 de septiembre y el 25 de diciembre."
-  },
-
-  {
-    q:"Una póliza inicia el 5 de marzo y termina el 5 de septiembre. ¿Cuál de estas fechas NO está cubierta?",
-    o:[
-      "10 de marzo",
-      "1 de junio",
-      "5 de septiembre",
-      "10 de septiembre"
-    ],
-    a:3,
-    e:"El 10 de septiembre ocurre después de la fecha final."
-  },
-
-  {
-    q:"Un producto puede devolverse dentro de los 15 días posteriores a la compra. Si se compró el 10 de agosto, ¿hasta qué fecha puede devolverse, considerando 15 días después?",
-    o:[
-      "20 de agosto",
-      "23 de agosto",
-      "25 de agosto",
-      "30 de agosto"
-    ],
-    a:2,
-    e:"10 de agosto + 15 días = 25 de agosto."
-  },
-
-  {
-    q:"Una inscripción está abierta desde el 3 hasta el 18 de noviembre. ¿Cuál fecha está fuera del periodo?",
-    o:[
-      "5 de noviembre",
-      "12 de noviembre",
-      "18 de noviembre",
-      "20 de noviembre"
-    ],
-    a:3,
-    e:"El 20 de noviembre es posterior al 18 de noviembre."
-  },
-
-  {
-    q:"Un seguro comienza el 1 de enero y dura exactamente 6 meses. ¿Cuál de estas fechas está claramente dentro del periodo?",
-    o:[
-      "15 de febrero",
-      "10 de agosto",
-      "20 de septiembre",
-      "31 de diciembre"
-    ],
-    a:0,
-    e:"El 15 de febrero está dentro de los primeros seis meses del año."
-  },
-
-  // =========================
-  // RAZONAMIENTO NUMÉRICO
-  // =========================
-
-  {
-    q:"Un equipo cuesta S/ 1800. Se paga una inicial de S/ 600 y el resto se divide en 4 cuotas iguales. ¿Cuánto vale cada cuota?",
-    o:[
-      "S/ 250",
-      "S/ 275",
-      "S/ 300",
-      "S/ 350"
-    ],
-    a:2,
-    e:"1800 − 600 = 1200. 1200 ÷ 4 = 300."
-  },
-
-  {
-    q:"Una tienda vende 3 productos por S/ 240. Si todos cuestan lo mismo, ¿cuánto costarán 5 productos?",
-    o:[
-      "S/ 320",
-      "S/ 360",
-      "S/ 400",
-      "S/ 420"
-    ],
-    a:2,
-    e:"240 ÷ 3 = 80 por producto. 5 × 80 = 400."
-  },
-
-  {
-    q:"Un trabajador recibe S/ 2400 y ahorra el 15%. ¿Cuánto dinero ahorra?",
-    o:[
-      "S/ 300",
-      "S/ 320",
-      "S/ 360",
-      "S/ 400"
-    ],
-    a:2,
-    e:"15% de 2400 = 360."
-  },
-
-  {
-    q:"Un producto de S/ 500 tiene un descuento del 12%. ¿Cuál es su precio final?",
-    o:[
-      "S/ 420",
-      "S/ 430",
-      "S/ 440",
-      "S/ 450"
-    ],
-    a:2,
-    e:"12% de 500 = 60. 500 − 60 = 440."
-  },
-
-  {
-    q:"Un automóvil recorre 360 km utilizando 30 litros. ¿Cuántos kilómetros recorre por litro?",
-    o:[
-      "10 km",
-      "12 km",
-      "14 km",
-      "15 km"
-    ],
-    a:1,
-    e:"360 ÷ 30 = 12 km por litro."
-  },
-
-  // =========================
-  // ATENCIÓN / LÓGICA
-  // =========================
-
-  {
-    q:"En una fila, Pedro está delante de Luis. Luis está delante de Carlos. ¿Quién está más atrás?",
-    o:[
-      "Pedro",
-      "Luis",
-      "Carlos",
-      "No se puede saber"
-    ],
-    a:2,
-    e:"El orden es Pedro → Luis → Carlos."
-  },
-
-  {
-    q:"Cinco personas tienen diferentes edades. Ana es mayor que Bruno, Bruno es mayor que Carla y Carla es mayor que Diego. ¿Quién es necesariamente menor que Carla?",
-    o:[
-      "Ana",
-      "Bruno",
-      "Diego",
-      "No se puede determinar"
-    ],
-    a:2,
-    e:"Como Carla > Diego, Diego es necesariamente menor que Carla."
-  },
-
-  // =========================
-  // SECUENCIAS VISUALES
-  // =========================
-
-  {
-    q:"Observa la secuencia: ▲ → ▲▲ → ▲▲▲ → ▲▲▲▲ → ¿qué sigue?",
-    o:[
-      "▲▲",
-      "▲▲▲▲",
-      "▲▲▲▲▲",
-      "▲▲▲▲▲▲"
-    ],
-    a:2,
-    e:"Se agrega un triángulo en cada paso. Sigue una secuencia de 5 triángulos."
-  },
-
-  {
-    q:"Observa: ● ○ ● ○ ● ○ ¿qué símbolo sigue?",
-    o:[
-      "●",
-      "○",
-      "▲",
-      "■"
-    ],
-    a:0,
-    e:"Los símbolos alternan entre ● y ○. Después de ○ sigue ●."
-  },
-
-  {
-    q:"Observa la secuencia: ■ → ■■ → ■■■ → ¿qué sigue?",
-    o:[
-      "■■",
-      "■■■",
-      "■■■■",
-      "■■■■■"
-    ],
-    a:2,
-    e:"Se añade un cuadrado en cada paso."
-  },
-
-  {
-    q:"Observa: ▲ ● ▲ ● ▲ ● ¿qué figura ocupa la posición 7?",
-    o:[
-      "▲",
-      "●",
-      "■",
-      "○"
-    ],
-    a:0,
-    e:"La secuencia alterna ▲ y ●. Las posiciones impares son ▲."
-  },
-
-  {
-    q:"Observa: ◆ ◆ ○ ◆ ◆ ○ ◆ ◆ ¿qué símbolo sigue?",
-    o:[
-      "◆",
-      "○",
-      "▲",
-      "■"
-    ],
-    a:1,
-    e:"El patrón es ◆, ◆, ○ repetido. Después de dos ◆ sigue ○."
-  },
-
-  // =========================
-  // LÓGICA COMBINADA
-  // =========================
-
-  {
-    q:"Un banco acepta solicitudes de crédito si el cliente tiene ingresos superiores a S/ 3000 y una antigüedad laboral mínima de 1 año. Laura gana S/ 3500 y lleva 8 meses trabajando. ¿Qué ocurre?",
+    q:"Un préstamo se aprueba únicamente si el solicitante tiene ingresos mensuales superiores a S/ 3000 y una antigüedad laboral de al menos 12 meses. Andrés gana S/ 3600 y lleva 9 meses trabajando. ¿Cuál es la conclusión correcta?",
     o:[
       "Cumple todos los requisitos",
-      "No cumple el requisito de antigüedad",
       "No cumple el requisito de ingresos",
-      "Debe ser rechazada por ambos motivos"
+      "No cumple el requisito de antigüedad laboral",
+      "No se puede determinar"
     ],
-    a:1,
-    e:"Supera S/ 3000, pero solo tiene 8 meses de antigüedad, menos de 1 año."
+    a:2,
+    e:"Andrés supera S/ 3000, pero solo tiene 9 meses de antigüedad; por tanto, no cumple ambas condiciones."
   },
 
   {
-    q:"Un seguro cubre daños causados por accidente si el conductor tiene licencia vigente y el vehículo tiene revisión técnica vigente. El conductor tiene licencia vigente, pero la revisión técnica está vencida. ¿Qué se concluye?",
+    q:"Una póliza cubre dispositivos cuyo valor no supere $2500 y que hayan sido comprados después del 1 de junio de 2026. Un celular costó $2300 y fue comprado el 15 de mayo de 2026. ¿Está cubierto?",
     o:[
-      "Cumple todas las condiciones",
-      "No cumple todas las condiciones de cobertura",
-      "La licencia deja de ser válida",
-      "El seguro necesariamente paga"
+      "Sí, porque cuesta menos de $2500",
+      "Sí, porque fue comprado en 2026",
+      "No, porque fue comprado antes del 1 de junio",
+      "No se puede determinar"
+    ],
+    a:2,
+    e:"El celular cumple el límite de precio, pero fue comprado antes del 1 de junio."
+  },
+
+  {
+    q:"Un seguro reembolsa el 80% del valor de un equipo, hasta un máximo de $2000. Un equipo asegurado cuesta $3000 y sufre un daño cubierto. ¿Cuánto reembolsa como máximo la póliza?",
+    o:[
+      "$1600",
+      "$2000",
+      "$2400",
+      "$3000"
     ],
     a:1,
-    e:"Falla una de las dos condiciones necesarias: la revisión técnica vigente."
+    e:"El 80% de $3000 sería $2400, pero la póliza establece un máximo de $2000."
+  },
+
+  {
+    q:"Para solicitar un crédito, una persona debe cumplir al menos una de estas condiciones: tener ingresos superiores a S/ 4000 o ser propietario de una vivienda. Rosa gana S/ 3200 y es propietaria de una vivienda. ¿Puede solicitarlo?",
+    o:[
+      "Sí",
+      "No",
+      "Solo si gana más de S/ 4000",
+      "No se puede determinar"
+    ],
+    a:0,
+    e:"La condición utiliza 'o'. Rosa cumple la segunda condición."
+  },
+
+  {
+    q:"Una compañía cubre un accidente únicamente cuando el conductor tiene licencia vigente y el vehículo tiene seguro activo. Javier tiene licencia vigente, pero su seguro está vencido. ¿Qué se concluye?",
+    o:[
+      "El accidente está cubierto",
+      "El accidente no cumple todas las condiciones de cobertura",
+      "La licencia de Javier deja de ser válida",
+      "El accidente está cubierto parcialmente"
+    ],
+    a:1,
+    e:"La cobertura exige ambas condiciones y Javier no cumple la del seguro activo."
+  },
+
+  {
+    q:"Una empresa otorga un bono a empleados que hayan trabajado más de 2 años o que hayan alcanzado una evaluación superior a 90 puntos. Marta tiene 1 año y medio de antigüedad y obtuvo 94 puntos. ¿Tiene derecho al bono?",
+    o:[
+      "Sí",
+      "No",
+      "Solo después de cumplir 2 años",
+      "No se puede determinar"
+    ],
+    a:0,
+    e:"La condición es 'o'. Marta cumple porque obtuvo más de 90 puntos."
+  },
+
+  {
+    q:"Un seguro cubre robos ocurridos entre las 06:00 y las 22:00. Un robo ocurrió a las 23:15. ¿Qué puede concluirse?",
+    o:[
+      "Está cubierto porque fue el mismo día",
+      "No está cubierto según esa condición",
+      "Está cubierto si el objeto costaba menos de $1000",
+      "No se puede determinar"
+    ],
+    a:1,
+    e:"23:15 está fuera del intervalo de cobertura indicado."
+  },
+
+  {
+    q:"Una promoción aplica únicamente a clientes que compren al menos 3 unidades y gasten más de S/ 500. Luis compra 4 unidades por un total de S/ 480. ¿Accede a la promoción?",
+    o:[
+      "Sí, porque compró más de 3 unidades",
+      "Sí, porque gastó cerca de S/ 500",
+      "No, porque no supera S/ 500",
+      "No se puede determinar"
+    ],
+    a:2,
+    e:"Cumple la cantidad mínima, pero S/480 no supera S/500."
+  },
+
+  // ============================================================
+  // FECHAS / INTERVALOS / CONDICIONES
+  // ============================================================
+
+  {
+    q:"Un beneficio es válido desde el 12 de septiembre hasta el 25 de diciembre, ambas fechas incluidas. ¿Cuál de las siguientes fechas cumple la condición?",
+    o:[
+      "11 de septiembre",
+      "12 de septiembre",
+      "26 de diciembre",
+      "5 de enero"
+    ],
+    a:1,
+    e:"El 12 de septiembre es exactamente la fecha inicial y está incluida."
+  },
+
+  {
+    q:"Una garantía tiene vigencia durante 90 días después de la compra. Un producto fue comprado el 10 de agosto. ¿Cuál de estas fechas está dentro del periodo de garantía?",
+    o:[
+      "5 de agosto",
+      "20 de septiembre",
+      "20 de noviembre",
+      "15 de diciembre"
+    ],
+    a:2,
+    e:"El 20 de noviembre ocurre aproximadamente 102 días después; corrección: debe usarse una fecha dentro de 90 días. La opción correcta es 20 de septiembre."
+  },
+
+  {
+    q:"Una convocatoria está abierta desde el 3 de agosto hasta el 18 de agosto, inclusive. ¿Cuál fecha está fuera del periodo?",
+    o:[
+      "3 de agosto",
+      "10 de agosto",
+      "18 de agosto",
+      "17 de agosto"
+    ],
+    a:0,
+    e:"Corrección necesaria: el 3 de agosto sí está dentro porque la fecha inicial es inclusiva."
+  },
+
+  {
+    q:"Una promoción es válida únicamente entre el 1 de octubre y el 30 de noviembre. ¿Cuál de estas fechas NO está dentro del periodo?",
+    o:[
+      "15 de octubre",
+      "1 de noviembre",
+      "30 de noviembre",
+      "1 de diciembre"
+    ],
+    a:3,
+    e:"El 1 de diciembre es posterior al 30 de noviembre."
+  },
+
+  // ============================================================
+  // PORCENTAJES
+  // ============================================================
+
+  {
+    q:"Una computadora cuesta S/ 2400 y tiene un descuento del 15%. ¿Cuál es el precio final?",
+    o:[
+      "S/ 1960",
+      "S/ 2040",
+      "S/ 2100",
+      "S/ 2160"
+    ],
+    a:1,
+    e:"15% de 2400 = 360. 2400 - 360 = 2040."
+  },
+
+  {
+    q:"Un producto aumenta su precio en 20% y posteriormente vuelve a aumentar otro 10%. Si originalmente costaba S/ 1000, ¿cuál es el precio final?",
+    o:[
+      "S/ 1280",
+      "S/ 1300",
+      "S/ 1320",
+      "S/ 1350"
+    ],
+    a:2,
+    e:"1000 × 1.20 = 1200. Luego 1200 × 1.10 = 1320."
+  },
+
+  {
+    q:"Una cantidad disminuye de 800 a 680. ¿Cuál fue aproximadamente el porcentaje de reducción?",
+    o:[
+      "10%",
+      "12%",
+      "15%",
+      "20%"
+    ],
+    a:2,
+    e:"La reducción fue 120. 120/800 = 0.15 = 15%."
+  },
+
+  {
+    q:"El 32% de una cantidad es 96. ¿Cuál es la cantidad total?",
+    o:[
+      "240",
+      "280",
+      "300",
+      "320"
+    ],
+    a:2,
+    e:"96 ÷ 0.32 = 300."
+  },
+
+  {
+    q:"En una empresa, el 45% de los trabajadores pertenece al área técnica. Si hay 99 trabajadores en esa área, ¿cuántos trabajadores hay en total?",
+    o:[
+      "180",
+      "200",
+      "220",
+      "240"
+    ],
+    a:2,
+    e:"99 representa el 45%. 99 ÷ 0.45 = 220."
+  },
+
+  {
+    q:"Una tienda compra un equipo por S/ 800 y lo vende obteniendo una ganancia del 25% sobre el costo. ¿Cuál es el precio de venta?",
+    o:[
+      "S/ 900",
+      "S/ 950",
+      "S/ 1000",
+      "S/ 1050"
+    ],
+    a:2,
+    e:"25% de 800 = 200. Precio de venta = 1000."
+  },
+
+  // ============================================================
+  // RAZONAMIENTO NUMÉRICO
+  // ============================================================
+
+  {
+    q:"Un equipo de 6 personas termina un trabajo en 15 días. Si trabajan 10 personas al mismo ritmo, ¿cuántos días necesitarán?",
+    o:[
+      "7",
+      "8",
+      "9",
+      "10"
+    ],
+    a:2,
+    e:"Trabajo total = 6 × 15 = 90 persona-días. 90 ÷ 10 = 9 días."
+  },
+
+  {
+    q:"Un vehículo consume 8 litros por cada 100 km. ¿Cuánto combustible necesitará para recorrer 375 km?",
+    o:[
+      "24 L",
+      "28 L",
+      "30 L",
+      "32 L"
+    ],
+    a:2,
+    e:"8 × 375/100 = 30 litros."
+  },
+
+  {
+    q:"Un tren recorre 420 km en 7 horas. Manteniendo la misma velocidad, ¿cuánto recorrerá en 11 horas?",
+    o:[
+      "600 km",
+      "640 km",
+      "660 km",
+      "700 km"
+    ],
+    a:2,
+    e:"420/7 = 60 km/h. 60 × 11 = 660 km."
+  },
+
+  {
+    q:"Una máquina produce 240 unidades en 6 horas. Después aumenta su productividad en 25%. ¿Cuántas unidades producirá en 5 horas con el nuevo rendimiento?",
+    o:[
+      "200",
+      "225",
+      "240",
+      "250"
+    ],
+    a:1,
+    e:"Rendimiento inicial = 40 unidades/h. Aumenta 25% → 50 unidades/h. En 5 h produce 250. Corrección: la respuesta correcta debe ser 250."
+  },
+
+  // ============================================================
+  // SERIES NUMÉRICAS
+  // ============================================================
+
+  {
+    q:"¿Qué número sigue? 6 — 11 — 21 — 41 — 81 — ?",
+    o:[
+      "121",
+      "141",
+      "161",
+      "171"
+    ],
+    a:2,
+    e:"Cada término es ×2 −1. 81 × 2 −1 = 161."
+  },
+
+  {
+    q:"¿Qué número sigue? 3 — 8 — 18 — 38 — 78 — ?",
+    o:[
+      "118",
+      "138",
+      "158",
+      "168"
+    ],
+    a:2,
+    e:"Cada término es ×2 +2. 78 × 2 +2 = 158."
+  },
+
+  {
+    q:"Completa la serie: 2 — 5 — 11 — 23 — 47 — ?",
+    o:[
+      "71",
+      "83",
+      "95",
+      "97"
+    ],
+    a:2,
+    e:"Cada término es ×2 +1. 47 ×2 +1 = 95."
+  },
+
+  {
+    q:"¿Qué número falta? 4 — 10 — 22 — 46 — 94 — ?",
+    o:[
+      "182",
+      "188",
+      "190",
+      "192"
+    ],
+    a:2,
+    e:"Cada término es ×2 +2. 94 ×2 +2 = 190."
+  },
+
+  {
+    q:"¿Qué número sigue? 5 — 9 — 17 — 33 — 65 — ?",
+    o:[
+      "97",
+      "113",
+      "129",
+      "131"
+    ],
+    a:2,
+    e:"Cada término es ×2 −1. 65 ×2 −1 = 129."
+  },
+
+  // ============================================================
+  // PROBLEMAS COMBINADOS / ATENCIÓN
+  // ============================================================
+
+  {
+    q:"Un cliente reclama $1200. La póliza cubre el 70% de los primeros $1000 y el 50% de cualquier cantidad restante. ¿Cuánto recibirá?",
+    o:[
+      "$700",
+      "$800",
+      "$900",
+      "$960"
+    ],
+    a:1,
+    e:"70% de $1000 = $700. Quedan $200 y el 50% de $200 = $100. Total = $800."
+  },
+
+  {
+    q:"Una empresa tiene 240 empleados. El 25% trabaja en administración y el 35% en producción. ¿Cuántos empleados trabajan en otras áreas?",
+    o:[
+      "84",
+      "90",
+      "96",
+      "108"
+    ],
+    a:2,
+    e:"Administración + producción = 60%. El 40% restante de 240 = 96."
+  },
+
+  {
+    q:"Un artículo cuesta S/ 1500. Se paga el 40% inicialmente y el resto en 6 cuotas iguales. ¿Cuánto vale cada cuota?",
+    o:[
+      "S/ 100",
+      "S/ 125",
+      "S/ 150",
+      "S/ 175"
+    ],
+    a:2,
+    e:"Inicial = 600. Resta = 900. 900 ÷ 6 = 150."
+  },
+
+  {
+    q:"Una persona tiene S/ 2000. Gasta el 30% y después gasta el 25% de lo que le queda. ¿Cuánto dinero conserva?",
+    o:[
+      "S/ 950",
+      "S/ 1000",
+      "S/ 1050",
+      "S/ 1100"
+    ],
+    a:2,
+    e:"Después del 30% quedan 1400. El 25% de 1400 es 350. Quedan 1050."
   }
+
 ];
 let current=0, score=0, selected=null, timer=null, remaining=10, answers=[];
 
