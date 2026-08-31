@@ -38,8 +38,8 @@ button:hover{background:#374151}
 <body>
 <header class="top">
   <div class="topin">
-    <div class="title">🧠 Simulador Cognitivo · 10 preguntas</div>
-    <div id="timer" class="timer">10</div>
+    <div class="title">🧠 Simulador Cognitivo · 30 preguntas</div>
+    <div id="timer" class="timer">15</div>
   </div>
 </header>
 
@@ -53,8 +53,8 @@ button:hover{background:#374151}
 
 <section id="quiz" class="card">
   <div class="qhead">
-    <span id="counter">Pregunta 1 de 10</span>
-    <span>⏱️ <span id="qtime">10</span>s</span>
+    <span id="counter">Pregunta 1 de 30</span>
+    <span>⏱️ <span id="qtime">15</span>s</span>
   </div>
   <div id="question" class="question"></div>
   <div id="options" class="options"></div>
@@ -124,6 +124,108 @@ const questions = [
     q:"¿Qué número sigue? 5 — 8 — 14 — 26 — 50 — ?",
     o:["74","86","98","102"], a:2,
     e:"Las diferencias son +3, +6, +12, +24; sigue +48 → 98."
+  },
+
+  {
+    q:"¿Cuál es el siguiente número? 4 — 8 — 16 — 32 — ?",
+    o:["48","56","64","72"], a:2,
+    e:"Cada número se multiplica por 2."
+  },
+  {
+    q:"Un artículo cuesta S/ 200 y aumenta su precio en 15%. ¿Cuál es el nuevo precio?",
+    o:["S/ 215","S/ 225","S/ 230","S/ 235"], a:2,
+    e:"15% de 200 = 30. Entonces 200 + 30 = 230."
+  },
+  {
+    q:"Completa la serie: 100 — 90 — 81 — 73 — 66 — ?",
+    o:["58","60","61","62"], a:2,
+    e:"Las diferencias son −10, −9, −8, −7; sigue −6 → 60."
+  },
+  {
+    q:"Si 5 trabajadores realizan un trabajo en 12 días, manteniendo el mismo ritmo, ¿cuántos días necesitarían 10 trabajadores?",
+    o:["3","5","6","8"], a:2,
+    e:"Al duplicar los trabajadores, el tiempo se reduce a la mitad: 12/2 = 6 días."
+  },
+  {
+    q:"¿Cuál palabra NO pertenece al grupo?",
+    o:["Perro","Gato","Caballo","Águila"], a:3,
+    e:"Perro, gato y caballo son mamíferos; águila es un ave."
+  },
+  {
+    q:"Si todos los ingenieros son profesionales y algunos profesionales son músicos, ¿qué afirmación es necesariamente cierta?",
+    o:["Todos los ingenieros son músicos","Algunos ingenieros son músicos","Ningún ingeniero es músico","Todos los ingenieros son profesionales"], a:3,
+    e:"La única conclusión garantizada es que todos los ingenieros son profesionales."
+  },
+  {
+    q:"¿Qué número falta? 7 — 14 — 28 — 56 — ?",
+    o:["84","98","112","120"], a:2,
+    e:"Cada término se multiplica por 2: 56 × 2 = 112."
+  },
+  {
+    q:"Un automóvil consume 8 litros de combustible cada 100 km. ¿Cuántos litros necesita para recorrer 250 km?",
+    o:["16 L","18 L","20 L","24 L"], a:2,
+    e:"8/100 × 250 = 20 litros."
+  },
+  {
+    q:"Completa: B — E — I — N — ?",
+    o:["R","S","T","U"], a:2,
+    e:"Los saltos son +3, +4, +5; sigue +6. N + 6 = T."
+  },
+  {
+    q:"Si hoy es miércoles, ¿qué día será dentro de 10 días?",
+    o:["Viernes","Sábado","Domingo","Lunes"], a:1,
+    e:"10 mod 7 = 3. Miércoles + 3 días = sábado."
+  },
+
+  {
+    q:"¿Cuál es el siguiente número? 1 — 4 — 9 — 16 — 25 — ?",
+    o:["30","32","36","49"], a:2,
+    e:"Son cuadrados perfectos: 1², 2², 3², 4², 5²; sigue 6² = 36."
+  },
+  {
+    q:"Un examen tiene 40 preguntas. Una persona responde correctamente el 75%. ¿Cuántas respondió correctamente?",
+    o:["25","30","32","35"], a:1,
+    e:"75% de 40 = 30."
+  },
+  {
+    q:"¿Qué número NO pertenece al grupo? 8, 27, 64, 100, 125",
+    o:["27","64","100","125"], a:2,
+    e:"8, 27, 64 y 125 son cubos perfectos; 100 no."
+  },
+  {
+    q:"Pedro tiene el doble de edad que Luis. Si Luis tiene 12 años, ¿cuántos años tiene Pedro?",
+    o:["18","20","24","26"], a:2,
+    e:"El doble de 12 es 24."
+  },
+  {
+    q:"Completa la serie: 2 — 5 — 10 — 17 — 26 — ?",
+    o:["35","36","37","38"], a:2,
+    e:"Las diferencias son +3, +5, +7, +9; sigue +11 → 37."
+  },
+  {
+    q:"Una tienda vende 3 productos por S/ 45. Al mismo precio unitario, ¿cuánto cuestan 8 productos?",
+    o:["S/ 100","S/ 110","S/ 120","S/ 135"], a:2,
+    e:"Cada producto cuesta 45/3 = 15. Entonces 8 × 15 = 120."
+  },
+  {
+    q:"Si A > B, B > C y C > D, ¿cuál es necesariamente el menor?",
+    o:["A","B","C","D"], a:3,
+    e:"El orden es A > B > C > D, por lo tanto D es el menor."
+  },
+  {
+    q:"¿Qué letra sigue? Z — W — S — N — H — ?",
+    o:["A","B","C","D"], a:0,
+    e:"Los saltos son −3, −4, −5, −6; sigue −7. H − 7 = A."
+  },
+  {
+    q:"Una cantidad de S/ 500 se reduce en 20%. ¿Cuál es el nuevo valor?",
+    o:["S/ 380","S/ 400","S/ 420","S/ 450"], a:1,
+    e:"20% de 500 = 100. Entonces 500 − 100 = 400."
+  },
+  {
+    q:"¿Cuál es el siguiente número? 3 — 6 — 11 — 18 — 27 — ?",
+    o:["36","37","38","39"], a:2,
+    e:"Las diferencias son +3, +5, +7, +9; sigue +11 → 38."
   }
 ];
 
