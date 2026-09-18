@@ -1,0 +1,2006 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Simulador completo de fibra óptica</title>
+
+<style>
+    *{
+        box-sizing:border-box;
+    }
+
+    body{
+        margin:0;
+        background:#0a0f18;
+        color:#eef4ff;
+        font-family:Arial, Helvetica, sans-serif;
+    }
+
+    .container{
+        max-width:1400px;
+        margin:auto;
+        padding:22px;
+    }
+
+    h1{
+        text-align:center;
+        margin:0 0 8px 0;
+    }
+
+    .subtitle{
+        text-align:center;
+        color:#aab6ca;
+        margin-bottom:20px;
+    }
+
+    .grid{
+        display:grid;
+        grid-template-columns:330px 1fr;
+        gap:18px;
+    }
+
+    .panel{
+        background:#131d2c;
+        border:1px solid #263650;
+        border-radius:16px;
+        padding:18px;
+    }
+
+    .controls h2,
+    .visual h2{
+        margin-top:0;
+    }
+
+    .control{
+        margin-bottom:22px;
+    }
+
+    label{
+        display:block;
+        font-weight:bold;
+        margin-bottom:8px;
+    }
+
+    input[type="range"]{
+        width:100%;
+    }
+
+    .value{
+        margin-top:5px;
+        font-size:19px;
+        font-weight:bold;
+    }
+
+    .equation{
+        background:#0e1622;
+        border-radius:10px;
+        padding:12px;
+        margin-top:10px;
+        line-height:1.7;
+        font-family:Georgia, serif;
+    }
+
+    .cards{
+        display:grid;
+        grid-template-columns:repeat(4,1fr);
+        gap:12px;
+        margin-top:16px;
+    }
+
+    .card{
+        background:#131d2c;
+        border:1px solid #263650;
+        border-radius:14px;
+        padding:14px;
+        text-align:center;
+    }
+
+    .card-title{
+        color:#aab6ca;
+        font-size:14px;
+    }
+
+    .card-value{
+        font-size:24px;
+        font-weight:bold;
+        margin-top:7px;
+    }
+
+    canvas{
+        width:100%;
+        background:#08101b;
+        border:1px solid #263650;
+        border-radius:14px;
+        display:block;
+    }
+
+    .canvasBlock{
+        margin-bottom:18px;
+    }
+
+    .status{
+        margin-top:16px;
+        padding:16px;
+        border-radius:12px;
+        text-align:center;
+        font-weight:bold;
+        font-size:21px;
+    }
+
+    .ok{
+        background:#123d31;
+        color:#6fffc0;
+    }
+
+    .warning{
+        background:#564616;
+        color:#ffe67b;
+    }
+
+    .bad{
+        background:#4c1e28;
+        color:#ff8f9c;
+    }
+
+    .info{
+        margin-top:14px;
+        line-height:1.7;
+        color:#d6dfed;
+    }
+
+    .legend{
+        display:flex;
+        flex-wrap:wrap;
+        gap:12px;
+        margin-top:10px;
+        color:#bcc8da;
+        font-size:14px;
+    }
+
+    .dot{
+        display:inline-block;
+        width:12px;
+        height:12px;
+        border-radius:50%;
+        margin-right:6px;
+    }
+
+    @media(max-width:900px){
+        .grid{
+            grid-template-columns:1fr;
+        }
+
+        .cards{
+            grid-template-columns:1fr 1fr;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Simulador de fibra óptica de índice escalonado</h1>
+
+    <div class="subtitle">
+        Índices de refracción · Apertura numérica · Número V · Monomodo · Multimodo · Fuga de luz
+    </div>
+
+    <div class="grid">
+
+        <!-- ==============================
+             CONTROLES
+        =============================== -->
+
+        <div class="panel controls">
+
+            <h2>Parámetros</h2>
+
+            <div class="control">
+
+                <label>
+                    Índice del núcleo n₁
+                </label>
+
+                <input
+                    id="n1"
+                    type="range"
+                    min="1.30"
+                    max="1.80"
+                    step="0.001"
+                    value="1.600"
+                >
+
+                <div
+                    class="value"
+                    id="n1Value">
+                </div>
+
+            </div>
+
+
+            <div class="control">
+
+                <label>
+                    Índice del revestimiento n₂
+                </label>
+
+                <input
+                    id="n2"
+                    type="range"
+                    min="1.20"
+                    max="1.80"
+                    step="0.001"
+                    value="1.560"
+                >
+
+                <div
+                    class="value"
+                    id="n2Value">
+                </div>
+
+            </div>
+
+
+            <div class="control">
+
+                <label>
+                    Diámetro del núcleo d
+                </label>
+
+                <input
+                    id="diameter"
+                    type="range"
+                    min="1"
+                    max="35"
+                    step="0.1"
+                    value="8"
+                >
+
+                <div
+                    class="value"
+                    id="diameterValue">
+                </div>
+
+            </div>
+
+
+            <div class="control">
+
+                <label>
+                    Longitud de onda λ₀
+                </label>
+
+                <input
+                    id="lambda"
+                    type="range"
+                    min="700"
+                    max="1700"
+                    step="10"
+                    value="1550"
+                >
+
+                <div
+                    class="value"
+                    id="lambdaValue">
+                </div>
+
+            </div>
+
+
+            <div class="equation">
+
+                <strong>Relaciones:</strong>
+
+                <br>
+
+                NA = √(n₁² − n₂²)
+
+                <br>
+
+                V = (πd / λ₀) NA
+
+                <br>
+
+                V &lt; 2.405 → monomodo
+
+                <br>
+
+                dmax =
+                2.405 λ₀ / (π NA)
+
+            </div>
+
+        </div>
+
+
+        <!-- ==============================
+             VISUALIZACIONES
+        =============================== -->
+
+        <div class="panel visual">
+
+            <h2>Comportamiento de la fibra</h2>
+
+            <div class="canvasBlock">
+
+                <canvas
+                    id="fiberCanvas"
+                    width="950"
+                    height="380">
+                </canvas>
+
+            </div>
+
+            <div class="canvasBlock">
+
+                <canvas
+                    id="profileCanvas"
+                    width="950"
+                    height="260">
+                </canvas>
+
+            </div>
+
+            <div class="canvasBlock">
+
+                <canvas
+                    id="graphCanvas"
+                    width="950"
+                    height="350">
+                </canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==============================
+         RESULTADOS
+    =============================== -->
+
+    <div class="cards">
+
+        <div class="card">
+
+            <div class="card-title">
+                Apertura numérica
+            </div>
+
+            <div
+                class="card-value"
+                id="naResult">
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-title">
+                Número V
+            </div>
+
+            <div
+                class="card-value"
+                id="vResult">
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-title">
+                d máximo monomodo
+            </div>
+
+            <div
+                class="card-value"
+                id="dmaxResult">
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-title">
+                n₁ − n₂
+            </div>
+
+            <div
+                class="card-value"
+                id="deltaResult">
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div
+        id="status"
+        class="status">
+    </div>
+
+
+    <div
+        class="panel info"
+        id="explanation">
+    </div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   ELEMENTOS
+===================================================== */
+
+const n1Slider =
+document.getElementById("n1");
+
+const n2Slider =
+document.getElementById("n2");
+
+const diameterSlider =
+document.getElementById("diameter");
+
+const lambdaSlider =
+document.getElementById("lambda");
+
+
+const fiberCanvas =
+document.getElementById("fiberCanvas");
+
+const fiberCtx =
+fiberCanvas.getContext("2d");
+
+
+const profileCanvas =
+document.getElementById("profileCanvas");
+
+const profileCtx =
+profileCanvas.getContext("2d");
+
+
+const graphCanvas =
+document.getElementById("graphCanvas");
+
+const graphCtx =
+graphCanvas.getContext("2d");
+
+
+/* =====================================================
+   PRINCIPAL
+===================================================== */
+
+function simulate(){
+
+    const n1 =
+    parseFloat(n1Slider.value);
+
+    const n2 =
+    parseFloat(n2Slider.value);
+
+    const diameterUm =
+    parseFloat(diameterSlider.value);
+
+    const lambdaNm =
+    parseFloat(lambdaSlider.value);
+
+
+    const diameter =
+    diameterUm * 1e-6;
+
+    const lambda =
+    lambdaNm * 1e-9;
+
+
+    const delta =
+    n1 - n2;
+
+
+    let NA = null;
+
+    let V = null;
+
+    let dmaxUm = null;
+
+
+    /* =====================================
+       CASO NORMAL: n1 > n2
+    ===================================== */
+
+    if(n1 > n2){
+
+        NA =
+        Math.sqrt(
+            n1*n1 -
+            n2*n2
+        );
+
+
+        V =
+        Math.PI *
+        diameter *
+        NA /
+        lambda;
+
+
+        const dmax =
+        2.405 *
+        lambda /
+        (
+            Math.PI *
+            NA
+        );
+
+
+        dmaxUm =
+        dmax * 1e6;
+
+    }
+
+
+    /* =====================================
+       ACTUALIZAR TEXTOS
+    ===================================== */
+
+    document.getElementById(
+        "n1Value"
+    ).innerText =
+    n1.toFixed(3);
+
+
+    document.getElementById(
+        "n2Value"
+    ).innerText =
+    n2.toFixed(3);
+
+
+    document.getElementById(
+        "diameterValue"
+    ).innerText =
+    diameterUm.toFixed(1) +
+    " µm";
+
+
+    document.getElementById(
+        "lambdaValue"
+    ).innerText =
+    lambdaNm +
+    " nm";
+
+
+    document.getElementById(
+        "deltaResult"
+    ).innerText =
+    delta.toFixed(3);
+
+
+    if(NA !== null){
+
+        document.getElementById(
+            "naResult"
+        ).innerText =
+        NA.toFixed(4);
+
+    }
+
+    else{
+
+        document.getElementById(
+            "naResult"
+        ).innerText =
+        "No real";
+
+    }
+
+
+    if(V !== null){
+
+        document.getElementById(
+            "vResult"
+        ).innerText =
+        V.toFixed(3);
+
+    }
+
+    else{
+
+        document.getElementById(
+            "vResult"
+        ).innerText =
+        "No guiado";
+
+    }
+
+
+    if(dmaxUm !== null){
+
+        document.getElementById(
+            "dmaxResult"
+        ).innerText =
+        dmaxUm.toFixed(2) +
+        " µm";
+
+    }
+
+    else{
+
+        document.getElementById(
+            "dmaxResult"
+        ).innerText =
+        "No aplica";
+
+    }
+
+
+    /* =====================================
+       ESTADO FÍSICO
+    ===================================== */
+
+    updateStatus(
+        n1,
+        n2,
+        V,
+        NA,
+        dmaxUm,
+        diameterUm
+    );
+
+
+    /* =====================================
+       GRÁFICAS
+    ===================================== */
+
+    drawFiber(
+        n1,
+        n2,
+        V,
+        diameterUm
+    );
+
+    drawIndexProfile(
+        n1,
+        n2
+    );
+
+    drawDmaxGraph(
+        n1,
+        n2,
+        lambdaNm
+    );
+
+}
+
+
+/* =====================================================
+   ESTADO
+===================================================== */
+
+function updateStatus(
+    n1,
+    n2,
+    V,
+    NA,
+    dmax,
+    diameter
+){
+
+    const status =
+    document.getElementById("status");
+
+    const explanation =
+    document.getElementById("explanation");
+
+
+    if(n2 > n1){
+
+        status.className =
+        "status bad";
+
+        status.innerHTML =
+        "n₂ > n₁ → NO hay guiado convencional por reflexión interna total";
+
+
+        explanation.innerHTML =
+
+        "<strong>¿Qué está pasando?</strong><br><br>" +
+
+        "El revestimiento tiene un índice de refracción mayor que el núcleo. " +
+
+        "En una fibra escalonada convencional se necesita <strong>n₁ > n₂</strong>. " +
+
+        "Cuando n₂ > n₁, la expresión √(n₁² − n₂²) deja de ser real y por eso la apertura numérica definida para este caso deja de tener sentido físico. " +
+
+        "La luz ya no queda confinada en el núcleo mediante reflexión interna total; parte importante del campo se desplaza hacia el revestimiento.";
+
+        return;
+
+    }
+
+
+    if(Math.abs(n1 - n2) < 0.0005){
+
+        status.className =
+        "status warning";
+
+        status.innerHTML =
+        "n₁ ≈ n₂ → prácticamente no existe contraste de índice";
+
+
+        explanation.innerHTML =
+
+        "<strong>n₁ y n₂ son prácticamente iguales.</strong><br><br>" +
+
+        "El núcleo deja de distinguirse ópticamente del revestimiento. " +
+
+        "NA tiende a cero, V también tiende a cero y el mecanismo de confinamiento se vuelve extremadamente débil.";
+
+        return;
+
+    }
+
+
+    if(V < 2.405){
+
+        status.className =
+        "status ok";
+
+        status.innerHTML =
+        "MONOMODO → se propaga el modo fundamental HE₁₁";
+
+
+        explanation.innerHTML =
+
+        "<strong>Fibra correctamente guiada.</strong><br><br>" +
+
+        "Como n₁ > n₂ existe contraste de índice y puede darse reflexión interna total. " +
+
+        "Además, V = " +
+        V.toFixed(3) +
+        " es menor que 2.405, por lo que todavía no aparecen los primeros modos superiores.<br><br>" +
+
+        "Diámetro actual: <strong>" +
+        diameter.toFixed(2) +
+        " µm</strong><br>" +
+
+        "Diámetro máximo aproximado para seguir monomodo: <strong>" +
+        dmax.toFixed(2) +
+        " µm</strong>.";
+
+        return;
+
+    }
+
+
+    status.className =
+    "status bad";
+
+    status.innerHTML =
+    "MULTIMODO → HE₁₁ + modos superiores";
+
+
+    explanation.innerHTML =
+
+    "<strong>La luz sigue guiada, pero la fibra ya no es monomodo.</strong><br><br>" +
+
+    "Como V = " +
+    V.toFixed(3) +
+    " supera 2.405, pueden aparecer los primeros modos superiores, como TE₀₁, TM₀₁ y HE₂₁.";
+
+}
+
+
+/* =====================================================
+   DIBUJO FIBRA LONGITUDINAL
+===================================================== */
+
+function drawFiber(
+    n1,
+    n2,
+    V,
+    diameter
+){
+
+    const ctx =
+    fiberCtx;
+
+    const W =
+    fiberCanvas.width;
+
+    const H =
+    fiberCanvas.height;
+
+
+    ctx.clearRect(
+        0,
+        0,
+        W,
+        H
+    );
+
+
+    /* fondo */
+
+    ctx.fillStyle =
+    "#08101b";
+
+    ctx.fillRect(
+        0,
+        0,
+        W,
+        H
+    );
+
+
+    const centerY =
+    H / 2;
+
+
+    const claddingTop =
+    65;
+
+    const claddingBottom =
+    H - 65;
+
+
+    /* revestimiento */
+
+    ctx.fillStyle =
+    "#18314b";
+
+    ctx.fillRect(
+        60,
+        claddingTop,
+        W - 120,
+        claddingBottom - claddingTop
+    );
+
+
+    /* núcleo */
+
+    const coreHeight =
+    Math.min(
+        50 +
+        diameter * 4,
+        180
+    );
+
+
+    const coreTop =
+    centerY -
+    coreHeight / 2;
+
+
+    const coreBottom =
+    centerY +
+    coreHeight / 2;
+
+
+    ctx.fillStyle =
+    n1 > n2
+    ? "#7a3f25"
+    : "#30465d";
+
+
+    ctx.fillRect(
+        60,
+        coreTop,
+        W - 120,
+        coreHeight
+    );
+
+
+    /* etiquetas */
+
+    ctx.fillStyle =
+    "#ffffff";
+
+    ctx.font =
+    "18px Arial";
+
+
+    ctx.fillText(
+        "Revestimiento",
+        80,
+        95
+    );
+
+
+    ctx.fillText(
+        "n₂ = " +
+        n2.toFixed(3),
+        80,
+        120
+    );
+
+
+    ctx.fillText(
+        "Núcleo",
+        80,
+        centerY - 8
+    );
+
+
+    ctx.fillText(
+        "n₁ = " +
+        n1.toFixed(3),
+        80,
+        centerY + 18
+    );
+
+
+    /* =========================================
+       CASO n2 > n1
+    ========================================= */
+
+    if(n2 >= n1){
+
+        drawLeakyField(
+            ctx,
+            W,
+            H,
+            centerY,
+            coreTop,
+            coreBottom
+        );
+
+        return;
+
+    }
+
+
+    /* =========================================
+       MONOMODO
+    ========================================= */
+
+    if(V < 2.405){
+
+        drawFundamentalMode(
+            ctx,
+            W,
+            centerY,
+            coreHeight
+        );
+
+    }
+
+    else{
+
+        drawHigherModes(
+            ctx,
+            W,
+            centerY,
+            coreHeight
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   HE11
+===================================================== */
+
+function drawFundamentalMode(
+    ctx,
+    W,
+    centerY,
+    coreHeight
+){
+
+    const startX =
+    170;
+
+    const endX =
+    W - 90;
+
+
+    /* envolvente */
+
+    const gradient =
+    ctx.createLinearGradient(
+        startX,
+        0,
+        endX,
+        0
+    );
+
+
+    gradient.addColorStop(
+        0,
+        "rgba(90,255,190,0.15)"
+    );
+
+    gradient.addColorStop(
+        0.5,
+        "rgba(90,255,190,0.45)"
+    );
+
+    gradient.addColorStop(
+        1,
+        "rgba(90,255,190,0.15)"
+    );
+
+
+    ctx.fillStyle =
+    gradient;
+
+
+    ctx.beginPath();
+
+    for(
+        let x = startX;
+        x <= endX;
+        x += 3
+    ){
+
+        const envelope =
+        coreHeight *
+        0.26 *
+        Math.sin(
+            Math.PI *
+            (x-startX) /
+            (endX-startX)
+        );
+
+
+        const y =
+        centerY -
+        envelope;
+
+
+        if(x === startX){
+
+            ctx.moveTo(
+                x,
+                y
+            );
+
+        }
+
+        else{
+
+            ctx.lineTo(
+                x,
+                y
+            );
+
+        }
+
+    }
+
+
+    for(
+        let x = endX;
+        x >= startX;
+        x -= 3
+    ){
+
+        const envelope =
+        coreHeight *
+        0.26 *
+        Math.sin(
+            Math.PI *
+            (x-startX) /
+            (endX-startX)
+        );
+
+
+        ctx.lineTo(
+            x,
+            centerY +
+            envelope
+        );
+
+    }
+
+
+    ctx.closePath();
+
+    ctx.fill();
+
+
+    /* línea central */
+
+    ctx.strokeStyle =
+    "#65ffc0";
+
+    ctx.lineWidth =
+    5;
+
+    ctx.beginPath();
+
+
+    for(
+        let x = startX;
+        x <= endX;
+        x += 2
+    ){
+
+        const y =
+        centerY +
+        10 *
+        Math.sin(
+            (x-startX)/35
+        );
+
+
+        if(x === startX){
+
+            ctx.moveTo(
+                x,
+                y
+            );
+
+        }
+
+        else{
+
+            ctx.lineTo(
+                x,
+                y
+            );
+
+        }
+
+    }
+
+
+    ctx.stroke();
+
+
+    ctx.fillStyle =
+    "#65ffc0";
+
+    ctx.font =
+    "bold 21px Arial";
+
+    ctx.fillText(
+        "HE₁₁",
+        endX - 60,
+        centerY - 35
+    );
+
+}
+
+
+/* =====================================================
+   MULTIMODO
+===================================================== */
+
+function drawHigherModes(
+    ctx,
+    W,
+    centerY,
+    coreHeight
+){
+
+    const startX =
+    170;
+
+    const endX =
+    W - 90;
+
+
+    const amplitudes =
+    [
+        coreHeight*0.15,
+        coreHeight*0.28,
+        coreHeight*0.40
+    ];
+
+
+    const periods =
+    [
+        35,
+        48,
+        66
+    ];
+
+
+    for(
+        let k = 0;
+        k < amplitudes.length;
+        k++
+    ){
+
+        ctx.beginPath();
+
+        ctx.lineWidth =
+        k === 0 ? 4 : 2;
+
+
+        ctx.strokeStyle =
+        k === 0
+        ? "#65ffc0"
+        : "#ffd45d";
+
+
+        for(
+            let x = startX;
+            x <= endX;
+            x += 2
+        ){
+
+            const y =
+            centerY +
+            amplitudes[k] *
+            Math.sin(
+                (x-startX) /
+                periods[k]
+            );
+
+
+            if(x === startX){
+
+                ctx.moveTo(
+                    x,
+                    y
+                );
+
+            }
+
+            else{
+
+                ctx.lineTo(
+                    x,
+                    y
+                );
+
+            }
+
+        }
+
+
+        ctx.stroke();
+
+    }
+
+
+    ctx.fillStyle =
+    "#ffd45d";
+
+    ctx.font =
+    "bold 19px Arial";
+
+    ctx.fillText(
+        "modos superiores",
+        endX - 180,
+        110
+    );
+
+}
+
+
+/* =====================================================
+   FUGA CUANDO n2 >= n1
+===================================================== */
+
+function drawLeakyField(
+    ctx,
+    W,
+    H,
+    centerY,
+    coreTop,
+    coreBottom
+){
+
+    ctx.strokeStyle =
+    "#ff6677";
+
+    ctx.lineWidth =
+    3;
+
+
+    const startX =
+    170;
+
+
+    for(
+        let k = -2;
+        k <= 2;
+        k++
+    ){
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            startX,
+            centerY + k*12
+        );
+
+
+        ctx.bezierCurveTo(
+            350,
+            centerY + k*20,
+            500,
+            centerY + k*80,
+            700,
+            centerY + k*110
+        );
+
+
+        ctx.stroke();
+
+    }
+
+
+    /* fugas superior e inferior */
+
+    for(
+        let i = 0;
+        i < 7;
+        i++
+    ){
+
+        const x =
+        350 + i*65;
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            x,
+            coreTop
+        );
+
+        ctx.lineTo(
+            x + 45,
+            coreTop - 55
+        );
+
+        ctx.stroke();
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            x,
+            coreBottom
+        );
+
+        ctx.lineTo(
+            x + 45,
+            coreBottom + 55
+        );
+
+        ctx.stroke();
+
+    }
+
+
+    ctx.fillStyle =
+    "#ff8995";
+
+    ctx.font =
+    "bold 22px Arial";
+
+    ctx.fillText(
+        "FUGA DE CAMPO",
+        W - 260,
+        70
+    );
+
+}
+
+
+/* =====================================================
+   PERFIL DE ÍNDICE
+===================================================== */
+
+function drawIndexProfile(
+    n1,
+    n2
+){
+
+    const ctx =
+    profileCtx;
+
+    const W =
+    profileCanvas.width;
+
+    const H =
+    profileCanvas.height;
+
+
+    ctx.clearRect(
+        0,
+        0,
+        W,
+        H
+    );
+
+
+    ctx.fillStyle =
+    "#08101b";
+
+    ctx.fillRect(
+        0,
+        0,
+        W,
+        H
+    );
+
+
+    const left =
+    80;
+
+    const right =
+    W - 50;
+
+    const top =
+    30;
+
+    const bottom =
+    H - 50;
+
+
+    /* ejes */
+
+    ctx.strokeStyle =
+    "#dbe7f5";
+
+    ctx.lineWidth =
+    2;
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        left,
+        top
+    );
+
+    ctx.lineTo(
+        left,
+        bottom
+    );
+
+    ctx.lineTo(
+        right,
+        bottom
+    );
+
+    ctx.stroke();
+
+
+    ctx.fillStyle =
+    "#ffffff";
+
+    ctx.font =
+    "16px Arial";
+
+    ctx.fillText(
+        "Índice n",
+        12,
+        35
+    );
+
+
+    ctx.fillText(
+        "posición radial",
+        right - 120,
+        H - 15
+    );
+
+
+    const minN =
+    Math.min(
+        n1,
+        n2
+    ) - 0.05;
+
+
+    const maxN =
+    Math.max(
+        n1,
+        n2
+    ) + 0.05;
+
+
+    function yForN(n){
+
+        return bottom -
+        (
+            (n-minN) /
+            (maxN-minN)
+        )
+        *
+        (bottom-top);
+
+    }
+
+
+    const coreLeft =
+    W * 0.38;
+
+    const coreRight =
+    W * 0.62;
+
+
+    ctx.strokeStyle =
+    "#60d8ff";
+
+    ctx.lineWidth =
+    4;
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        left,
+        yForN(n2)
+    );
+
+    ctx.lineTo(
+        coreLeft,
+        yForN(n2)
+    );
+
+    ctx.lineTo(
+        coreLeft,
+        yForN(n1)
+    );
+
+    ctx.lineTo(
+        coreRight,
+        yForN(n1)
+    );
+
+    ctx.lineTo(
+        coreRight,
+        yForN(n2)
+    );
+
+    ctx.lineTo(
+        right,
+        yForN(n2)
+    );
+
+    ctx.stroke();
+
+
+    ctx.fillStyle =
+    "#ffffff";
+
+
+    ctx.fillText(
+        "n₁ = " +
+        n1.toFixed(3),
+        coreLeft + 20,
+        yForN(n1) - 10
+    );
+
+
+    ctx.fillText(
+        "n₂ = " +
+        n2.toFixed(3),
+        left + 15,
+        yForN(n2) - 10
+    );
+
+
+    if(n2 > n1){
+
+        ctx.fillStyle =
+        "#ff8995";
+
+        ctx.fillText(
+            "El revestimiento tiene mayor índice que el núcleo",
+            W/2 - 180,
+            25
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   GRÁFICA dmax vs n2
+===================================================== */
+
+function drawDmaxGraph(
+    n1,
+    currentN2,
+    lambdaNm
+){
+
+    const ctx =
+    graphCtx;
+
+    const W =
+    graphCanvas.width;
+
+    const H =
+    graphCanvas.height;
+
+
+    ctx.clearRect(
+        0,
+        0,
+        W,
+        H
+    );
+
+
+    ctx.fillStyle =
+    "#08101b";
+
+    ctx.fillRect(
+        0,
+        0,
+        W,
+        H
+    );
+
+
+    const left =
+    80;
+
+    const right =
+    W - 40;
+
+    const top =
+    35;
+
+    const bottom =
+    H - 60;
+
+
+    ctx.strokeStyle =
+    "#dbe7f5";
+
+    ctx.lineWidth =
+    2;
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        left,
+        top
+    );
+
+    ctx.lineTo(
+        left,
+        bottom
+    );
+
+    ctx.lineTo(
+        right,
+        bottom
+    );
+
+    ctx.stroke();
+
+
+    ctx.fillStyle =
+    "#ffffff";
+
+    ctx.font =
+    "16px Arial";
+
+
+    ctx.fillText(
+        "d máximo (µm)",
+        10,
+        25
+    );
+
+
+    ctx.fillText(
+        "n₂",
+        right - 5,
+        bottom + 35
+    );
+
+
+    const minN2 =
+    Math.max(
+        1.0,
+        n1 - 0.35
+    );
+
+
+    const maxN2 =
+    n1 - 0.001;
+
+
+    const lambda =
+    lambdaNm * 1e-9;
+
+
+    let values = [];
+
+
+    for(
+        let i = 0;
+        i <= 250;
+        i++
+    ){
+
+        const n2 =
+        minN2 +
+        (
+            maxN2-minN2
+        ) *
+        i/250;
+
+
+        const NA =
+        Math.sqrt(
+            n1*n1 -
+            n2*n2
+        );
+
+
+        const dmax =
+        (
+            2.405 *
+            lambda /
+            (
+                Math.PI *
+                NA
+            )
+        )
+        * 1e6;
+
+
+        values.push({
+            n2,
+            dmax
+        });
+
+    }
+
+
+    const maxD =
+    Math.min(
+        Math.max(
+            ...values.map(
+                p => p.dmax
+            )
+        ),
+        100
+    );
+
+
+    function xMap(n2){
+
+        return left +
+        (
+            n2-minN2
+        ) /
+        (
+            maxN2-minN2
+        )
+        *
+        (
+            right-left
+        );
+
+    }
+
+
+    function yMap(d){
+
+        return bottom -
+        d/maxD *
+        (
+            bottom-top
+        );
+
+    }
+
+
+    ctx.strokeStyle =
+    "#60d8ff";
+
+    ctx.lineWidth =
+    4;
+
+    ctx.beginPath();
+
+
+    values.forEach(
+        (p,index)=>{
+
+            const x =
+            xMap(
+                p.n2
+            );
+
+            const y =
+            yMap(
+                Math.min(
+                    p.dmax,
+                    maxD
+                )
+            );
+
+
+            if(index===0){
+
+                ctx.moveTo(
+                    x,
+                    y
+                );
+
+            }
+
+            else{
+
+                ctx.lineTo(
+                    x,
+                    y
+                );
+
+            }
+
+        }
+    );
+
+
+    ctx.stroke();
+
+
+    /* punto actual */
+
+    if(
+        currentN2 < n1 &&
+        currentN2 >= minN2
+    ){
+
+        const NA =
+        Math.sqrt(
+            n1*n1 -
+            currentN2*currentN2
+        );
+
+
+        const dmax =
+        (
+            2.405 *
+            lambda /
+            (
+                Math.PI *
+                NA
+            )
+        )
+        * 1e6;
+
+
+        const x =
+        xMap(
+            currentN2
+        );
+
+
+        const y =
+        yMap(
+            Math.min(
+                dmax,
+                maxD
+            )
+        );
+
+
+        ctx.fillStyle =
+        "#ffd75e";
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x,
+            y,
+            7,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fill();
+
+
+        ctx.fillStyle =
+        "#ffffff";
+
+        ctx.fillText(
+            "actual",
+            x + 10,
+            y - 10
+        );
+
+    }
+
+
+    /* línea n1 */
+
+    ctx.strokeStyle =
+    "#ff6778";
+
+    ctx.setLineDash(
+        [7,7]
+    );
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        right,
+        top
+    );
+
+    ctx.lineTo(
+        right,
+        bottom
+    );
+
+    ctx.stroke();
+
+
+    ctx.setLineDash([]);
+
+
+    ctx.fillStyle =
+    "#ff8995";
+
+    ctx.fillText(
+        "n₂ → n₁",
+        right - 65,
+        top + 15
+    );
+
+
+    ctx.fillStyle =
+    "#aab6ca";
+
+    ctx.font =
+    "14px Arial";
+
+    ctx.fillText(
+        "A medida que n₂ se aproxima a n₁, NA disminuye y d máximo monomodo aumenta.",
+        160,
+        H - 15
+    );
+
+}
+
+
+/* =====================================================
+   EVENTOS
+===================================================== */
+
+[
+    n1Slider,
+    n2Slider,
+    diameterSlider,
+    lambdaSlider
+]
+.forEach(
+    slider =>
+    slider.addEventListener(
+        "input",
+        simulate
+    )
+);
+
+
+simulate();
+
+</script>
+
+</body>
+</html>
