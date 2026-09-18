@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador de Refracción y Ángulo Crítico</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #101722;
+        color: white;
+        display: flex;
+        justify-content: center;
+        min-height: 100vh;
+    }
+
+    .container {
+        width: 1100px;
+        max-width: 96%;
+        padding: 25px;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .subtitle {
+        text-align: center;
+        color: #bbb;
+        margin-bottom: 25px;
+    }
+
+    .panel {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 20px;
+    }
+
+    .controls {
+        background: #192231;
+        padding: 20px;
+        border-radius: 15px;
+    }
+
+    .control {
+        margin-bottom: 25px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+    }
+
+    input[type="range"] {
+        width: 100%;
+    }
+
+    .value {
+        font-size: 20px;
+        margin-top: 5px;
+        color: #55cfff;
+    }
+
+    canvas {
+        width: 100%;
+        background: #101722;
+        border-radius: 15px;
+        border: 1px solid #34465e;
+    }
+
+    .results {
+        background: #192231;
+        margin-top: 20px;
+        padding: 20px;
+        border-radius: 15px;
+    }
+
+    .equation {
+        font-size: 20px;
+        margin: 8px 0;
+    }
+
+    #state {
+        margin-top: 15px;
+        padding: 15px;
+        border-radius: 10px;
+        font-size: 21px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .refraccion {
+        background: #133d32;
+        color: #66ffbb;
+    }
+
+    .critico {
+        background: #514112;
+        color: #ffe66d;
+    }
+
+    .tir {
+        background: #4a1c24;
+        color: #ff7c8d;
+    }
+
+    .impossible {
+        background: #25314a;
+        color: #9fc8ff;
+    }
+
+    .note {
+        margin-top: 20px;
+        line-height: 1.6;
+        color: #ccc;
+    }
+
+    @media(max-width: 800px) {
+        .panel {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Simulador de Refracción</h1>
+
+    <div class="subtitle">
+        Ley de Snell · Ángulo crítico · Reflexión interna total
+    </div>
+
+    <div class="panel">
+
+        <!-- CONTROLES -->
+
+        <div class="controls">
+
+            <div class="control">
+                <label>Índice del medio 1 (n₁)</label>
+                <input
+                    type="range"
+                    id="n1"
+                    min="1"
+                    max="2.5"
+                    step="0.01"
+                    value="1.50"
+                >
+                <div class="value" id="n1Value">1.50</div>
+            </div>
+
+            <div class="control">
+                <label>Índice del medio 2 (n₂)</label>
+                <input
+                    type="range"
+                    id="n2"
+                    min="1"
+                    max="2.5"
+                    step="0.01"
+                    value="1.00"
+                >
+                <div class="value" id="n2Value">1.00</div>
+            </div>
+
+            <div class="control">
+                <label>Ángulo de incidencia θ₁</label>
+                <input
+                    type="range"
+                    id="angle"
+                    min="0"
+                    max="89"
+                    step="0.1"
+                    value="30"
+                >
+                <div class="value" id="angleValue">30°</div>
+            </div>
+
+        </div>
+
+        <!-- SIMULACIÓN -->
+
+        <canvas
+            id="canvas"
+            width="760"
+            height="520">
+        </canvas>
+
+    </div>
+
+    <!-- RESULTADOS -->
+
+    <div class="results">
+
+        <div class="equation">
+            Ley de Snell:
+            n₁ sin(θ₁) = n₂ sin(θ₂)
+        </div>
+
+        <div class="equation">
+            Ángulo crítico:
+            sin(θc) = n₂ / n₁
+        </div>
+
+        <hr>
+
+        <p>
+            <strong>Ángulo crítico θc:</strong>
+            <span id="criticalAngle">---</span>
+        </p>
+
+        <p>
+            <strong>Ángulo refractado θ₂:</strong>
+            <span id="refractedAngle">---</span>
+        </p>
+
+        <p>
+            <strong>Velocidad relativa:</strong>
+            <span id="velocityInfo"></span>
+        </p>
+
+        <div id="state"></div>
+
+        <div class="note">
+
+            Si n₁ &gt; n₂, puede existir un ángulo crítico.
+
+            <br><br>
+
+            Si θ₁ &lt; θc → existe refracción.
+
+            <br>
+
+            Si θ₁ = θc → θ₂ = 90°.
+
+            <br>
+
+            Si θ₁ &gt; θc → ocurre reflexión interna total.
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+const n1Slider = document.getElementById("n1");
+const n2Slider = document.getElementById("n2");
+const angleSlider = document.getElementById("angle");
+
+const n1Value = document.getElementById("n1Value");
+const n2Value = document.getElementById("n2Value");
+const angleValue = document.getElementById("angleValue");
+
+const criticalText =
+    document.getElementById("criticalAngle");
+
+const refractedText =
+    document.getElementById("refractedAngle");
+
+const velocityText =
+    document.getElementById("velocityInfo");
+
+const state =
+    document.getElementById("state");
+
+
+function degToRad(deg) {
+
+    return deg * Math.PI / 180;
+
+}
+
+
+function radToDeg(rad) {
+
+    return rad * 180 / Math.PI;
+
+}
+
+
+/* ==================================================
+   DIBUJAR FLECHA
+================================================== */
+
+function drawArrow(x1, y1, x2, y2, color, width = 4) {
+
+    const angle =
+        Math.atan2(y2 - y1, x2 - x1);
+
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+
+    ctx.lineWidth = width;
+
+    ctx.beginPath();
+
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+
+    ctx.stroke();
+
+    const head = 12;
+
+    ctx.beginPath();
+
+    ctx.moveTo(x2, y2);
+
+    ctx.lineTo(
+        x2 - head * Math.cos(angle - Math.PI / 6),
+        y2 - head * Math.sin(angle - Math.PI / 6)
+    );
+
+    ctx.lineTo(
+        x2 - head * Math.cos(angle + Math.PI / 6),
+        y2 - head * Math.sin(angle + Math.PI / 6)
+    );
+
+    ctx.closePath();
+
+    ctx.fill();
+
+}
+
+
+/* ==================================================
+   ARCO PARA MOSTRAR ÁNGULOS
+================================================== */
+
+function drawAngleArc(
+    cx,
+    cy,
+    radius,
+    start,
+    end,
+    color,
+    text
+) {
+
+    ctx.strokeStyle = color;
+
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        cx,
+        cy,
+        radius,
+        start,
+        end
+    );
+
+    ctx.stroke();
+
+    ctx.fillStyle = color;
+
+    ctx.font = "16px Arial";
+
+    const middle =
+        (start + end) / 2;
+
+    ctx.fillText(
+        text,
+        cx + (radius + 20) * Math.cos(middle),
+        cy + (radius + 20) * Math.sin(middle)
+    );
+
+}
+
+
+/* ==================================================
+   SIMULACIÓN
+================================================== */
+
+function simulate() {
+
+    const n1 =
+        parseFloat(n1Slider.value);
+
+    const n2 =
+        parseFloat(n2Slider.value);
+
+    const theta1 =
+        parseFloat(angleSlider.value);
+
+    const theta1Rad =
+        degToRad(theta1);
+
+
+    /* ---------- Valores visuales ---------- */
+
+    n1Value.innerText =
+        n1.toFixed(2);
+
+    n2Value.innerText =
+        n2.toFixed(2);
+
+    angleValue.innerText =
+        theta1.toFixed(1) + "°";
+
+
+    /* ---------- velocidades ---------- */
+
+    const c = 3e8;
+
+    const v1 =
+        c / n1;
+
+    const v2 =
+        c / n2;
+
+    velocityText.innerHTML =
+
+        "v₁ = " +
+        v1.toExponential(3) +
+        " m/s &nbsp;&nbsp; | &nbsp;&nbsp;" +
+
+        "v₂ = " +
+        v2.toExponential(3) +
+        " m/s";
+
+
+    /* ---------- Ley de Snell ---------- */
+
+    const sinTheta2 =
+        (n1 / n2) *
+        Math.sin(theta1Rad);
+
+
+    let theta2 = null;
+
+    let criticalAngle = null;
+
+    let mode = "";
+
+
+    /* ==========================================
+       ÁNGULO CRÍTICO
+    ========================================== */
+
+    if (n1 > n2) {
+
+        criticalAngle =
+            radToDeg(
+                Math.asin(n2 / n1)
+            );
+
+        criticalText.innerText =
+            criticalAngle.toFixed(2) +
+            "°";
+
+
+        if (
+            Math.abs(
+                theta1 -
+                criticalAngle
+            ) < 0.15
+        ) {
+
+            mode = "critical";
+
+            theta2 = 90;
+
+        }
+
+        else if (
+            theta1 >
+            criticalAngle
+        ) {
+
+            mode = "tir";
+
+        }
+
+        else {
+
+            mode = "refraction";
+
+            theta2 =
+                radToDeg(
+                    Math.asin(
+                        sinTheta2
+                    )
+                );
+
+        }
+
+    }
+
+    else {
+
+        /*
+        Si n1 <= n2 no puede existir
+        reflexión interna total al pasar
+        del medio 1 al medio 2.
+        */
+
+        criticalText.innerText =
+            "No existe (n₁ ≤ n₂)";
+
+        mode = "refraction";
+
+        theta2 =
+            radToDeg(
+                Math.asin(
+                    Math.min(
+                        1,
+                        sinTheta2
+                    )
+                )
+            );
+
+    }
+
+
+    /* ---------- mensajes ---------- */
+
+    if (mode === "refraction") {
+
+        refractedText.innerText =
+            theta2.toFixed(2) +
+            "°";
+
+        state.className =
+            "refraccion";
+
+        if (n2 > n1) {
+
+            state.innerHTML =
+                "REFRACCIÓN: el rayo se ACERCA a la normal";
+
+        }
+
+        else if (n2 < n1) {
+
+            state.innerHTML =
+                "REFRACCIÓN: el rayo se ALEJA de la normal";
+
+        }
+
+        else {
+
+            state.innerHTML =
+                "NO HAY DESVIACIÓN: n₁ = n₂";
+
+        }
+
+    }
+
+
+    if (mode === "critical") {
+
+        refractedText.innerText =
+            "90°";
+
+        state.className =
+            "critico";
+
+        state.innerHTML =
+            "ÁNGULO CRÍTICO: el rayo refractado viaja por la interfaz";
+
+    }
+
+
+    if (mode === "tir") {
+
+        refractedText.innerText =
+            "No existe";
+
+        state.className =
+            "tir";
+
+        state.innerHTML =
+            "REFLEXIÓN INTERNA TOTAL";
+
+    }
+
+
+    /* ==========================================
+       DIBUJAR
+    ========================================== */
+
+    drawScene(
+        n1,
+        n2,
+        theta1,
+        theta2,
+        mode,
+        criticalAngle
+    );
+
+}
+
+
+/* ==================================================
+   ESCENA
+================================================== */
+
+function drawScene(
+    n1,
+    n2,
+    theta1,
+    theta2,
+    mode,
+    criticalAngle
+) {
+
+    const W =
+        canvas.width;
+
+    const H =
+        canvas.height;
+
+    const cx =
+        W / 2;
+
+    const cy =
+        H / 2;
+
+
+    ctx.clearRect(
+        0,
+        0,
+        W,
+        H
+    );
+
+
+    /* ---------- medios ---------- */
+
+    ctx.fillStyle =
+        "#17334b";
+
+    ctx.fillRect(
+        0,
+        0,
+        W,
+        cy
+    );
+
+
+    ctx.fillStyle =
+        "#26323f";
+
+    ctx.fillRect(
+        0,
+        cy,
+        W,
+        H - cy
+    );
+
+
+    /* ---------- interfaz ---------- */
+
+    ctx.strokeStyle =
+        "#ffffff";
+
+    ctx.lineWidth =
+        3;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        0,
+        cy
+    );
+
+    ctx.lineTo(
+        W,
+        cy
+    );
+
+    ctx.stroke();
+
+
+    /* ---------- normal ---------- */
+
+    ctx.setLineDash(
+        [10, 8]
+    );
+
+    ctx.strokeStyle =
+        "#cccccc";
+
+    ctx.lineWidth =
+        2;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        cx,
+        15
+    );
+
+    ctx.lineTo(
+        cx,
+        H - 15
+    );
+
+    ctx.stroke();
+
+    ctx.setLineDash([]);
+
+
+    /* ---------- etiquetas ---------- */
+
+    ctx.fillStyle =
+        "#ffffff";
+
+    ctx.font =
+        "18px Arial";
+
+    ctx.fillText(
+        "MEDIO 2   n₂ = " +
+        n2.toFixed(2),
+        20,
+        35
+    );
+
+    ctx.fillText(
+        "MEDIO 1   n₁ = " +
+        n1.toFixed(2),
+        20,
+        H - 25
+    );
+
+    ctx.fillStyle =
+        "#bbbbbb";
+
+    ctx.fillText(
+        "NORMAL",
+        cx + 10,
+        35
+    );
+
+
+    /* ==========================================
+       RAYO INCIDENTE
+    ========================================== */
+
+    const L =
+        210;
+
+    const theta1Rad =
+        degToRad(theta1);
+
+
+    const incidentX =
+        cx -
+        L *
+        Math.sin(theta1Rad);
+
+    const incidentY =
+        cy +
+        L *
+        Math.cos(theta1Rad);
+
+
+    drawArrow(
+        incidentX,
+        incidentY,
+        cx,
+        cy,
+        "#ffdd55",
+        5
+    );
+
+
+    /* arco ángulo incidencia */
+
+    drawAngleArc(
+        cx,
+        cy,
+        55,
+        Math.PI / 2,
+        Math.PI / 2 +
+        theta1Rad,
+        "#ffdd55",
+        "θ₁=" +
+        theta1.toFixed(1) +
+        "°"
+    );
+
+
+    /* ==========================================
+       REFRACCIÓN
+    ========================================== */
+
+    if (
+        mode === "refraction"
+    ) {
+
+        const theta2Rad =
+            degToRad(theta2);
+
+        const refractedX =
+            cx +
+            L *
+            Math.sin(theta2Rad);
+
+        const refractedY =
+            cy -
+            L *
+            Math.cos(theta2Rad);
+
+
+        drawArrow(
+            cx,
+            cy,
+            refractedX,
+            refractedY,
+            "#45e083",
+            5
+        );
+
+
+        drawAngleArc(
+            cx,
+            cy,
+            70,
+            -Math.PI / 2,
+            -Math.PI / 2 +
+            theta2Rad,
+            "#45e083",
+            "θ₂=" +
+            theta2.toFixed(1) +
+            "°"
+        );
+
+    }
+
+
+    /* ==========================================
+       ÁNGULO CRÍTICO
+    ========================================== */
+
+    if (
+        mode === "critical"
+    ) {
+
+        drawArrow(
+            cx,
+            cy,
+            W - 30,
+            cy,
+            "#ffe66d",
+            5
+        );
+
+        ctx.fillStyle =
+            "#ffe66d";
+
+        ctx.font =
+            "19px Arial";
+
+        ctx.fillText(
+            "θ₂ = 90°",
+            cx + 100,
+            cy - 15
+        );
+
+    }
+
+
+    /* ==========================================
+       REFLEXIÓN INTERNA TOTAL
+    ========================================== */
+
+    if (
+        mode === "tir"
+    ) {
+
+        const reflectedX =
+            cx +
+            L *
+            Math.sin(theta1Rad);
+
+        const reflectedY =
+            cy +
+            L *
+            Math.cos(theta1Rad);
+
+
+        drawArrow(
+            cx,
+            cy,
+            reflectedX,
+            reflectedY,
+            "#ff626f",
+            5
+        );
+
+
+        ctx.fillStyle =
+            "#ff7c8d";
+
+        ctx.font =
+            "20px Arial";
+
+        ctx.fillText(
+            "Reflexión interna total",
+            cx + 60,
+            cy + 60
+        );
+
+        ctx.fillText(
+            "θr = θ₁",
+            cx + 80,
+            cy + 90
+        );
+
+    }
+
+}
+
+
+/* ==================================================
+   EVENTOS
+================================================== */
+
+n1Slider.addEventListener(
+    "input",
+    simulate
+);
+
+n2Slider.addEventListener(
+    "input",
+    simulate
+);
+
+angleSlider.addEventListener(
+    "input",
+    simulate
+);
+
+
+/* Inicio */
+
+simulate();
+
+</script>
+
+</body>
+</html>
