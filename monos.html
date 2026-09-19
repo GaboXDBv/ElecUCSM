@@ -1,2006 +1,1033 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Simulador completo de fibra óptica</title>
-
-<style>
-    *{
-        box-sizing:border-box;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Freno Electromagnético por Corrientes de Foucault</title>
+  <style>
+    :root{
+      --bg:#0f172a;
+      --panel:#111827;
+      --panel2:#1f2937;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --line:#334155;
+      --accent:#38bdf8;
+      --accent2:#a78bfa;
+      --good:#34d399;
+      --warn:#f59e0b;
+      --danger:#fb7185;
+      --white:#ffffff;
     }
 
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
     body{
-        margin:0;
-        background:#0a0f18;
-        color:#eef4ff;
-        font-family:Arial, Helvetica, sans-serif;
+      margin:0;
+      font-family:Inter,Segoe UI,Arial,sans-serif;
+      background:linear-gradient(180deg,#0b1220,#111827 45%,#0f172a);
+      color:var(--text);
+      line-height:1.6;
     }
 
-    .container{
-        max-width:1400px;
-        margin:auto;
-        padding:22px;
+    header{
+      padding:42px 20px 28px;
+      text-align:center;
+      border-bottom:1px solid var(--line);
+      background:
+        radial-gradient(circle at 20% 20%,rgba(56,189,248,.15),transparent 28%),
+        radial-gradient(circle at 80% 0%,rgba(167,139,250,.14),transparent 25%);
     }
 
-    h1{
-        text-align:center;
-        margin:0 0 8px 0;
+    header h1{
+      margin:0 0 10px;
+      font-size:clamp(28px,5vw,48px);
+      line-height:1.1;
     }
 
-    .subtitle{
-        text-align:center;
-        color:#aab6ca;
-        margin-bottom:20px;
+    header p{
+      max-width:920px;
+      margin:auto;
+      color:var(--muted);
+      font-size:1.05rem;
     }
+
+    nav{
+      position:sticky;
+      top:0;
+      z-index:50;
+      display:flex;
+      gap:12px;
+      justify-content:center;
+      flex-wrap:wrap;
+      padding:10px;
+      background:rgba(15,23,42,.92);
+      backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--line);
+    }
+
+    nav a{
+      color:var(--text);
+      text-decoration:none;
+      padding:8px 12px;
+      border-radius:10px;
+    }
+
+    nav a:hover{background:#1e293b}
+
+    main{
+      width:min(1180px,94%);
+      margin:0 auto;
+      padding:30px 0 70px;
+    }
+
+    section{
+      background:rgba(17,24,39,.88);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:24px;
+      margin:24px 0;
+      box-shadow:0 16px 45px rgba(0,0,0,.18);
+    }
+
+    h2{margin-top:0;font-size:1.75rem}
+    h3{margin-top:22px}
+    .muted{color:var(--muted)}
 
     .grid{
-        display:grid;
-        grid-template-columns:330px 1fr;
-        gap:18px;
-    }
-
-    .panel{
-        background:#131d2c;
-        border:1px solid #263650;
-        border-radius:16px;
-        padding:18px;
-    }
-
-    .controls h2,
-    .visual h2{
-        margin-top:0;
-    }
-
-    .control{
-        margin-bottom:22px;
-    }
-
-    label{
-        display:block;
-        font-weight:bold;
-        margin-bottom:8px;
-    }
-
-    input[type="range"]{
-        width:100%;
-    }
-
-    .value{
-        margin-top:5px;
-        font-size:19px;
-        font-weight:bold;
-    }
-
-    .equation{
-        background:#0e1622;
-        border-radius:10px;
-        padding:12px;
-        margin-top:10px;
-        line-height:1.7;
-        font-family:Georgia, serif;
-    }
-
-    .cards{
-        display:grid;
-        grid-template-columns:repeat(4,1fr);
-        gap:12px;
-        margin-top:16px;
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+      gap:16px;
     }
 
     .card{
-        background:#131d2c;
-        border:1px solid #263650;
-        border-radius:14px;
-        padding:14px;
-        text-align:center;
+      background:var(--panel2);
+      border:1px solid #374151;
+      border-radius:14px;
+      padding:16px;
     }
 
-    .card-title{
-        color:#aab6ca;
-        font-size:14px;
+    .flow{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:12px;
+      align-items:stretch;
     }
 
-    .card-value{
-        font-size:24px;
-        font-weight:bold;
-        margin-top:7px;
+    .flow .step{
+      background:#172033;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:15px;
+      text-align:center;
+      position:relative;
+    }
+
+    .flow .step:not(:last-child)::after{
+      content:"→";
+      position:absolute;
+      right:-18px;
+      top:50%;
+      transform:translateY(-50%);
+      color:var(--accent);
+      font-size:28px;
+      font-weight:700;
+    }
+
+    .badge{
+      display:inline-block;
+      padding:3px 9px;
+      border-radius:999px;
+      font-size:.82rem;
+      background:#0c4a6e;
+      color:#bae6fd;
+      margin-bottom:8px;
+    }
+
+    .sim-layout{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:18px;
     }
 
     canvas{
-        width:100%;
-        background:#08101b;
-        border:1px solid #263650;
-        border-radius:14px;
-        display:block;
+      width:100%;
+      background:#07111f;
+      border:1px solid var(--line);
+      border-radius:14px;
+      display:block;
     }
 
-    .canvasBlock{
-        margin-bottom:18px;
+    #simCanvas{height:430px}
+    #graphCanvas{height:270px}
+
+    .controls{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
     }
 
-    .status{
-        margin-top:16px;
-        padding:16px;
-        border-radius:12px;
-        text-align:center;
-        font-weight:bold;
-        font-size:21px;
+    .control{
+      background:#0f172a;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:12px;
     }
 
-    .ok{
-        background:#123d31;
-        color:#6fffc0;
+    .control label{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      font-weight:600;
+      margin-bottom:8px;
     }
 
-    .warning{
-        background:#564616;
-        color:#ffe67b;
+    input[type="range"]{width:100%}
+
+    .btns{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
     }
 
-    .bad{
-        background:#4c1e28;
-        color:#ff8f9c;
+    button{
+      border:0;
+      border-radius:10px;
+      padding:11px 12px;
+      cursor:pointer;
+      font-weight:700;
+      color:#06131f;
+      background:var(--accent);
     }
 
-    .info{
-        margin-top:14px;
-        line-height:1.7;
-        color:#d6dfed;
+    button.secondary{background:#cbd5e1}
+    button.danger{background:var(--danger)}
+    button:hover{filter:brightness(1.06)}
+
+    .meters{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+      margin-top:14px;
     }
 
-    .legend{
-        display:flex;
-        flex-wrap:wrap;
-        gap:12px;
-        margin-top:10px;
-        color:#bcc8da;
-        font-size:14px;
+    .meter{
+      background:#0f172a;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:12px;
+      text-align:center;
     }
 
-    .dot{
-        display:inline-block;
-        width:12px;
-        height:12px;
-        border-radius:50%;
-        margin-right:6px;
+    .meter strong{
+      display:block;
+      font-size:1.35rem;
+      color:var(--good);
     }
 
-    @media(max-width:900px){
-        .grid{
-            grid-template-columns:1fr;
-        }
-
-        .cards{
-            grid-template-columns:1fr 1fr;
-        }
+    .formula{
+      overflow-x:auto;
+      background:#08111f;
+      border-left:4px solid var(--accent2);
+      border-radius:10px;
+      padding:14px 16px;
+      margin:12px 0;
+      font-family:"Cambria Math",Consolas,monospace;
     }
-</style>
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      overflow:hidden;
+      border-radius:12px;
+    }
+
+    th,td{
+      border-bottom:1px solid var(--line);
+      padding:11px;
+      text-align:left;
+      vertical-align:top;
+    }
+
+    th{background:#172033}
+    tr:last-child td{border-bottom:0}
+
+    pre{
+      white-space:pre-wrap;
+      word-break:break-word;
+      background:#07111f;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:15px;
+      overflow:auto;
+      color:#dbeafe;
+    }
+
+    code{font-family:Consolas,monospace}
+
+    .note{
+      border:1px solid #854d0e;
+      background:rgba(120,53,15,.25);
+      padding:12px 14px;
+      border-radius:12px;
+      color:#fde68a;
+    }
+
+    footer{
+      text-align:center;
+      color:var(--muted);
+      padding:26px;
+      border-top:1px solid var(--line);
+    }
+
+    @media (max-width:900px){
+      .flow{grid-template-columns:1fr}
+      .flow .step:not(:last-child)::after{
+        content:"↓";
+        right:50%;
+        top:auto;
+        bottom:-25px;
+        transform:translateX(50%);
+      }
+      .sim-layout{grid-template-columns:1fr}
+      .meters{grid-template-columns:repeat(2,1fr)}
+    }
+
+    @media (max-width:520px){
+      .meters{grid-template-columns:1fr}
+      .btns{grid-template-columns:1fr}
+      section{padding:16px}
+    }
+  </style>
 </head>
 
 <body>
+<header>
+  <h1>Freno electromagnético por corrientes de Foucault</h1>
+  <p>
+    Simulación educativa de un disco conductor frenado sin contacto por un campo magnético.
+    Permite visualizar el sistema, modificar parámetros, observar la reducción de RPM y
+    revisar los cálculos físicos utilizados.
+  </p>
+</header>
 
-<div class="container">
+<nav>
+  <a href="#sistema">Sistema</a>
+  <a href="#simulador">Simulador</a>
+  <a href="#calculos">Cálculos</a>
+  <a href="#funcionamiento">Funcionamiento</a>
+  <a href="#codigo">Explicación del código</a>
+</nav>
 
-    <h1>Simulador de fibra óptica de índice escalonado</h1>
+<main>
 
-    <div class="subtitle">
-        Índices de refracción · Apertura numérica · Número V · Monomodo · Multimodo · Fuga de luz
+<section id="sistema">
+  <h2>1. Arquitectura del sistema</h2>
+  <p>
+    El proyecto representa un freno electromagnético sin contacto. Un motor hace girar
+    un disco de aluminio. Al acercar imanes permanentes al disco, el movimiento relativo
+    entre el conductor y el campo magnético induce corrientes de Foucault. Según la ley
+    de Lenz, esas corrientes generan un campo que se opone al movimiento que las produjo.
+  </p>
+
+  <div class="flow">
+    <div class="step">
+      <span class="badge">Entrada</span>
+      <strong>Motor</strong>
+      <p class="muted">Entrega velocidad al eje.</p>
+    </div>
+    <div class="step">
+      <span class="badge">Elemento móvil</span>
+      <strong>Disco de aluminio</strong>
+      <p class="muted">Conductor donde aparecen corrientes inducidas.</p>
+    </div>
+    <div class="step">
+      <span class="badge">Frenado</span>
+      <strong>Imanes</strong>
+      <p class="muted">Generan el campo magnético transversal.</p>
+    </div>
+    <div class="step">
+      <span class="badge">Medición</span>
+      <strong>Sensor Hall / Encoder</strong>
+      <p class="muted">Obtiene la velocidad de giro.</p>
+    </div>
+    <div class="step">
+      <span class="badge">Control</span>
+      <strong>ESP32</strong>
+      <p class="muted">Calcula RPM, tiempo y respuesta experimental.</p>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-top:18px">
+    <div class="card">
+      <h3>Variable manipulada</h3>
+      <p>Separación entre los imanes y el disco, intensidad del campo magnético y velocidad inicial.</p>
+    </div>
+    <div class="card">
+      <h3>Variable medida</h3>
+      <p>RPM, velocidad angular, par de frenado estimado, potencia disipada y tiempo de desaceleración.</p>
+    </div>
+    <div class="card">
+      <h3>Objetivo experimental</h3>
+      <p>Determinar cómo cambia el tiempo de frenado cuando varía la distancia imán–disco.</p>
+    </div>
+  </div>
+</section>
+
+<section id="simulador">
+  <h2>2. Simulador interactivo</h2>
+  <p class="muted">
+    Cambia los parámetros y presiona <b>Iniciar</b>. El modelo es simplificado y sirve
+    para explicar el fenómeno y planificar el experimento real.
+  </p>
+
+  <div class="sim-layout">
+    <div>
+      <canvas id="simCanvas" width="800" height="430"></canvas>
+      <div class="meters">
+        <div class="meter">Velocidad<strong id="rpmOut">1200 rpm</strong></div>
+        <div class="meter">ω<strong id="omegaOut">125.66 rad/s</strong></div>
+        <div class="meter">Par de frenado<strong id="torqueOut">0.000 N·m</strong></div>
+        <div class="meter">Potencia<strong id="powerOut">0.00 W</strong></div>
+        <div class="meter">Energía disipada<strong id="energyOut">0.00 J</strong></div>
+        <div class="meter">Tiempo<strong id="timeOut">0.00 s</strong></div>
+      </div>
     </div>
 
-    <div class="grid">
+    <div class="controls">
+      <div class="control">
+        <label>
+          <span>RPM inicial</span>
+          <span id="rpmInitLabel">1200 rpm</span>
+        </label>
+        <input id="rpmInit" type="range" min="200" max="3000" value="1200" step="50">
+      </div>
 
-        <!-- ==============================
-             CONTROLES
-        =============================== -->
+      <div class="control">
+        <label>
+          <span>Separación imán–disco</span>
+          <span id="gapLabel">10 mm</span>
+        </label>
+        <input id="gap" type="range" min="2" max="30" value="10" step="1">
+      </div>
 
-        <div class="panel controls">
+      <div class="control">
+        <label>
+          <span>Campo magnético nominal B₀</span>
+          <span id="bLabel">0.35 T</span>
+        </label>
+        <input id="b0" type="range" min="0.10" max="0.80" value="0.35" step="0.01">
+      </div>
 
-            <h2>Parámetros</h2>
+      <div class="control">
+        <label>
+          <span>Radio del disco</span>
+          <span id="radiusLabel">0.10 m</span>
+        </label>
+        <input id="radius" type="range" min="0.05" max="0.20" value="0.10" step="0.01">
+      </div>
 
-            <div class="control">
+      <div class="control">
+        <label>
+          <span>Masa del disco</span>
+          <span id="massLabel">0.35 kg</span>
+        </label>
+        <input id="mass" type="range" min="0.10" max="1.20" value="0.35" step="0.05">
+      </div>
 
-                <label>
-                    Índice del núcleo n₁
-                </label>
+      <div class="control">
+        <label>
+          <span>Constante electromagnética K</span>
+          <span id="kLabel">0.0025</span>
+        </label>
+        <input id="kBrake" type="range" min="0.0005" max="0.0080" value="0.0025" step="0.0001">
+      </div>
 
-                <input
-                    id="n1"
-                    type="range"
-                    min="1.30"
-                    max="1.80"
-                    step="0.001"
-                    value="1.600"
-                >
+      <div class="btns">
+        <button id="startBtn">Iniciar</button>
+        <button id="pauseBtn" class="secondary">Pausar</button>
+        <button id="resetBtn" class="danger">Reiniciar</button>
+      </div>
 
-                <div
-                    class="value"
-                    id="n1Value">
-                </div>
+      <div class="note">
+        En el prototipo real, evita inferir parámetros físicos únicamente con esta
+        simulación. Deben calibrarse con mediciones reales de RPM, distancia y tiempo.
+      </div>
+    </div>
+  </div>
 
-            </div>
+  <h3>Gráfica RPM vs. tiempo</h3>
+  <canvas id="graphCanvas" width="1000" height="270"></canvas>
+</section>
 
+<section id="calculos">
+  <h2>3. Sección de cálculos</h2>
 
-            <div class="control">
+  <h3>3.1 Velocidad angular</h3>
+  <div class="formula">ω = RPM · 2π / 60</div>
+  <p id="calcOmega"></p>
 
-                <label>
-                    Índice del revestimiento n₂
-                </label>
+  <h3>3.2 Momento de inercia del disco</h3>
+  <p>Para un disco macizo:</p>
+  <div class="formula">I = ½ · m · r²</div>
+  <p id="calcInertia"></p>
 
-                <input
-                    id="n2"
-                    type="range"
-                    min="1.20"
-                    max="1.80"
-                    step="0.001"
-                    value="1.560"
-                >
+  <h3>3.3 Campo magnético efectivo</h3>
+  <p>
+    Para esta demostración se usa una aproximación exponencial de la disminución del campo
+    con la separación:
+  </p>
+  <div class="formula">B(g) = B₀ · e<sup>−g/g₀</sup></div>
+  <p>
+    donde <b>g</b> es la separación y <b>g₀ = 12 mm</b> es una constante usada en la simulación.
+  </p>
+  <p id="calcB"></p>
 
-                <div
-                    class="value"
-                    id="n2Value">
-                </div>
+  <h3>3.4 Par de frenado aproximado</h3>
+  <div class="formula">τ<sub>f</sub> = K · B² · r² · ω</div>
+  <p id="calcTorque"></p>
 
-            </div>
+  <h3>3.5 Ecuación dinámica</h3>
+  <div class="formula">I · dω/dt = −τ<sub>f</sub> − b·ω</div>
+  <p>
+    Se agrega un término pequeño <b>b·ω</b> para representar pérdidas mecánicas del eje,
+    rodamientos y aire.
+  </p>
 
+  <h3>3.6 Potencia disipada</h3>
+  <div class="formula">P = τ<sub>f</sub> · ω</div>
+  <p id="calcPower"></p>
 
-            <div class="control">
+  <h3>3.7 Ejemplo numérico actual</h3>
+  <table>
+    <thead>
+      <tr><th>Magnitud</th><th>Valor</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>RPM</td><td id="tableRpm"></td></tr>
+      <tr><td>Velocidad angular</td><td id="tableOmega"></td></tr>
+      <tr><td>Momento de inercia</td><td id="tableInertia"></td></tr>
+      <tr><td>Campo efectivo</td><td id="tableB"></td></tr>
+      <tr><td>Par de frenado</td><td id="tableTorque"></td></tr>
+      <tr><td>Potencia instantánea</td><td id="tablePower"></td></tr>
+    </tbody>
+  </table>
+</section>
 
-                <label>
-                    Diámetro del núcleo d
-                </label>
+<section id="funcionamiento">
+  <h2>4. ¿Cómo funciona físicamente?</h2>
 
-                <input
-                    id="diameter"
-                    type="range"
-                    min="1"
-                    max="35"
-                    step="0.1"
-                    value="8"
-                >
-
-                <div
-                    class="value"
-                    id="diameterValue">
-                </div>
-
-            </div>
-
-
-            <div class="control">
-
-                <label>
-                    Longitud de onda λ₀
-                </label>
-
-                <input
-                    id="lambda"
-                    type="range"
-                    min="700"
-                    max="1700"
-                    step="10"
-                    value="1550"
-                >
-
-                <div
-                    class="value"
-                    id="lambdaValue">
-                </div>
-
-            </div>
-
-
-            <div class="equation">
-
-                <strong>Relaciones:</strong>
-
-                <br>
-
-                NA = √(n₁² − n₂²)
-
-                <br>
-
-                V = (πd / λ₀) NA
-
-                <br>
-
-                V &lt; 2.405 → monomodo
-
-                <br>
-
-                dmax =
-                2.405 λ₀ / (π NA)
-
-            </div>
-
-        </div>
-
-
-        <!-- ==============================
-             VISUALIZACIONES
-        =============================== -->
-
-        <div class="panel visual">
-
-            <h2>Comportamiento de la fibra</h2>
-
-            <div class="canvasBlock">
-
-                <canvas
-                    id="fiberCanvas"
-                    width="950"
-                    height="380">
-                </canvas>
-
-            </div>
-
-            <div class="canvasBlock">
-
-                <canvas
-                    id="profileCanvas"
-                    width="950"
-                    height="260">
-                </canvas>
-
-            </div>
-
-            <div class="canvasBlock">
-
-                <canvas
-                    id="graphCanvas"
-                    width="950"
-                    height="350">
-                </canvas>
-
-            </div>
-
-        </div>
-
+  <div class="grid">
+    <div class="card">
+      <h3>1. El disco gira</h3>
+      <p>
+        El motor entrega energía mecánica y el disco conductor gira con una velocidad angular ω.
+      </p>
     </div>
 
-
-    <!-- ==============================
-         RESULTADOS
-    =============================== -->
-
-    <div class="cards">
-
-        <div class="card">
-
-            <div class="card-title">
-                Apertura numérica
-            </div>
-
-            <div
-                class="card-value"
-                id="naResult">
-            </div>
-
-        </div>
-
-
-        <div class="card">
-
-            <div class="card-title">
-                Número V
-            </div>
-
-            <div
-                class="card-value"
-                id="vResult">
-            </div>
-
-        </div>
-
-
-        <div class="card">
-
-            <div class="card-title">
-                d máximo monomodo
-            </div>
-
-            <div
-                class="card-value"
-                id="dmaxResult">
-            </div>
-
-        </div>
-
-
-        <div class="card">
-
-            <div class="card-title">
-                n₁ − n₂
-            </div>
-
-            <div
-                class="card-value"
-                id="deltaResult">
-            </div>
-
-        </div>
-
+    <div class="card">
+      <h3>2. El conductor cruza el campo</h3>
+      <p>
+        Una región del disco atraviesa el campo magnético producido por los imanes.
+      </p>
     </div>
 
-
-    <div
-        id="status"
-        class="status">
+    <div class="card">
+      <h3>3. Se inducen corrientes</h3>
+      <p>
+        El cambio de flujo magnético produce corrientes cerradas dentro del propio disco:
+        las corrientes de Foucault.
+      </p>
     </div>
 
-
-    <div
-        class="panel info"
-        id="explanation">
+    <div class="card">
+      <h3>4. Aparece una fuerza opuesta</h3>
+      <p>
+        Por la ley de Lenz, el campo creado por esas corrientes se opone a la causa que
+        las produce, generando un par resistente.
+      </p>
     </div>
 
-</div>
+    <div class="card">
+      <h3>5. La velocidad disminuye</h3>
+      <p>
+        La energía cinética rotacional se reduce y parte se transforma principalmente en calor
+        dentro del material conductor.
+      </p>
+    </div>
 
+    <div class="card">
+      <h3>6. El sensor registra las RPM</h3>
+      <p>
+        Un sensor Hall o encoder puede enviar pulsos al ESP32 para calcular experimentalmente
+        RPM y tiempo de frenado.
+      </p>
+    </div>
+  </div>
+
+  <h3>Hipótesis experimental sugerida</h3>
+  <p>
+    A menor separación entre los imanes y el disco conductor, mayor será la interacción
+    magnética y menor será el tiempo requerido para reducir la velocidad del disco.
+  </p>
+</section>
+
+<section id="codigo">
+  <h2>5. Explicación del código HTML</h2>
+
+  <h3>5.1 Estructura HTML</h3>
+  <p>
+    El documento está dividido en cinco secciones principales: arquitectura, simulador,
+    cálculos, explicación física y explicación del código. Los elementos
+    <code>&lt;canvas&gt;</code> se utilizan para dibujar el disco y la gráfica.
+  </p>
+
+  <h3>5.2 CSS</h3>
+  <p>
+    Todo el diseño se encuentra dentro de <code>&lt;style&gt;</code>. Se usan CSS Grid,
+    tarjetas, variables de color y reglas responsivas para que la interfaz también se adapte
+    a pantallas pequeñas.
+  </p>
+
+  <h3>5.3 Variables principales de JavaScript</h3>
+  <pre><code>let omega;          // velocidad angular en rad/s
+let rpm;            // revoluciones por minuto
+let angle;          // ángulo visual del disco
+let time;           // tiempo de simulación
+let energy;         // energía acumulada disipada
+let running;        // estado del simulador</code></pre>
+
+  <h3>5.4 Conversión de RPM a rad/s</h3>
+  <pre><code>omega = rpm * 2 * Math.PI / 60;</code></pre>
+  <p>
+    Esta conversión permite trabajar con las ecuaciones mecánicas usando unidades del SI.
+  </p>
+
+  <h3>5.5 Campo magnético efectivo</h3>
+  <pre><code>const B = B0 * Math.exp(-gapMM / 12);</code></pre>
+  <p>
+    La expresión no pretende reproducir exactamente la geometría de un imán real. Se usa
+    para representar de forma visual que el campo efectivo sobre el disco cae al aumentar
+    la separación.
+  </p>
+
+  <h3>5.6 Momento de inercia</h3>
+  <pre><code>const I = 0.5 * mass * radius * radius;</code></pre>
+  <p>
+    Corresponde a la expresión para un disco macizo que gira alrededor de su eje central.
+  </p>
+
+  <h3>5.7 Modelo del par de frenado</h3>
+  <pre><code>const torque = K * B * B * radius * radius * omega;</code></pre>
+  <p>
+    El par aumenta con el campo magnético, el tamaño efectivo del disco y la velocidad.
+    En un desarrollo experimental serio, la constante K debería obtenerse mediante ajuste
+    de datos reales.
+  </p>
+
+  <h3>5.8 Actualización de la velocidad</h3>
+  <pre><code>const alpha = -(torque + mechanicalLoss) / I;
+omega += alpha * dt;
+if (omega &lt; 0) omega = 0;</code></pre>
+  <p>
+    Primero se calcula la aceleración angular negativa y luego se integra numéricamente
+    usando un paso pequeño de tiempo <code>dt</code>.
+  </p>
+
+  <h3>5.9 Animación</h3>
+  <pre><code>requestAnimationFrame(animate);</code></pre>
+  <p>
+    El navegador ejecuta repetidamente la función de animación. En cada ciclo se recalculan
+    las magnitudes físicas, se dibuja el disco, se actualizan los indicadores y se agrega
+    un punto a la gráfica.
+  </p>
+
+  <h3>5.10 Gráfica</h3>
+  <p>
+    El arreglo <code>history</code> guarda pares <code>{t, rpm}</code>. La función
+    <code>drawGraph()</code> convierte esos valores a coordenadas del canvas y dibuja
+    la curva RPM-tiempo.
+  </p>
+
+  <div class="note">
+    Para el paper, presenten este modelo como una herramienta didáctica o de predicción
+    preliminar. La validación principal debe realizarse con el prototipo físico y mediciones reales.
+  </div>
+</section>
+
+</main>
+
+<footer>
+  Simulador educativo — Freno electromagnético por corrientes de Foucault
+</footer>
 
 <script>
-
-/* =====================================================
-   ELEMENTOS
-===================================================== */
-
-const n1Slider =
-document.getElementById("n1");
-
-const n2Slider =
-document.getElementById("n2");
-
-const diameterSlider =
-document.getElementById("diameter");
-
-const lambdaSlider =
-document.getElementById("lambda");
-
-
-const fiberCanvas =
-document.getElementById("fiberCanvas");
-
-const fiberCtx =
-fiberCanvas.getContext("2d");
-
-
-const profileCanvas =
-document.getElementById("profileCanvas");
-
-const profileCtx =
-profileCanvas.getContext("2d");
-
-
-const graphCanvas =
-document.getElementById("graphCanvas");
-
-const graphCtx =
-graphCanvas.getContext("2d");
-
-
-/* =====================================================
-   PRINCIPAL
-===================================================== */
-
-function simulate(){
-
-    const n1 =
-    parseFloat(n1Slider.value);
-
-    const n2 =
-    parseFloat(n2Slider.value);
-
-    const diameterUm =
-    parseFloat(diameterSlider.value);
-
-    const lambdaNm =
-    parseFloat(lambdaSlider.value);
-
-
-    const diameter =
-    diameterUm * 1e-6;
-
-    const lambda =
-    lambdaNm * 1e-9;
-
-
-    const delta =
-    n1 - n2;
-
-
-    let NA = null;
-
-    let V = null;
-
-    let dmaxUm = null;
-
-
-    /* =====================================
-       CASO NORMAL: n1 > n2
-    ===================================== */
-
-    if(n1 > n2){
-
-        NA =
-        Math.sqrt(
-            n1*n1 -
-            n2*n2
-        );
-
-
-        V =
-        Math.PI *
-        diameter *
-        NA /
-        lambda;
-
-
-        const dmax =
-        2.405 *
-        lambda /
-        (
-            Math.PI *
-            NA
-        );
-
-
-        dmaxUm =
-        dmax * 1e6;
-
-    }
-
-
-    /* =====================================
-       ACTUALIZAR TEXTOS
-    ===================================== */
-
-    document.getElementById(
-        "n1Value"
-    ).innerText =
-    n1.toFixed(3);
-
-
-    document.getElementById(
-        "n2Value"
-    ).innerText =
-    n2.toFixed(3);
-
-
-    document.getElementById(
-        "diameterValue"
-    ).innerText =
-    diameterUm.toFixed(1) +
-    " µm";
-
-
-    document.getElementById(
-        "lambdaValue"
-    ).innerText =
-    lambdaNm +
-    " nm";
-
-
-    document.getElementById(
-        "deltaResult"
-    ).innerText =
-    delta.toFixed(3);
-
-
-    if(NA !== null){
-
-        document.getElementById(
-            "naResult"
-        ).innerText =
-        NA.toFixed(4);
-
-    }
-
-    else{
-
-        document.getElementById(
-            "naResult"
-        ).innerText =
-        "No real";
-
-    }
-
-
-    if(V !== null){
-
-        document.getElementById(
-            "vResult"
-        ).innerText =
-        V.toFixed(3);
-
-    }
-
-    else{
-
-        document.getElementById(
-            "vResult"
-        ).innerText =
-        "No guiado";
-
-    }
-
-
-    if(dmaxUm !== null){
-
-        document.getElementById(
-            "dmaxResult"
-        ).innerText =
-        dmaxUm.toFixed(2) +
-        " µm";
-
-    }
-
-    else{
-
-        document.getElementById(
-            "dmaxResult"
-        ).innerText =
-        "No aplica";
-
-    }
-
-
-    /* =====================================
-       ESTADO FÍSICO
-    ===================================== */
-
-    updateStatus(
-        n1,
-        n2,
-        V,
-        NA,
-        dmaxUm,
-        diameterUm
-    );
-
-
-    /* =====================================
-       GRÁFICAS
-    ===================================== */
-
-    drawFiber(
-        n1,
-        n2,
-        V,
-        diameterUm
-    );
-
-    drawIndexProfile(
-        n1,
-        n2
-    );
-
-    drawDmaxGraph(
-        n1,
-        n2,
-        lambdaNm
-    );
-
-}
-
-
-/* =====================================================
-   ESTADO
-===================================================== */
-
-function updateStatus(
-    n1,
-    n2,
-    V,
-    NA,
-    dmax,
-    diameter
-){
-
-    const status =
-    document.getElementById("status");
-
-    const explanation =
-    document.getElementById("explanation");
-
-
-    if(n2 > n1){
-
-        status.className =
-        "status bad";
-
-        status.innerHTML =
-        "n₂ > n₁ → NO hay guiado convencional por reflexión interna total";
-
-
-        explanation.innerHTML =
-
-        "<strong>¿Qué está pasando?</strong><br><br>" +
-
-        "El revestimiento tiene un índice de refracción mayor que el núcleo. " +
-
-        "En una fibra escalonada convencional se necesita <strong>n₁ > n₂</strong>. " +
-
-        "Cuando n₂ > n₁, la expresión √(n₁² − n₂²) deja de ser real y por eso la apertura numérica definida para este caso deja de tener sentido físico. " +
-
-        "La luz ya no queda confinada en el núcleo mediante reflexión interna total; parte importante del campo se desplaza hacia el revestimiento.";
-
-        return;
-
-    }
-
-
-    if(Math.abs(n1 - n2) < 0.0005){
-
-        status.className =
-        "status warning";
-
-        status.innerHTML =
-        "n₁ ≈ n₂ → prácticamente no existe contraste de índice";
-
-
-        explanation.innerHTML =
-
-        "<strong>n₁ y n₂ son prácticamente iguales.</strong><br><br>" +
-
-        "El núcleo deja de distinguirse ópticamente del revestimiento. " +
-
-        "NA tiende a cero, V también tiende a cero y el mecanismo de confinamiento se vuelve extremadamente débil.";
-
-        return;
-
-    }
-
-
-    if(V < 2.405){
-
-        status.className =
-        "status ok";
-
-        status.innerHTML =
-        "MONOMODO → se propaga el modo fundamental HE₁₁";
-
-
-        explanation.innerHTML =
-
-        "<strong>Fibra correctamente guiada.</strong><br><br>" +
-
-        "Como n₁ > n₂ existe contraste de índice y puede darse reflexión interna total. " +
-
-        "Además, V = " +
-        V.toFixed(3) +
-        " es menor que 2.405, por lo que todavía no aparecen los primeros modos superiores.<br><br>" +
-
-        "Diámetro actual: <strong>" +
-        diameter.toFixed(2) +
-        " µm</strong><br>" +
-
-        "Diámetro máximo aproximado para seguir monomodo: <strong>" +
-        dmax.toFixed(2) +
-        " µm</strong>.";
-
-        return;
-
-    }
-
-
-    status.className =
-    "status bad";
-
-    status.innerHTML =
-    "MULTIMODO → HE₁₁ + modos superiores";
-
-
-    explanation.innerHTML =
-
-    "<strong>La luz sigue guiada, pero la fibra ya no es monomodo.</strong><br><br>" +
-
-    "Como V = " +
-    V.toFixed(3) +
-    " supera 2.405, pueden aparecer los primeros modos superiores, como TE₀₁, TM₀₁ y HE₂₁.";
-
-}
-
-
-/* =====================================================
-   DIBUJO FIBRA LONGITUDINAL
-===================================================== */
-
-function drawFiber(
-    n1,
-    n2,
-    V,
-    diameter
-){
-
-    const ctx =
-    fiberCtx;
-
-    const W =
-    fiberCanvas.width;
-
-    const H =
-    fiberCanvas.height;
-
-
-    ctx.clearRect(
-        0,
-        0,
-        W,
-        H
-    );
-
-
-    /* fondo */
-
-    ctx.fillStyle =
-    "#08101b";
-
-    ctx.fillRect(
-        0,
-        0,
-        W,
-        H
-    );
-
-
-    const centerY =
-    H / 2;
-
-
-    const claddingTop =
-    65;
-
-    const claddingBottom =
-    H - 65;
-
-
-    /* revestimiento */
-
-    ctx.fillStyle =
-    "#18314b";
-
-    ctx.fillRect(
-        60,
-        claddingTop,
-        W - 120,
-        claddingBottom - claddingTop
-    );
-
-
-    /* núcleo */
-
-    const coreHeight =
-    Math.min(
-        50 +
-        diameter * 4,
-        180
-    );
-
-
-    const coreTop =
-    centerY -
-    coreHeight / 2;
-
-
-    const coreBottom =
-    centerY +
-    coreHeight / 2;
-
-
-    ctx.fillStyle =
-    n1 > n2
-    ? "#7a3f25"
-    : "#30465d";
-
-
-    ctx.fillRect(
-        60,
-        coreTop,
-        W - 120,
-        coreHeight
-    );
-
-
-    /* etiquetas */
-
-    ctx.fillStyle =
-    "#ffffff";
-
-    ctx.font =
-    "18px Arial";
-
-
-    ctx.fillText(
-        "Revestimiento",
-        80,
-        95
-    );
-
-
-    ctx.fillText(
-        "n₂ = " +
-        n2.toFixed(3),
-        80,
-        120
-    );
-
-
-    ctx.fillText(
-        "Núcleo",
-        80,
-        centerY - 8
-    );
-
-
-    ctx.fillText(
-        "n₁ = " +
-        n1.toFixed(3),
-        80,
-        centerY + 18
-    );
-
-
-    /* =========================================
-       CASO n2 > n1
-    ========================================= */
-
-    if(n2 >= n1){
-
-        drawLeakyField(
-            ctx,
-            W,
-            H,
-            centerY,
-            coreTop,
-            coreBottom
-        );
-
-        return;
-
-    }
-
-
-    /* =========================================
-       MONOMODO
-    ========================================= */
-
-    if(V < 2.405){
-
-        drawFundamentalMode(
-            ctx,
-            W,
-            centerY,
-            coreHeight
-        );
-
-    }
-
-    else{
-
-        drawHigherModes(
-            ctx,
-            W,
-            centerY,
-            coreHeight
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   HE11
-===================================================== */
-
-function drawFundamentalMode(
-    ctx,
-    W,
-    centerY,
-    coreHeight
-){
-
-    const startX =
-    170;
-
-    const endX =
-    W - 90;
-
-
-    /* envolvente */
-
-    const gradient =
-    ctx.createLinearGradient(
-        startX,
-        0,
-        endX,
-        0
-    );
-
-
-    gradient.addColorStop(
-        0,
-        "rgba(90,255,190,0.15)"
-    );
-
-    gradient.addColorStop(
-        0.5,
-        "rgba(90,255,190,0.45)"
-    );
-
-    gradient.addColorStop(
-        1,
-        "rgba(90,255,190,0.15)"
-    );
-
-
-    ctx.fillStyle =
-    gradient;
-
-
+  const simCanvas = document.getElementById("simCanvas");
+  const ctx = simCanvas.getContext("2d");
+
+  const graphCanvas = document.getElementById("graphCanvas");
+  const gctx = graphCanvas.getContext("2d");
+
+  const rpmInit = document.getElementById("rpmInit");
+  const gap = document.getElementById("gap");
+  const b0 = document.getElementById("b0");
+  const radiusInput = document.getElementById("radius");
+  const massInput = document.getElementById("mass");
+  const kBrake = document.getElementById("kBrake");
+
+  let running = false;
+  let rpm = Number(rpmInit.value);
+  let omega = rpmToOmega(rpm);
+  let angle = 0;
+  let time = 0;
+  let energy = 0;
+  let lastTimestamp = null;
+  let history = [{t:0, rpm:rpm}];
+
+  const mechanicalB = 0.00002;
+
+  function rpmToOmega(rpmValue){
+    return rpmValue * 2 * Math.PI / 60;
+  }
+
+  function omegaToRpm(omegaValue){
+    return omegaValue * 60 / (2 * Math.PI);
+  }
+
+  function getParams(){
+    const gapMM = Number(gap.value);
+    const B0 = Number(b0.value);
+    const radius = Number(radiusInput.value);
+    const mass = Number(massInput.value);
+    const K = Number(kBrake.value);
+
+    const B = B0 * Math.exp(-gapMM / 12);
+    const I = 0.5 * mass * radius * radius;
+    const torque = K * B * B * radius * radius * omega;
+    const mechanicalLoss = mechanicalB * omega;
+    const power = torque * omega;
+
+    return {gapMM,B0,radius,mass,K,B,I,torque,mechanicalLoss,power};
+  }
+
+  function updateLabels(){
+    document.getElementById("rpmInitLabel").textContent = `${rpmInit.value} rpm`;
+    document.getElementById("gapLabel").textContent = `${gap.value} mm`;
+    document.getElementById("bLabel").textContent = `${Number(b0.value).toFixed(2)} T`;
+    document.getElementById("radiusLabel").textContent = `${Number(radiusInput.value).toFixed(2)} m`;
+    document.getElementById("massLabel").textContent = `${Number(massInput.value).toFixed(2)} kg`;
+    document.getElementById("kLabel").textContent = Number(kBrake.value).toFixed(4);
+  }
+
+  function updateNumbers(){
+    rpm = omegaToRpm(omega);
+    const p = getParams();
+
+    document.getElementById("rpmOut").textContent = `${rpm.toFixed(0)} rpm`;
+    document.getElementById("omegaOut").textContent = `${omega.toFixed(2)} rad/s`;
+    document.getElementById("torqueOut").textContent = `${p.torque.toFixed(5)} N·m`;
+    document.getElementById("powerOut").textContent = `${p.power.toFixed(3)} W`;
+    document.getElementById("energyOut").textContent = `${energy.toFixed(3)} J`;
+    document.getElementById("timeOut").textContent = `${time.toFixed(2)} s`;
+
+    document.getElementById("calcOmega").innerHTML =
+      `ω = ${rpm.toFixed(1)} × 2π / 60 = <b>${omega.toFixed(3)} rad/s</b>`;
+
+    document.getElementById("calcInertia").innerHTML =
+      `I = ½ × ${p.mass.toFixed(2)} × ${p.radius.toFixed(2)}² = <b>${p.I.toFixed(6)} kg·m²</b>`;
+
+    document.getElementById("calcB").innerHTML =
+      `B = ${p.B0.toFixed(2)} × e<sup>−${p.gapMM}/12</sup> = <b>${p.B.toFixed(4)} T</b>`;
+
+    document.getElementById("calcTorque").innerHTML =
+      `τf = ${p.K.toFixed(4)} × ${p.B.toFixed(4)}² × ${p.radius.toFixed(2)}² × ${omega.toFixed(2)}
+       = <b>${p.torque.toFixed(6)} N·m</b>`;
+
+    document.getElementById("calcPower").innerHTML =
+      `P = ${p.torque.toFixed(6)} × ${omega.toFixed(2)}
+       = <b>${p.power.toFixed(5)} W</b>`;
+
+    document.getElementById("tableRpm").textContent = `${rpm.toFixed(1)} rpm`;
+    document.getElementById("tableOmega").textContent = `${omega.toFixed(3)} rad/s`;
+    document.getElementById("tableInertia").textContent = `${p.I.toFixed(6)} kg·m²`;
+    document.getElementById("tableB").textContent = `${p.B.toFixed(4)} T`;
+    document.getElementById("tableTorque").textContent = `${p.torque.toFixed(6)} N·m`;
+    document.getElementById("tablePower").textContent = `${p.power.toFixed(5)} W`;
+  }
+
+  function drawSystem(){
+    const w = simCanvas.width;
+    const h = simCanvas.height;
+    ctx.clearRect(0,0,w,h);
+
+    const bg = ctx.createLinearGradient(0,0,w,h);
+    bg.addColorStop(0,"#07111f");
+    bg.addColorStop(1,"#101827");
+    ctx.fillStyle = bg;
+    ctx.fillRect(0,0,w,h);
+
+    const cx = 355;
+    const cy = 220;
+    const visualR = 135;
+
+    ctx.strokeStyle = "#64748b";
+    ctx.lineWidth = 14;
     ctx.beginPath();
+    ctx.moveTo(85,cy);
+    ctx.lineTo(cx,cy);
+    ctx.stroke();
 
-    for(
-        let x = startX;
-        x <= endX;
-        x += 3
-    ){
+    ctx.fillStyle = "#334155";
+    ctx.fillRect(40,170,115,100);
+    ctx.fillStyle = "#e2e8f0";
+    ctx.font = "bold 18px Arial";
+    ctx.fillText("MOTOR",67,225);
 
-        const envelope =
-        coreHeight *
-        0.26 *
-        Math.sin(
-            Math.PI *
-            (x-startX) /
-            (endX-startX)
-        );
+    ctx.save();
+    ctx.translate(cx,cy);
+    ctx.rotate(angle);
 
-
-        const y =
-        centerY -
-        envelope;
-
-
-        if(x === startX){
-
-            ctx.moveTo(
-                x,
-                y
-            );
-
-        }
-
-        else{
-
-            ctx.lineTo(
-                x,
-                y
-            );
-
-        }
-
-    }
-
-
-    for(
-        let x = endX;
-        x >= startX;
-        x -= 3
-    ){
-
-        const envelope =
-        coreHeight *
-        0.26 *
-        Math.sin(
-            Math.PI *
-            (x-startX) /
-            (endX-startX)
-        );
-
-
-        ctx.lineTo(
-            x,
-            centerY +
-            envelope
-        );
-
-    }
-
-
-    ctx.closePath();
-
+    const discGradient = ctx.createRadialGradient(0,0,15,0,0,visualR);
+    discGradient.addColorStop(0,"#e5e7eb");
+    discGradient.addColorStop(.65,"#aeb8c5");
+    discGradient.addColorStop(1,"#64748b");
+    ctx.fillStyle = discGradient;
+    ctx.beginPath();
+    ctx.arc(0,0,visualR,0,Math.PI*2);
     ctx.fill();
 
+    ctx.strokeStyle = "rgba(15,23,42,.38)";
+    ctx.lineWidth = 4;
+    for(let a=0;a<Math.PI*2;a+=Math.PI/6){
+      ctx.beginPath();
+      ctx.moveTo(0,0);
+      ctx.lineTo(Math.cos(a)*visualR,Math.sin(a)*visualR);
+      ctx.stroke();
+    }
 
-    /* línea central */
-
-    ctx.strokeStyle =
-    "#65ffc0";
-
-    ctx.lineWidth =
-    5;
-
+    ctx.fillStyle="#111827";
     ctx.beginPath();
+    ctx.arc(0,0,18,0,Math.PI*2);
+    ctx.fill();
+    ctx.restore();
 
+    const gapMM = Number(gap.value);
+    const magnetOffset = 22 + gapMM*2.0;
+    const mx = cx + visualR + magnetOffset;
 
-    for(
-        let x = startX;
-        x <= endX;
-        x += 2
-    ){
+    ctx.fillStyle="#ef4444";
+    ctx.fillRect(mx,120,60,82);
+    ctx.fillStyle="#3b82f6";
+    ctx.fillRect(mx,238,60,82);
 
-        const y =
-        centerY +
-        10 *
-        Math.sin(
-            (x-startX)/35
-        );
+    ctx.fillStyle="#fff";
+    ctx.font="bold 22px Arial";
+    ctx.fillText("N",mx+20,168);
+    ctx.fillText("S",mx+20,286);
 
+    ctx.strokeStyle="rgba(56,189,248,.55)";
+    ctx.lineWidth=2;
+    for(let i=0;i<5;i++){
+      const spread=i*10;
+      ctx.beginPath();
+      ctx.bezierCurveTo(mx,190-spread, cx+visualR+35,185-spread,
+                        cx+visualR-20,205-spread/2, cx+visualR-35,220);
+      ctx.stroke();
 
-        if(x === startX){
-
-            ctx.moveTo(
-                x,
-                y
-            );
-
-        }
-
-        else{
-
-            ctx.lineTo(
-                x,
-                y
-            );
-
-        }
-
+      ctx.beginPath();
+      ctx.bezierCurveTo(mx,250+spread, cx+visualR+35,255+spread,
+                        cx+visualR-20,235+spread/2, cx+visualR-35,220);
+      ctx.stroke();
     }
 
-
-    ctx.stroke();
-
-
-    ctx.fillStyle =
-    "#65ffc0";
-
-    ctx.font =
-    "bold 21px Arial";
-
-    ctx.fillText(
-        "HE₁₁",
-        endX - 60,
-        centerY - 35
-    );
-
-}
-
-
-/* =====================================================
-   MULTIMODO
-===================================================== */
-
-function drawHigherModes(
-    ctx,
-    W,
-    centerY,
-    coreHeight
-){
-
-    const startX =
-    170;
-
-    const endX =
-    W - 90;
-
-
-    const amplitudes =
-    [
-        coreHeight*0.15,
-        coreHeight*0.28,
-        coreHeight*0.40
-    ];
-
-
-    const periods =
-    [
-        35,
-        48,
-        66
-    ];
-
-
-    for(
-        let k = 0;
-        k < amplitudes.length;
-        k++
-    ){
-
-        ctx.beginPath();
-
-        ctx.lineWidth =
-        k === 0 ? 4 : 2;
-
-
-        ctx.strokeStyle =
-        k === 0
-        ? "#65ffc0"
-        : "#ffd45d";
-
-
-        for(
-            let x = startX;
-            x <= endX;
-            x += 2
-        ){
-
-            const y =
-            centerY +
-            amplitudes[k] *
-            Math.sin(
-                (x-startX) /
-                periods[k]
-            );
-
-
-            if(x === startX){
-
-                ctx.moveTo(
-                    x,
-                    y
-                );
-
-            }
-
-            else{
-
-                ctx.lineTo(
-                    x,
-                    y
-                );
-
-            }
-
-        }
-
-
-        ctx.stroke();
-
-    }
-
-
-    ctx.fillStyle =
-    "#ffd45d";
-
-    ctx.font =
-    "bold 19px Arial";
-
-    ctx.fillText(
-        "modos superiores",
-        endX - 180,
-        110
-    );
-
-}
-
-
-/* =====================================================
-   FUGA CUANDO n2 >= n1
-===================================================== */
-
-function drawLeakyField(
-    ctx,
-    W,
-    H,
-    centerY,
-    coreTop,
-    coreBottom
-){
-
-    ctx.strokeStyle =
-    "#ff6677";
-
-    ctx.lineWidth =
-    3;
-
-
-    const startX =
-    170;
-
-
-    for(
-        let k = -2;
-        k <= 2;
-        k++
-    ){
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            startX,
-            centerY + k*12
-        );
-
-
-        ctx.bezierCurveTo(
-            350,
-            centerY + k*20,
-            500,
-            centerY + k*80,
-            700,
-            centerY + k*110
-        );
-
-
-        ctx.stroke();
-
-    }
-
-
-    /* fugas superior e inferior */
-
-    for(
-        let i = 0;
-        i < 7;
-        i++
-    ){
-
-        const x =
-        350 + i*65;
-
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            x,
-            coreTop
-        );
-
-        ctx.lineTo(
-            x + 45,
-            coreTop - 55
-        );
-
-        ctx.stroke();
-
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            x,
-            coreBottom
-        );
-
-        ctx.lineTo(
-            x + 45,
-            coreBottom + 55
-        );
-
-        ctx.stroke();
-
-    }
-
-
-    ctx.fillStyle =
-    "#ff8995";
-
-    ctx.font =
-    "bold 22px Arial";
-
-    ctx.fillText(
-        "FUGA DE CAMPO",
-        W - 260,
-        70
-    );
-
-}
-
-
-/* =====================================================
-   PERFIL DE ÍNDICE
-===================================================== */
-
-function drawIndexProfile(
-    n1,
-    n2
-){
-
-    const ctx =
-    profileCtx;
-
-    const W =
-    profileCanvas.width;
-
-    const H =
-    profileCanvas.height;
-
-
-    ctx.clearRect(
-        0,
-        0,
-        W,
-        H
-    );
-
-
-    ctx.fillStyle =
-    "#08101b";
-
-    ctx.fillRect(
-        0,
-        0,
-        W,
-        H
-    );
-
-
-    const left =
-    80;
-
-    const right =
-    W - 50;
-
-    const top =
-    30;
-
-    const bottom =
-    H - 50;
-
-
-    /* ejes */
-
-    ctx.strokeStyle =
-    "#dbe7f5";
-
-    ctx.lineWidth =
-    2;
-
-
+    ctx.fillStyle="#f8fafc";
+    ctx.font="16px Arial";
+    ctx.fillText(`Separación: ${gapMM} mm`,560,355);
+
+    ctx.fillStyle="#38bdf8";
     ctx.beginPath();
+    ctx.arc(350,45,16,0,Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle="#e5e7eb";
+    ctx.font="14px Arial";
+    ctx.fillText("Sensor Hall / Encoder",380,50);
 
-    ctx.moveTo(
-        left,
-        top
-    );
-
-    ctx.lineTo(
-        left,
-        bottom
-    );
-
-    ctx.lineTo(
-        right,
-        bottom
-    );
-
-    ctx.stroke();
-
-
-    ctx.fillStyle =
-    "#ffffff";
-
-    ctx.font =
-    "16px Arial";
-
-    ctx.fillText(
-        "Índice n",
-        12,
-        35
-    );
-
-
-    ctx.fillText(
-        "posición radial",
-        right - 120,
-        H - 15
-    );
-
-
-    const minN =
-    Math.min(
-        n1,
-        n2
-    ) - 0.05;
-
-
-    const maxN =
-    Math.max(
-        n1,
-        n2
-    ) + 0.05;
-
-
-    function yForN(n){
-
-        return bottom -
-        (
-            (n-minN) /
-            (maxN-minN)
-        )
-        *
-        (bottom-top);
-
-    }
-
-
-    const coreLeft =
-    W * 0.38;
-
-    const coreRight =
-    W * 0.62;
-
-
-    ctx.strokeStyle =
-    "#60d8ff";
-
-    ctx.lineWidth =
-    4;
-
-
+    ctx.strokeStyle="#38bdf8";
+    ctx.setLineDash([6,6]);
     ctx.beginPath();
-
-    ctx.moveTo(
-        left,
-        yForN(n2)
-    );
-
-    ctx.lineTo(
-        coreLeft,
-        yForN(n2)
-    );
-
-    ctx.lineTo(
-        coreLeft,
-        yForN(n1)
-    );
-
-    ctx.lineTo(
-        coreRight,
-        yForN(n1)
-    );
-
-    ctx.lineTo(
-        coreRight,
-        yForN(n2)
-    );
-
-    ctx.lineTo(
-        right,
-        yForN(n2)
-    );
-
+    ctx.moveTo(350,62);
+    ctx.lineTo(350,85);
     ctx.stroke();
-
-
-    ctx.fillStyle =
-    "#ffffff";
-
-
-    ctx.fillText(
-        "n₁ = " +
-        n1.toFixed(3),
-        coreLeft + 20,
-        yForN(n1) - 10
-    );
-
-
-    ctx.fillText(
-        "n₂ = " +
-        n2.toFixed(3),
-        left + 15,
-        yForN(n2) - 10
-    );
-
-
-    if(n2 > n1){
-
-        ctx.fillStyle =
-        "#ff8995";
-
-        ctx.fillText(
-            "El revestimiento tiene mayor índice que el núcleo",
-            W/2 - 180,
-            25
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   GRÁFICA dmax vs n2
-===================================================== */
-
-function drawDmaxGraph(
-    n1,
-    currentN2,
-    lambdaNm
-){
-
-    const ctx =
-    graphCtx;
-
-    const W =
-    graphCanvas.width;
-
-    const H =
-    graphCanvas.height;
-
-
-    ctx.clearRect(
-        0,
-        0,
-        W,
-        H
-    );
-
-
-    ctx.fillStyle =
-    "#08101b";
-
-    ctx.fillRect(
-        0,
-        0,
-        W,
-        H
-    );
-
-
-    const left =
-    80;
-
-    const right =
-    W - 40;
-
-    const top =
-    35;
-
-    const bottom =
-    H - 60;
-
-
-    ctx.strokeStyle =
-    "#dbe7f5";
-
-    ctx.lineWidth =
-    2;
-
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        left,
-        top
-    );
-
-    ctx.lineTo(
-        left,
-        bottom
-    );
-
-    ctx.lineTo(
-        right,
-        bottom
-    );
-
-    ctx.stroke();
-
-
-    ctx.fillStyle =
-    "#ffffff";
-
-    ctx.font =
-    "16px Arial";
-
-
-    ctx.fillText(
-        "d máximo (µm)",
-        10,
-        25
-    );
-
-
-    ctx.fillText(
-        "n₂",
-        right - 5,
-        bottom + 35
-    );
-
-
-    const minN2 =
-    Math.max(
-        1.0,
-        n1 - 0.35
-    );
-
-
-    const maxN2 =
-    n1 - 0.001;
-
-
-    const lambda =
-    lambdaNm * 1e-9;
-
-
-    let values = [];
-
-
-    for(
-        let i = 0;
-        i <= 250;
-        i++
-    ){
-
-        const n2 =
-        minN2 +
-        (
-            maxN2-minN2
-        ) *
-        i/250;
-
-
-        const NA =
-        Math.sqrt(
-            n1*n1 -
-            n2*n2
-        );
-
-
-        const dmax =
-        (
-            2.405 *
-            lambda /
-            (
-                Math.PI *
-                NA
-            )
-        )
-        * 1e6;
-
-
-        values.push({
-            n2,
-            dmax
-        });
-
-    }
-
-
-    const maxD =
-    Math.min(
-        Math.max(
-            ...values.map(
-                p => p.dmax
-            )
-        ),
-        100
-    );
-
-
-    function xMap(n2){
-
-        return left +
-        (
-            n2-minN2
-        ) /
-        (
-            maxN2-minN2
-        )
-        *
-        (
-            right-left
-        );
-
-    }
-
-
-    function yMap(d){
-
-        return bottom -
-        d/maxD *
-        (
-            bottom-top
-        );
-
-    }
-
-
-    ctx.strokeStyle =
-    "#60d8ff";
-
-    ctx.lineWidth =
-    4;
-
-    ctx.beginPath();
-
-
-    values.forEach(
-        (p,index)=>{
-
-            const x =
-            xMap(
-                p.n2
-            );
-
-            const y =
-            yMap(
-                Math.min(
-                    p.dmax,
-                    maxD
-                )
-            );
-
-
-            if(index===0){
-
-                ctx.moveTo(
-                    x,
-                    y
-                );
-
-            }
-
-            else{
-
-                ctx.lineTo(
-                    x,
-                    y
-                );
-
-            }
-
-        }
-    );
-
-
-    ctx.stroke();
-
-
-    /* punto actual */
-
-    if(
-        currentN2 < n1 &&
-        currentN2 >= minN2
-    ){
-
-        const NA =
-        Math.sqrt(
-            n1*n1 -
-            currentN2*currentN2
-        );
-
-
-        const dmax =
-        (
-            2.405 *
-            lambda /
-            (
-                Math.PI *
-                NA
-            )
-        )
-        * 1e6;
-
-
-        const x =
-        xMap(
-            currentN2
-        );
-
-
-        const y =
-        yMap(
-            Math.min(
-                dmax,
-                maxD
-            )
-        );
-
-
-        ctx.fillStyle =
-        "#ffd75e";
-
-        ctx.beginPath();
-
-        ctx.arc(
-            x,
-            y,
-            7,
-            0,
-            Math.PI*2
-        );
-
-        ctx.fill();
-
-
-        ctx.fillStyle =
-        "#ffffff";
-
-        ctx.fillText(
-            "actual",
-            x + 10,
-            y - 10
-        );
-
-    }
-
-
-    /* línea n1 */
-
-    ctx.strokeStyle =
-    "#ff6778";
-
-    ctx.setLineDash(
-        [7,7]
-    );
-
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        right,
-        top
-    );
-
-    ctx.lineTo(
-        right,
-        bottom
-    );
-
-    ctx.stroke();
-
-
     ctx.setLineDash([]);
 
+    drawRotationArrow(cx,cy,visualR+25);
+  }
 
-    ctx.fillStyle =
-    "#ff8995";
+  function drawRotationArrow(cx,cy,r){
+    ctx.save();
+    ctx.strokeStyle="#34d399";
+    ctx.fillStyle="#34d399";
+    ctx.lineWidth=4;
 
-    ctx.fillText(
-        "n₂ → n₁",
-        right - 65,
-        top + 15
-    );
+    ctx.beginPath();
+    ctx.arc(cx,cy,r,-0.9,0.45);
+    ctx.stroke();
 
+    const ax=cx+Math.cos(.45)*r;
+    const ay=cy+Math.sin(.45)*r;
 
-    ctx.fillStyle =
-    "#aab6ca";
+    ctx.translate(ax,ay);
+    ctx.rotate(.45+Math.PI/2);
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.lineTo(-12,-7);
+    ctx.lineTo(-12,7);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
 
-    ctx.font =
-    "14px Arial";
+    ctx.fillStyle="#34d399";
+    ctx.font="bold 16px Arial";
+    ctx.fillText(`${rpm.toFixed(0)} RPM`,cx-38,cy-visualR-33);
+  }
 
-    ctx.fillText(
-        "A medida que n₂ se aproxima a n₁, NA disminuye y d máximo monomodo aumenta.",
-        160,
-        H - 15
-    );
+  function drawGraph(){
+    const w=graphCanvas.width;
+    const h=graphCanvas.height;
+    gctx.clearRect(0,0,w,h);
+    gctx.fillStyle="#07111f";
+    gctx.fillRect(0,0,w,h);
 
-}
+    const padL=58,padR=20,padT=20,padB=38;
+    const gw=w-padL-padR;
+    const gh=h-padT-padB;
 
+    gctx.strokeStyle="#475569";
+    gctx.lineWidth=1;
+    gctx.beginPath();
+    gctx.moveTo(padL,padT);
+    gctx.lineTo(padL,h-padB);
+    gctx.lineTo(w-padR,h-padB);
+    gctx.stroke();
 
-/* =====================================================
-   EVENTOS
-===================================================== */
+    const maxT=Math.max(10,time, history.length ? history[history.length-1].t : 10);
+    const maxRpm=Math.max(Number(rpmInit.value),200);
 
-[
-    n1Slider,
-    n2Slider,
-    diameterSlider,
-    lambdaSlider
-]
-.forEach(
-    slider =>
-    slider.addEventListener(
-        "input",
-        simulate
-    )
-);
+    gctx.fillStyle="#94a3b8";
+    gctx.font="13px Arial";
+    gctx.fillText("RPM",12,24);
+    gctx.fillText("Tiempo (s)",w-86,h-10);
 
+    for(let i=0;i<=5;i++){
+      const y=padT+gh*i/5;
+      const val=maxRpm*(1-i/5);
+      gctx.strokeStyle="rgba(71,85,105,.30)";
+      gctx.beginPath();
+      gctx.moveTo(padL,y);
+      gctx.lineTo(w-padR,y);
+      gctx.stroke();
+      gctx.fillStyle="#94a3b8";
+      gctx.fillText(val.toFixed(0),8,y+4);
+    }
 
-simulate();
+    for(let i=0;i<=5;i++){
+      const x=padL+gw*i/5;
+      const val=maxT*i/5;
+      gctx.strokeStyle="rgba(71,85,105,.20)";
+      gctx.beginPath();
+      gctx.moveTo(x,padT);
+      gctx.lineTo(x,h-padB);
+      gctx.stroke();
+      gctx.fillStyle="#94a3b8";
+      gctx.fillText(val.toFixed(1),x-8,h-18);
+    }
 
+    if(history.length>1){
+      gctx.strokeStyle="#38bdf8";
+      gctx.lineWidth=3;
+      gctx.beginPath();
+      history.forEach((p,i)=>{
+        const x=padL+(p.t/maxT)*gw;
+        const y=padT+(1-p.rpm/maxRpm)*gh;
+        if(i===0) gctx.moveTo(x,y);
+        else gctx.lineTo(x,y);
+      });
+      gctx.stroke();
+    }
+  }
+
+  function physicsStep(dt){
+    const p=getParams();
+    const alpha=-(p.torque+p.mechanicalLoss)/p.I;
+
+    omega += alpha*dt;
+    if(omega<0.05) omega=0;
+
+    angle += omega*dt;
+    time += dt;
+    energy += Math.max(0,p.power)*dt;
+
+    if(history.length===0 || time-history[history.length-1].t>=0.05){
+      history.push({t:time,rpm:omegaToRpm(omega)});
+    }
+
+    if(omega===0){
+      running=false;
+    }
+  }
+
+  function animate(timestamp){
+    if(lastTimestamp===null) lastTimestamp=timestamp;
+    let dt=(timestamp-lastTimestamp)/1000;
+    lastTimestamp=timestamp;
+
+    if(dt>0.05) dt=0.05;
+
+    if(running){
+      physicsStep(dt);
+    }
+
+    updateNumbers();
+    drawSystem();
+    drawGraph();
+    requestAnimationFrame(animate);
+  }
+
+  function resetSimulation(){
+    running=false;
+    rpm=Number(rpmInit.value);
+    omega=rpmToOmega(rpm);
+    angle=0;
+    time=0;
+    energy=0;
+    history=[{t:0,rpm:rpm}];
+    lastTimestamp=null;
+    updateLabels();
+    updateNumbers();
+    drawSystem();
+    drawGraph();
+  }
+
+  document.getElementById("startBtn").addEventListener("click",()=>running=true);
+  document.getElementById("pauseBtn").addEventListener("click",()=>running=false);
+  document.getElementById("resetBtn").addEventListener("click",resetSimulation);
+
+  [rpmInit,gap,b0,radiusInput,massInput,kBrake].forEach(input=>{
+    input.addEventListener("input",()=>{
+      updateLabels();
+      if(!running && input===rpmInit){
+        rpm=Number(rpmInit.value);
+        omega=rpmToOmega(rpm);
+      }
+      updateNumbers();
+      drawSystem();
+      drawGraph();
+    });
+  });
+
+  updateLabels();
+  resetSimulation();
+  requestAnimationFrame(animate);
 </script>
-
 </body>
 </html>
