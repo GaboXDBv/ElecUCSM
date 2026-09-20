@@ -1,1033 +1,2590 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Freno Electromagnético por Corrientes de Foucault</title>
-  <style>
-    :root{
-      --bg:#0f172a;
-      --panel:#111827;
-      --panel2:#1f2937;
-      --text:#e5e7eb;
-      --muted:#94a3b8;
-      --line:#334155;
-      --accent:#38bdf8;
-      --accent2:#a78bfa;
-      --good:#34d399;
-      --warn:#f59e0b;
-      --danger:#fb7185;
-      --white:#ffffff;
-    }
-
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{
-      margin:0;
-      font-family:Inter,Segoe UI,Arial,sans-serif;
-      background:linear-gradient(180deg,#0b1220,#111827 45%,#0f172a);
-      color:var(--text);
-      line-height:1.6;
-    }
-
-    header{
-      padding:42px 20px 28px;
-      text-align:center;
-      border-bottom:1px solid var(--line);
-      background:
-        radial-gradient(circle at 20% 20%,rgba(56,189,248,.15),transparent 28%),
-        radial-gradient(circle at 80% 0%,rgba(167,139,250,.14),transparent 25%);
-    }
-
-    header h1{
-      margin:0 0 10px;
-      font-size:clamp(28px,5vw,48px);
-      line-height:1.1;
-    }
-
-    header p{
-      max-width:920px;
-      margin:auto;
-      color:var(--muted);
-      font-size:1.05rem;
-    }
-
-    nav{
-      position:sticky;
-      top:0;
-      z-index:50;
-      display:flex;
-      gap:12px;
-      justify-content:center;
-      flex-wrap:wrap;
-      padding:10px;
-      background:rgba(15,23,42,.92);
-      backdrop-filter:blur(10px);
-      border-bottom:1px solid var(--line);
-    }
-
-    nav a{
-      color:var(--text);
-      text-decoration:none;
-      padding:8px 12px;
-      border-radius:10px;
-    }
-
-    nav a:hover{background:#1e293b}
-
-    main{
-      width:min(1180px,94%);
-      margin:0 auto;
-      padding:30px 0 70px;
-    }
-
-    section{
-      background:rgba(17,24,39,.88);
-      border:1px solid var(--line);
-      border-radius:18px;
-      padding:24px;
-      margin:24px 0;
-      box-shadow:0 16px 45px rgba(0,0,0,.18);
-    }
-
-    h2{margin-top:0;font-size:1.75rem}
-    h3{margin-top:22px}
-    .muted{color:var(--muted)}
-
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-      gap:16px;
-    }
-
-    .card{
-      background:var(--panel2);
-      border:1px solid #374151;
-      border-radius:14px;
-      padding:16px;
-    }
-
-    .flow{
-      display:grid;
-      grid-template-columns:repeat(5,1fr);
-      gap:12px;
-      align-items:stretch;
-    }
-
-    .flow .step{
-      background:#172033;
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:15px;
-      text-align:center;
-      position:relative;
-    }
-
-    .flow .step:not(:last-child)::after{
-      content:"→";
-      position:absolute;
-      right:-18px;
-      top:50%;
-      transform:translateY(-50%);
-      color:var(--accent);
-      font-size:28px;
-      font-weight:700;
-    }
-
-    .badge{
-      display:inline-block;
-      padding:3px 9px;
-      border-radius:999px;
-      font-size:.82rem;
-      background:#0c4a6e;
-      color:#bae6fd;
-      margin-bottom:8px;
-    }
-
-    .sim-layout{
-      display:grid;
-      grid-template-columns:1.2fr .8fr;
-      gap:18px;
-    }
-
-    canvas{
-      width:100%;
-      background:#07111f;
-      border:1px solid var(--line);
-      border-radius:14px;
-      display:block;
-    }
-
-    #simCanvas{height:430px}
-    #graphCanvas{height:270px}
-
-    .controls{
-      display:flex;
-      flex-direction:column;
-      gap:14px;
-    }
-
-    .control{
-      background:#0f172a;
-      border:1px solid var(--line);
-      border-radius:12px;
-      padding:12px;
-    }
-
-    .control label{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      font-weight:600;
-      margin-bottom:8px;
-    }
-
-    input[type="range"]{width:100%}
-
-    .btns{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:10px;
-    }
-
-    button{
-      border:0;
-      border-radius:10px;
-      padding:11px 12px;
-      cursor:pointer;
-      font-weight:700;
-      color:#06131f;
-      background:var(--accent);
-    }
-
-    button.secondary{background:#cbd5e1}
-    button.danger{background:var(--danger)}
-    button:hover{filter:brightness(1.06)}
-
-    .meters{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:10px;
-      margin-top:14px;
-    }
-
-    .meter{
-      background:#0f172a;
-      border:1px solid var(--line);
-      border-radius:12px;
-      padding:12px;
-      text-align:center;
-    }
-
-    .meter strong{
-      display:block;
-      font-size:1.35rem;
-      color:var(--good);
-    }
-
-    .formula{
-      overflow-x:auto;
-      background:#08111f;
-      border-left:4px solid var(--accent2);
-      border-radius:10px;
-      padding:14px 16px;
-      margin:12px 0;
-      font-family:"Cambria Math",Consolas,monospace;
-    }
-
-    table{
-      width:100%;
-      border-collapse:collapse;
-      overflow:hidden;
-      border-radius:12px;
-    }
-
-    th,td{
-      border-bottom:1px solid var(--line);
-      padding:11px;
-      text-align:left;
-      vertical-align:top;
-    }
-
-    th{background:#172033}
-    tr:last-child td{border-bottom:0}
-
-    pre{
-      white-space:pre-wrap;
-      word-break:break-word;
-      background:#07111f;
-      border:1px solid var(--line);
-      border-radius:12px;
-      padding:15px;
-      overflow:auto;
-      color:#dbeafe;
-    }
-
-    code{font-family:Consolas,monospace}
-
-    .note{
-      border:1px solid #854d0e;
-      background:rgba(120,53,15,.25);
-      padding:12px 14px;
-      border-radius:12px;
-      color:#fde68a;
-    }
-
-    footer{
-      text-align:center;
-      color:var(--muted);
-      padding:26px;
-      border-top:1px solid var(--line);
-    }
-
-    @media (max-width:900px){
-      .flow{grid-template-columns:1fr}
-      .flow .step:not(:last-child)::after{
-        content:"↓";
-        right:50%;
-        top:auto;
-        bottom:-25px;
-        transform:translateX(50%);
-      }
-      .sim-layout{grid-template-columns:1fr}
-      .meters{grid-template-columns:repeat(2,1fr)}
-    }
-
-    @media (max-width:520px){
-      .meters{grid-template-columns:1fr}
-      .btns{grid-template-columns:1fr}
-      section{padding:16px}
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Foucault Lab · Freno magnético</title>
+<style>
+:root{color-scheme:dark;--bg:#0a111e;--panel:#111e30;--line:#283c53;--text:#eaf2fa;--muted:#a4b8cd;--teal:#58e0c0;--blue:#7bbaff;--orange:#ffbd73;--red:#ff858f}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.55 system-ui,-apple-system,Segoe UI,sans-serif}
+button,input,select{font:inherit}
+button,select,input[type=number],input[type=text]{border:1px solid var(--line);border-radius:8px;background:#0b1727;color:var(--text);padding:8px 10px}
+button{cursor:pointer;font-weight:600}
+button:hover{border-color:var(--teal);background:#193344}
+button:disabled{opacity:.4;cursor:not-allowed}
+.primary{background:var(--teal);color:#072b26;border-color:var(--teal)}
+.primary:hover{background:#92efd7;color:#072b26}
+input:focus-visible,select:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+input[type=range]{accent-color:var(--teal);width:100%;cursor:pointer}
+input[type=checkbox]{accent-color:var(--teal)}
+input[aria-invalid=true]{border-color:var(--red)}
+a{color:var(--teal)}
+h1,h2,h3,p{margin:0}
+h1{font-size:clamp(23px,3vw,35px);line-height:1.2;letter-spacing:-1px}
+h2{font-size:18px}
+h3{font-size:14px}
+.muted,small{color:var(--muted)}
+small{font-size:12px}
+.eyebrow{text-transform:uppercase;letter-spacing:2px;font-size:10px;color:var(--teal);font-weight:700}
+.header{max-width:1660px;margin:auto;padding:28px 26px 20px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.header p{margin-top:8px}
+.badge{border:1px solid #315951;color:var(--teal);border-radius:30px;padding:6px 12px;white-space:nowrap;font-size:12px}
+.layout{max-width:1660px;margin:auto;padding:0 26px 30px;display:grid;grid-template-columns:304px minmax(0,1fr);gap:20px}
+.panel{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:18px;min-width:0}
+.sidebar{align-self:start;position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto}
+.sidebar>p{margin:7px 0 15px}
+.sidebar details{border-top:1px solid var(--line);padding:12px 0}
+.sidebar summary{font-weight:700;cursor:pointer}
+.field{margin-top:14px}
+.field-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.field-head label{font-size:12px}
+.field-head input{width:97px;padding:5px 7px;font-variant-numeric:tabular-nums}
+.field input[type=range]{display:block;margin:8px 0 0}
+.full{width:100%}
+.row{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.spread{justify-content:space-between}
+.spacer{margin-top:14px}
+.tabs{display:flex;gap:5px;overflow:auto;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:16px}
+.tabs button{white-space:nowrap;border-color:transparent;background:transparent;color:var(--muted)}
+.tabs button[aria-selected=true]{background:#173b3a;color:var(--teal);border-color:#34675d}
+.tab[hidden],[hidden]{display:none!important}
+.stack{display:grid;gap:16px}
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.status{margin-left:auto;color:var(--teal);font-size:12px}
+.timebar{display:flex;align-items:center;gap:14px;margin-top:14px;font-variant-numeric:tabular-nums}
+.timebar progress{flex:1;min-width:40px;height:7px;accent-color:var(--teal)}
+.hero{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(230px,1fr);gap:16px}
+.scene{display:block;width:100%;height:365px;border-radius:9px;background:#0a1423;margin-top:12px}
+.scene-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.legend{display:flex;gap:13px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:9px}
+.swatch{width:17px;height:3px;display:inline-block;vertical-align:middle;margin-right:5px}
+.big-number{font-size:42px;line-height:1.1;letter-spacing:-1.5px;font-weight:650;color:var(--teal);font-variant-numeric:tabular-nums;margin:15px 0 7px}
+.meter{height:8px;border-radius:8px;background:#24394b;overflow:hidden;margin:15px 0}
+.meter span{display:block;height:100%;background:var(--teal);width:100%}
+.mini{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
+.mini strong{display:block;font-size:19px;font-weight:600;font-variant-numeric:tabular-nums}
+.notice{border-left:3px solid var(--teal);background:#102c30;border-radius:6px;padding:12px 14px;font-size:12px}
+.warning{border-color:var(--orange);background:#342c21}
+.error{border-color:var(--red);background:#34232e}
+.notice ul{padding-left:17px;margin:4px 0}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.card{background:#0c1829;border:1px solid var(--line);border-radius:9px;padding:12px}
+.card small{display:block;font-size:11px}
+.card strong{font-size:18px;font-weight:600;display:block;margin:4px 0;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.card .unit{font-size:11px;color:var(--muted)}
+.graphs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.plot{border:1px solid var(--line);border-radius:10px;padding:13px;background:#0c1829;min-width:0}
+.plot canvas{display:block;width:100%;height:220px}
+.plot.wide{grid-column:1/-1}
+.switches label{font-size:12px;margin-right:10px;white-space:nowrap}
+.math-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.equation{border:1px solid var(--line);border-radius:10px;padding:16px;background:#0c1829;overflow-wrap:anywhere}
+.equation b{color:var(--teal)}
+.formula{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:13px;line-height:1.8;margin:8px 0;white-space:pre-wrap}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:9px}
+table{border-collapse:collapse;width:100%;font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums}
+th,td{padding:10px 13px;border-bottom:1px solid var(--line);text-align:right}
+th{background:#1a2b40;color:#c9daeb;position:sticky;top:0}
+th:first-child,td:first-child{text-align:left}
+tbody tr:nth-child(even){background:#0d192a}
+tbody tr:last-child td{border:0}
+.questions{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.questions details{border:1px solid var(--line);padding:17px;border-radius:10px;background:#0c1829}
+.questions summary{cursor:pointer;font-weight:600;color:var(--teal)}
+.questions p{margin-top:12px}
+.foot{color:var(--muted);font-size:11px;margin-top:14px}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);max-width:90vw;background:#20483f;border:1px solid var(--teal);border-radius:9px;padding:12px 18px;box-shadow:0 10px 45px #0008;z-index:9}
+#runSelect{max-width:100%;min-width:180px}
+.experiment-input{margin:14px 0}
+.experiment-input input[type=text]{width:min(100%,340px)}
+noscript{display:block;background:#67252c;padding:20px}
+@media(min-width:1450px){.scene{height:400px}}
+@media(max-width:1120px){
+.layout{grid-template-columns:275px minmax(0,1fr);padding:0 16px 24px;gap:14px}
+.hero{grid-template-columns:1fr}
+.cards{grid-template-columns:repeat(3,minmax(0,1fr))}
+.hero .readout{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
+.readout>h2,.readout>.notice{grid-column:1/-1}
+.readout .meter{grid-column:1/-1}
+}
+@media(max-width:780px){
+.layout{grid-template-columns:1fr}
+.sidebar{position:static;max-height:none}
+.header{padding:22px 16px}
+.header .badge{display:none}
+.cards{grid-template-columns:repeat(3,minmax(0,1fr))}
+.sidebar details{display:block}
+.graphs,.math-grid,.questions{grid-template-columns:1fr}
+.plot.wide{grid-column:auto}
+.scene{height:345px}
+.status{margin-left:0}
+.tabs{position:sticky;top:0;background:var(--bg);z-index:3;padding-top:8px}
+.panel{padding:14px}
+}
+@media(max-width:420px){
+.cards{grid-template-columns:1fr 1fr}
+.scene{height:315px}
+.hero .readout{display:block}
+.header h1{font-size:26px}
+.big-number{font-size:36px}
+}
+</style>
 </head>
-
 <body>
-<header>
-  <h1>Freno electromagnético por corrientes de Foucault</h1>
-  <p>
-    Simulación educativa de un disco conductor frenado sin contacto por un campo magnético.
-    Permite visualizar el sistema, modificar parámetros, observar la reducción de RPM y
-    revisar los cálculos físicos utilizados.
-  </p>
+<noscript>Activa JavaScript en tu navegador para utilizar el simulador.</noscript>
+
+<header class="header">
+  <div>
+    <div class="eyebrow">Electromagnetismo / Laboratorio virtual 01</div>
+    <h1>Freno magnético por Foucault</h1>
+    <p class="muted">Explora cómo un campo magnético transforma el movimiento en calor.</p>
+  </div>
+  <span class="badge">HTML autónomo · Sin conexión</span>
 </header>
 
-<nav>
-  <a href="#sistema">Sistema</a>
-  <a href="#simulador">Simulador</a>
-  <a href="#calculos">Cálculos</a>
-  <a href="#funcionamiento">Funcionamiento</a>
-  <a href="#codigo">Explicación del código</a>
-</nav>
+<div class="layout">
+<aside class="panel sidebar" aria-label="Panel de parámetros">
+  <div class="row spread">
+    <h2>01 / Parámetros</h2>
+    <button id="defaults" title="Restaurar valores iniciales">Restaurar</button>
+  </div>
+  <p class="muted"><small>Los cambios reinician el ensayo actual. Los registros anteriores se conservan durante esta sesión.</small></p>
+
+  <label for="material">Material del disco</label>
+  <select id="material" class="full">
+    <option value="al">Aluminio · 35 MS/m</option>
+    <option value="cu">Cobre · 58 MS/m</option>
+    <option value="ss">Inoxidable 304 · 1.4 MS/m</option>
+    <option value="custom">Personalizado</option>
+  </select>
+  <small>Conductividades orientativas a temperatura ambiente; dependen de la aleación y temperatura. Cambiar material solo cambia σ.</small>
+
+  <details open>
+    <summary>Disco y velocidad inicial</summary>
+    <div id="discFields"></div>
+  </details>
+  <details open>
+    <summary>Imán y acoplamiento</summary>
+    <div id="magFields"></div>
+    <p class="foot">B(d) es una aproximación experimental configurable, no una ley universal del imán.</p>
+  </details>
+  <details open>
+    <summary>Tiempo e integración</summary>
+    <div id="timeFields"></div>
+    <p class="foot">Euler explícito, sin subpasos ocultos. Máximo 50 000 pasos por ensayo.</p>
+  </details>
+  <details>
+    <summary>Avanzado: fricción mecánica</summary>
+    <label class="row spacer"><input id="friction" type="checkbox"> Incluir fricción viscosa</label>
+    <div id="frictionFields"></div>
+    <small>cₘ = 0 cuando esta opción está desactivada.</small>
+  </details>
+</aside>
 
 <main>
+<nav class="tabs" role="tablist" aria-label="Secciones del laboratorio">
+  <button id="tab-lab" role="tab" aria-controls="lab" aria-selected="true" data-tab="lab">Laboratorio</button>
+  <button id="tab-experiments" role="tab" aria-controls="experiments" aria-selected="false" data-tab="experiments">Experimentos</button>
+  <button id="tab-model" role="tab" aria-controls="model" aria-selected="false" data-tab="model">Modelo matemático</button>
+  <button id="tab-data" role="tab" aria-controls="data" aria-selected="false" data-tab="data">Datos experimentales</button>
+  <button id="tab-guide" role="tab" aria-controls="guide" aria-selected="false" data-tab="guide">Guía física</button>
+</nav>
 
-<section id="sistema">
-  <h2>1. Arquitectura del sistema</h2>
-  <p>
-    El proyecto representa un freno electromagnético sin contacto. Un motor hace girar
-    un disco de aluminio. Al acercar imanes permanentes al disco, el movimiento relativo
-    entre el conductor y el campo magnético induce corrientes de Foucault. Según la ley
-    de Lenz, esas corrientes generan un campo que se opone al movimiento que las produjo.
-  </p>
+<div id="validation" role="alert" class="notice spacer" hidden></div>
 
-  <div class="flow">
-    <div class="step">
-      <span class="badge">Entrada</span>
-      <strong>Motor</strong>
-      <p class="muted">Entrega velocidad al eje.</p>
+<section id="lab" role="tabpanel" aria-labelledby="tab-lab" class="tab stack">
+  <div class="panel">
+    <div class="toolbar">
+      <button id="start" class="primary">▶ Iniciar</button>
+      <button id="pause">Pausar</button>
+      <button id="resume">Reanudar</button>
+      <button id="reset">Reiniciar</button>
+      <button id="step">Paso a paso</button>
+      <label>Reproducción
+        <select id="speed">
+          <option value="0.25">0.25×</option>
+          <option value="0.5">0.5×</option>
+          <option value="1" selected>1×</option>
+          <option value="2">2×</option>
+          <option value="4">4×</option>
+        </select>
+      </label>
+      <span id="status" class="status" role="status">Listo</span>
     </div>
-    <div class="step">
-      <span class="badge">Elemento móvil</span>
-      <strong>Disco de aluminio</strong>
-      <p class="muted">Conductor donde aparecen corrientes inducidas.</p>
-    </div>
-    <div class="step">
-      <span class="badge">Frenado</span>
-      <strong>Imanes</strong>
-      <p class="muted">Generan el campo magnético transversal.</p>
-    </div>
-    <div class="step">
-      <span class="badge">Medición</span>
-      <strong>Sensor Hall / Encoder</strong>
-      <p class="muted">Obtiene la velocidad de giro.</p>
-    </div>
-    <div class="step">
-      <span class="badge">Control</span>
-      <strong>ESP32</strong>
-      <p class="muted">Calcula RPM, tiempo y respuesta experimental.</p>
+    <div class="timebar">
+      <span id="clock">0.00 s</span>
+      <progress id="progress" value="0" max="20" aria-label="Tiempo de simulación"></progress>
+      <span id="endTime">20 s</span>
     </div>
   </div>
 
-  <div class="grid" style="margin-top:18px">
-    <div class="card">
-      <h3>Variable manipulada</h3>
-      <p>Separación entre los imanes y el disco, intensidad del campo magnético y velocidad inicial.</p>
-    </div>
-    <div class="card">
-      <h3>Variable medida</h3>
-      <p>RPM, velocidad angular, par de frenado estimado, potencia disipada y tiempo de desaceleración.</p>
-    </div>
-    <div class="card">
-      <h3>Objetivo experimental</h3>
-      <p>Determinar cómo cambia el tiempo de frenado cuando varía la distancia imán–disco.</p>
-    </div>
-  </div>
-</section>
-
-<section id="simulador">
-  <h2>2. Simulador interactivo</h2>
-  <p class="muted">
-    Cambia los parámetros y presiona <b>Iniciar</b>. El modelo es simplificado y sirve
-    para explicar el fenómeno y planificar el experimento real.
-  </p>
-
-  <div class="sim-layout">
-    <div>
-      <canvas id="simCanvas" width="800" height="430"></canvas>
-      <div class="meters">
-        <div class="meter">Velocidad<strong id="rpmOut">1200 rpm</strong></div>
-        <div class="meter">ω<strong id="omegaOut">125.66 rad/s</strong></div>
-        <div class="meter">Par de frenado<strong id="torqueOut">0.000 N·m</strong></div>
-        <div class="meter">Potencia<strong id="powerOut">0.00 W</strong></div>
-        <div class="meter">Energía disipada<strong id="energyOut">0.00 J</strong></div>
-        <div class="meter">Tiempo<strong id="timeOut">0.00 s</strong></div>
+  <div class="hero">
+    <div class="panel">
+      <div class="row spread">
+        <h2>02 / Sistema en movimiento</h2>
+        <label><input id="vectors" type="checkbox" checked> Vista física</label>
       </div>
+      <canvas id="scene" class="scene" role="img" aria-label="Disco conductor animado con imán, corrientes inducidas y vectores"></canvas>
+      <div class="scene-controls spacer">
+        <label>Giro visual
+          <select id="angleScale">
+            <option value="0.1">Legible · ×0.1</option>
+            <option value="1">Ángulo real · ×1</option>
+          </select>
+        </label>
+        <small>La escala angular no cambia el tiempo ni las RPM calculadas.</small>
+      </div>
+      <div class="legend">
+        <span style="color:var(--teal)">↑ v tangencial</span>
+        <span style="color:var(--blue)">⊙ B sale del plano</span>
+        <span style="color:var(--orange)">→ J local</span>
+        <span style="color:var(--red)">↓ f y ↻ τ de frenado</span>
+      </div>
+      <p class="foot">Bucles, campo y vectores cualitativos. Se muestran direcciones locales; su dibujo no resuelve la distribución electromagnética.</p>
     </div>
 
-    <div class="controls">
-      <div class="control">
-        <label>
-          <span>RPM inicial</span>
-          <span id="rpmInitLabel">1200 rpm</span>
-        </label>
-        <input id="rpmInit" type="range" min="200" max="3000" value="1200" step="50">
+    <div class="panel readout">
+      <h2>Estado instantáneo · Euler</h2>
+      <div>
+        <div id="rpmRead" class="big-number">600.0</div>
+        <span class="muted">RPM del disco</span>
       </div>
-
-      <div class="control">
-        <label>
-          <span>Separación imán–disco</span>
-          <span id="gapLabel">10 mm</span>
-        </label>
-        <input id="gap" type="range" min="2" max="30" value="10" step="1">
+      <div class="mini">
+        <div><small>Velocidad angular</small><strong id="omegaRead">—</strong><small>rad/s</small></div>
+        <div><small>Velocidad restante</small><strong id="fractionRead">100 %</strong><small>respecto a RPM₀</small></div>
       </div>
-
-      <div class="control">
-        <label>
-          <span>Campo magnético nominal B₀</span>
-          <span id="bLabel">0.35 T</span>
-        </label>
-        <input id="b0" type="range" min="0.10" max="0.80" value="0.35" step="0.01">
+      <div class="meter"><span id="rpmMeter"></span></div>
+      <div class="mini">
+        <div><small>Error relativo actual</small><strong id="errorRead">0 %</strong></div>
+        <div><small>λΔt</small><strong id="qRead">—</strong></div>
       </div>
-
-      <div class="control">
-        <label>
-          <span>Radio del disco</span>
-          <span id="radiusLabel">0.10 m</span>
-        </label>
-        <input id="radius" type="range" min="0.05" max="0.20" value="0.10" step="0.01">
-      </div>
-
-      <div class="control">
-        <label>
-          <span>Masa del disco</span>
-          <span id="massLabel">0.35 kg</span>
-        </label>
-        <input id="mass" type="range" min="0.10" max="1.20" value="0.35" step="0.05">
-      </div>
-
-      <div class="control">
-        <label>
-          <span>Constante electromagnética K</span>
-          <span id="kLabel">0.0025</span>
-        </label>
-        <input id="kBrake" type="range" min="0.0005" max="0.0080" value="0.0025" step="0.0001">
-      </div>
-
-      <div class="btns">
-        <button id="startBtn">Iniciar</button>
-        <button id="pauseBtn" class="secondary">Pausar</button>
-        <button id="resetBtn" class="danger">Reiniciar</button>
-      </div>
-
-      <div class="note">
-        En el prototipo real, evita inferir parámetros físicos únicamente con esta
-        simulación. Deben calibrarse con mediciones reales de RPM, distancia y tiempo.
-      </div>
+      <p class="notice">Las curvas y el giro siguen la integración numérica. La solución analítica permite evaluar el error. Entre muestras, la visualización interpola la velocidad.</p>
+      <button id="compare" class="full spacer">Comparar con/sin freno magnético</button>
     </div>
   </div>
 
-  <h3>Gráfica RPM vs. tiempo</h3>
-  <canvas id="graphCanvas" width="1000" height="270"></canvas>
-</section>
-
-<section id="calculos">
-  <h2>3. Sección de cálculos</h2>
-
-  <h3>3.1 Velocidad angular</h3>
-  <div class="formula">ω = RPM · 2π / 60</div>
-  <p id="calcOmega"></p>
-
-  <h3>3.2 Momento de inercia del disco</h3>
-  <p>Para un disco macizo:</p>
-  <div class="formula">I = ½ · m · r²</div>
-  <p id="calcInertia"></p>
-
-  <h3>3.3 Campo magnético efectivo</h3>
-  <p>
-    Para esta demostración se usa una aproximación exponencial de la disminución del campo
-    con la separación:
-  </p>
-  <div class="formula">B(g) = B₀ · e<sup>−g/g₀</sup></div>
-  <p>
-    donde <b>g</b> es la separación y <b>g₀ = 12 mm</b> es una constante usada en la simulación.
-  </p>
-  <p id="calcB"></p>
-
-  <h3>3.4 Par de frenado aproximado</h3>
-  <div class="formula">τ<sub>f</sub> = K · B² · r² · ω</div>
-  <p id="calcTorque"></p>
-
-  <h3>3.5 Ecuación dinámica</h3>
-  <div class="formula">I · dω/dt = −τ<sub>f</sub> − b·ω</div>
-  <p>
-    Se agrega un término pequeño <b>b·ω</b> para representar pérdidas mecánicas del eje,
-    rodamientos y aire.
-  </p>
-
-  <h3>3.6 Potencia disipada</h3>
-  <div class="formula">P = τ<sub>f</sub> · ω</div>
-  <p id="calcPower"></p>
-
-  <h3>3.7 Ejemplo numérico actual</h3>
-  <table>
-    <thead>
-      <tr><th>Magnitud</th><th>Valor</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>RPM</td><td id="tableRpm"></td></tr>
-      <tr><td>Velocidad angular</td><td id="tableOmega"></td></tr>
-      <tr><td>Momento de inercia</td><td id="tableInertia"></td></tr>
-      <tr><td>Campo efectivo</td><td id="tableB"></td></tr>
-      <tr><td>Par de frenado</td><td id="tableTorque"></td></tr>
-      <tr><td>Potencia instantánea</td><td id="tablePower"></td></tr>
-    </tbody>
-  </table>
-</section>
-
-<section id="funcionamiento">
-  <h2>4. ¿Cómo funciona físicamente?</h2>
-
-  <div class="grid">
-    <div class="card">
-      <h3>1. El disco gira</h3>
-      <p>
-        El motor entrega energía mecánica y el disco conductor gira con una velocidad angular ω.
-      </p>
+  <div class="panel">
+    <div class="row spread">
+      <h2>03 / Gráficas en tiempo real</h2>
+      <small>Ejes en unidades físicas</small>
     </div>
-
-    <div class="card">
-      <h3>2. El conductor cruza el campo</h3>
-      <p>
-        Una región del disco atraviesa el campo magnético producido por los imanes.
-      </p>
-    </div>
-
-    <div class="card">
-      <h3>3. Se inducen corrientes</h3>
-      <p>
-        El cambio de flujo magnético produce corrientes cerradas dentro del propio disco:
-        las corrientes de Foucault.
-      </p>
-    </div>
-
-    <div class="card">
-      <h3>4. Aparece una fuerza opuesta</h3>
-      <p>
-        Por la ley de Lenz, el campo creado por esas corrientes se opone a la causa que
-        las produce, generando un par resistente.
-      </p>
-    </div>
-
-    <div class="card">
-      <h3>5. La velocidad disminuye</h3>
-      <p>
-        La energía cinética rotacional se reduce y parte se transforma principalmente en calor
-        dentro del material conductor.
-      </p>
-    </div>
-
-    <div class="card">
-      <h3>6. El sensor registra las RPM</h3>
-      <p>
-        Un sensor Hall o encoder puede enviar pulsos al ESP32 para calcular experimentalmente
-        RPM y tiempo de frenado.
-      </p>
-    </div>
+    <div id="curveToggles" class="switches spacer"></div>
+    <div id="graphs" class="graphs spacer"></div>
   </div>
 
-  <h3>Hipótesis experimental sugerida</h3>
-  <p>
-    A menor separación entre los imanes y el disco conductor, mayor será la interacción
-    magnética y menor será el tiempo requerido para reducir la velocidad del disco.
-  </p>
+  <div class="panel">
+    <div class="row spread">
+      <h2>04 / Resultados numéricos</h2>
+      <small>Torques = magnitudes; aceleración con signo.</small>
+    </div>
+    <div id="cards" class="cards spacer"></div>
+    <p class="foot">Los tiempos t₅₀ y t₁₀ son predicciones analíticas con c = cₑ + cₘ. El tiempo de frenado práctico se define al 1 % de RPM₀; llegar exactamente a cero requiere tiempo infinito en este modelo.</p>
+  </div>
+
+  <p class="notice">El modelo τ = cω es una aproximación lineal útil para analizar cualitativamente y experimentalmente el comportamiento del sistema. Un freno real depende también de la geometría del imán, distribución espacial de B, efecto pelicular, temperatura, trayectoria de las corrientes inducidas, velocidad y geometría del disco.</p>
 </section>
 
-<section id="codigo">
-  <h2>5. Explicación del código HTML</h2>
+<section id="experiments" role="tabpanel" aria-labelledby="tab-experiments" class="tab stack" hidden>
+  <div class="panel">
+    <h2>Experimentos controlados</h2>
+    <p class="muted spacer">Se modifica una variable y se mantienen las demás, incluida la masa. Cada curva se integra con el mismo Δt y se registra automáticamente.</p>
+    <div class="row spacer">
+      <label for="expType">Ensayo</label>
+      <select id="expType">
+        <option value="distance">1 · Distancia imán-disco</option>
+        <option value="material">2 · Material (conductividad)</option>
+        <option value="rpm">3 · RPM inicial</option>
+        <option value="field">4 · Campo magnético efectivo B</option>
+        <option value="magnet">5 · Con / sin imán</option>
+      </select>
+      <button id="runExperiment" class="primary">Ejecutar experimento</button>
+    </div>
 
-  <h3>5.1 Estructura HTML</h3>
-  <p>
-    El documento está dividido en cinco secciones principales: arquitectura, simulador,
-    cálculos, explicación física y explicación del código. Los elementos
-    <code>&lt;canvas&gt;</code> se utilizan para dibujar el disco y la gráfica.
-  </p>
+    <div id="expDistance" class="experiment-input">
+      <p>Distancias: <b>5, 10, 15, 20 y 25 mm</b>.</p>
+    </div>
 
-  <h3>5.2 CSS</h3>
-  <p>
-    Todo el diseño se encuentra dentro de <code>&lt;style&gt;</code>. Se usan CSS Grid,
-    tarjetas, variables de color y reglas responsivas para que la interfaz también se adapte
-    a pantallas pequeñas.
-  </p>
+    <div id="expMaterial" class="experiment-input" hidden>
+      <div class="row">
+        <label><input type="checkbox" name="matCompare" value="al" checked> Aluminio</label>
+        <label><input type="checkbox" name="matCompare" value="cu" checked> Cobre</label>
+        <label><input type="checkbox" name="matCompare" value="ss" checked> Inoxidable 304</label>
+        <label><input type="checkbox" name="matCompare" value="custom"> Personalizado</label>
+      </div>
+      <label class="row spacer">σ personalizado [MS/m]
+        <input id="customSigma" type="number" min="0.001" max="100" value="20" step="any">
+      </label>
+      <p class="foot">Se aísla el efecto de σ, con la misma inercia. Discos reales de igual tamaño y distintos materiales tienen masas distintas. El inoxidable es una referencia austenítica; la magnetización y la histéresis no están modeladas.</p>
+    </div>
 
-  <h3>5.3 Variables principales de JavaScript</h3>
-  <pre><code>let omega;          // velocidad angular en rad/s
-let rpm;            // revoluciones por minuto
-let angle;          // ángulo visual del disco
-let time;           // tiempo de simulación
-let energy;         // energía acumulada disipada
-let running;        // estado del simulador</code></pre>
+    <div id="expRpm" class="experiment-input" hidden>
+      <label for="rpmValues">RPM iniciales, separadas por coma (máximo 6)</label><br>
+      <input id="rpmValues" type="text" value="300, 600, 900, 1200">
+    </div>
 
-  <h3>5.4 Conversión de RPM a rad/s</h3>
-  <pre><code>omega = rpm * 2 * Math.PI / 60;</code></pre>
-  <p>
-    Esta conversión permite trabajar con las ecuaciones mecánicas usando unidades del SI.
-  </p>
+    <div id="expField" class="experiment-input" hidden>
+      <label for="fieldValues">Campos B efectivos [T], separados por coma (decimal con punto)</label><br>
+      <input id="fieldValues" type="text" value="0.05, 0.10, 0.15, 0.20, 0.25">
+      <p class="foot">En este ensayo B se fija directamente y sustituye a B(d). No son valores de B₀.</p>
+    </div>
 
-  <h3>5.5 Campo magnético efectivo</h3>
-  <pre><code>const B = B0 * Math.exp(-gapMM / 12);</code></pre>
-  <p>
-    La expresión no pretende reproducir exactamente la geometría de un imán real. Se usa
-    para representar de forma visual que el campo efectivo sobre el disco cae al aumentar
-    la separación.
-  </p>
+    <div id="expMagnet" class="experiment-input" hidden>
+      <p>Se compara B = 0 con el B(d) configurado, manteniendo cₘ. Si la fricción está desactivada, la velocidad sin imán permanece constante.</p>
+    </div>
 
-  <h3>5.6 Momento de inercia</h3>
-  <pre><code>const I = 0.5 * mass * radius * radius;</code></pre>
-  <p>
-    Corresponde a la expresión para un disco macizo que gira alrededor de su eje central.
-  </p>
+    <p id="expMessage" class="notice" role="status">Elige un experimento y ejecútalo.</p>
+  </div>
 
-  <h3>5.7 Modelo del par de frenado</h3>
-  <pre><code>const torque = K * B * B * radius * radius * omega;</code></pre>
-  <p>
-    El par aumenta con el campo magnético, el tamaño efectivo del disco y la velocidad.
-    En un desarrollo experimental serio, la constante K debería obtenerse mediante ajuste
-    de datos reales.
-  </p>
-
-  <h3>5.8 Actualización de la velocidad</h3>
-  <pre><code>const alpha = -(torque + mechanicalLoss) / I;
-omega += alpha * dt;
-if (omega &lt; 0) omega = 0;</code></pre>
-  <p>
-    Primero se calcula la aceleración angular negativa y luego se integra numéricamente
-    usando un paso pequeño de tiempo <code>dt</code>.
-  </p>
-
-  <h3>5.9 Animación</h3>
-  <pre><code>requestAnimationFrame(animate);</code></pre>
-  <p>
-    El navegador ejecuta repetidamente la función de animación. En cada ciclo se recalculan
-    las magnitudes físicas, se dibuja el disco, se actualizan los indicadores y se agrega
-    un punto a la gráfica.
-  </p>
-
-  <h3>5.10 Gráfica</h3>
-  <p>
-    El arreglo <code>history</code> guarda pares <code>{t, rpm}</code>. La función
-    <code>drawGraph()</code> convierte esos valores a coordenadas del canvas y dibuja
-    la curva RPM-tiempo.
-  </p>
-
-  <div class="note">
-    Para el paper, presenten este modelo como una herramienta didáctica o de predicción
-    preliminar. La validación principal debe realizarse con el prototipo físico y mediciones reales.
+  <div id="expOutput" class="panel" hidden>
+    <h3 id="expTitle"></h3>
+    <div class="plot spacer">
+      <canvas id="expChart" role="img" aria-label="Comparación de RPM en los experimentos"></canvas>
+      <div id="expLegend" class="legend"></div>
+    </div>
+    <div id="expTable" class="table-wrap spacer"></div>
+    <p class="foot">Curvas: Euler explícito. Tiempos de reducción: referencia analítica. ∞ significa que el umbral no se alcanza en este modelo. Los resultados quedan asociados a los parámetros con los que se ejecutó el experimento.</p>
   </div>
 </section>
 
+<section id="model" role="tabpanel" aria-labelledby="tab-model" class="tab stack" hidden>
+  <div class="panel">
+    <h2>Modelo matemático y sustitución numérica</h2>
+    <p class="muted spacer">Se usa B perpendicular al disco (θ = 0 respecto a su normal). θ no es el ángulo de giro del disco. Todas las sustituciones se realizan en SI.</p>
+    <div id="equations" class="math-grid spacer"></div>
+  </div>
+  <div class="notice">El flujo B·Aₑ de una región fija puede ser constante. La inducción aparece en trayectorias materiales que entran y salen del campo localizado. Por eso no se utiliza ε = BAω sen(ωt), que describiría otra geometría. J ≈ σ(v × B) omite el campo eléctrico de redistribución de carga; el factor k_g representa efectos geométricos sin resolver las corrientes reales.</div>
+</section>
+
+<section id="data" role="tabpanel" aria-labelledby="tab-data" class="tab stack" hidden>
+  <div class="panel">
+    <h2>Datos experimentales · registros de simulación</h2>
+    <p class="notice spacer">Estos datos son simulados, no mediciones de un prototipo. Cada ensayo iniciado se registra hasta su último paso alcanzado. «Registrar intervalo completo» guarda todos los pasos calculados hasta T. Los registros permanecen durante esta sesión; exporta el CSV antes de cerrar el archivo.</p>
+    <div class="row spacer">
+      <button id="recordFull" class="primary">Registrar intervalo completo</button>
+      <button id="exportCsv">Exportar CSV</button>
+      <button id="exportAll">CSV de todos</button>
+      <button id="clearRuns">Vaciar registros</button>
+    </div>
+    <div class="row spacer">
+      <label for="runSelect">Registro</label>
+      <select id="runSelect"></select>
+      <span id="runCount" class="muted"></span>
+    </div>
+    <p id="runMeta" class="foot"></p>
+    <div id="dataSummary" class="cards spacer"></div>
+  </div>
+
+  <div class="panel">
+    <h3>Estadísticas del registro · Euler</h3>
+    <p class="foot">Promedios aritméticos de las muestras registradas, no promedios entre repeticiones.</p>
+    <div id="statistics" class="table-wrap spacer"></div>
+  </div>
+
+  <div class="panel">
+    <div class="row spread">
+      <h3>Muestras y comparación analítica</h3>
+      <div class="row">
+        <button id="prevPage">← Anterior</button>
+        <span id="pageLabel"></span>
+        <button id="nextPage">Siguiente →</button>
+      </div>
+    </div>
+    <div id="dataTable" class="table-wrap spacer"></div>
+    <p class="foot">Se muestran 100 filas por página. CSV exporta todas las muestras disponibles del registro seleccionado, parámetros SI, fecha, método, torques separados y error.</p>
+  </div>
+</section>
+
+<section id="guide" role="tabpanel" aria-labelledby="tab-guide" class="tab stack" hidden>
+  <div class="panel">
+    <h2>Del movimiento al calor</h2>
+    <p class="muted spacer">Disco en rotación → campo localizado → variación de flujo en trayectorias materiales → FEM → corrientes → fuerza opuesta → torque → desaceleración.</p>
+    <div class="questions spacer">
+      <details open>
+        <summary>1. ¿Qué son las corrientes de Foucault?</summary>
+        <p>Son corrientes eléctricas que circulan en trayectorias cerradas dentro de un conductor cuando experimenta inducción electromagnética. No necesitan cables externos: el propio disco ofrece caminos para la corriente.</p>
+      </details>
+      <details open>
+        <summary>2. ¿Por qué aparece el frenado?</summary>
+        <p>Al atravesar una región de campo magnético localizado, el conductor desarrolla corrientes. La fuerza volumétrica f = J × B tiene una componente que se opone al movimiento y produce un torque resistente sobre el eje.</p>
+      </details>
+      <details>
+        <summary>3. ¿Qué representa la Ley de Lenz?</summary>
+        <p>El signo negativo de Faraday indica que la respuesta inducida se opone al cambio de flujo que la origina. Esa oposición es consistente con la conservación de la energía: no se obtiene movimiento gratuito de la inducción.</p>
+      </details>
+      <details>
+        <summary>4. ¿Por qué el disco debe ser conductor?</summary>
+        <p>Sus cargas deben poder desplazarse para formar corrientes. Una conductividad mayor favorece J dentro de esta aproximación. En un aislante ideal no aparecen estas corrientes de conducción.</p>
+      </details>
+      <details>
+        <summary>5. ¿Por qué sirve el aluminio?</summary>
+        <p>El aluminio conduce electricidad aunque no sea ferromagnético. El frenado se debe a las corrientes inducidas y su interacción con el campo, no a que el material tenga una fuerte atracción estática hacia el imán.</p>
+      </details>
+      <details>
+        <summary>6. ¿Por qué aumenta con la velocidad?</summary>
+        <p>En el régimen lineal adoptado, v = rω, J ∝ ω y τₑ = cₑω. Por eso el torque crece con la velocidad, y la potencia disipada crece con ω². A altas velocidades reales esta proporcionalidad puede dejar de ser válida.</p>
+      </details>
+      <details>
+        <summary>7. ¿Qué ocurre al alejar el imán?</summary>
+        <p>En el modelo propuesto disminuye B(d); como cₑ ∝ B², disminuye el frenado magnético. Los parámetros B₀, d₀ y n deben ajustarse a mediciones del montaje para obtener una predicción experimental útil.</p>
+      </details>
+      <details>
+        <summary>8. ¿A dónde va la energía?</summary>
+        <p>La parte extraída por el frenado electromagnético se disipa principalmente como calor Joule en el conductor. La fricción mecánica también disipa energía. El imán permanente no es una fuente de energía del giro.</p>
+      </details>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Cómo interpretar la exposición</h2>
+    <p class="spacer">Inicia el ensayo, observa las RPM y compara Euler con la solución analítica. Ejecuta el barrido de distancia; después activa cₘ y compara con/sin imán. Cambia Δt para mostrar que el error numérico depende del paso temporal.</p>
+    <p class="spacer">La constante de tiempo es τc = I/c. A t = τc queda el 36.8 % de la velocidad inicial. Con fricción, c = cₑ + cₘ; sin fricción, c = cₑ. El modelo viscoso no produce una detención exacta en tiempo finito.</p>
+    <p class="spacer">Para contrastar con mediciones, el ajuste de ln(ω/ω₀) frente a t tiene pendiente −λ. Con la misma inercia, cₑ = I(λ_con − λ_sin). El simulador no ajusta mediciones ni sustituye esa validación.</p>
+  </div>
+</section>
+
+<p class="foot">Foucault Lab · Modelo educativo de parámetros constantes · Geometría y calentamiento no resueltos.</p>
 </main>
+</div>
 
-<footer>
-  Simulador educativo — Freno electromagnético por corrientes de Foucault
-</footer>
+<div id="toast" role="status" hidden></div>
 
 <script>
-  const simCanvas = document.getElementById("simCanvas");
-  const ctx = simCanvas.getContext("2d");
+(() => {
+'use strict';
 
-  const graphCanvas = document.getElementById("graphCanvas");
-  const gctx = graphCanvas.getContext("2d");
+// ============================================================
+// 1. CONFIGURACIÓN Y MOTOR FÍSICO
+// El núcleo físico trabaja exclusivamente en unidades SI.
+// ============================================================
 
-  const rpmInit = document.getElementById("rpmInit");
-  const gap = document.getElementById("gap");
-  const b0 = document.getElementById("b0");
-  const radiusInput = document.getElementById("radius");
-  const massInput = document.getElementById("mass");
-  const kBrake = document.getElementById("kBrake");
+const $ = id => document.getElementById(id);
+const TAU = 2 * Math.PI;
+const toRPM = w => w * 60 / TAU;
 
-  let running = false;
-  let rpm = Number(rpmInit.value);
-  let omega = rpmToOmega(rpm);
-  let angle = 0;
-  let time = 0;
-  let energy = 0;
-  let lastTimestamp = null;
-  let history = [{t:0, rpm:rpm}];
+const COLORS = [
+  '#58e0c0','#ffbd73','#7bbaff',
+  '#e5a1ff','#ff858f','#e0df79'
+];
 
-  const mechanicalB = 0.00002;
+const MATERIALS = {
+  al: {name:'Aluminio', sigma:35, rho:2700},
+  cu: {name:'Cobre', sigma:58, rho:8960},
+  ss: {name:'Inoxidable 304', sigma:1.4, rho:8000},
+  custom: {name:'Personalizado'}
+};
 
-  function rpmToOmega(rpmValue){
-    return rpmValue * 2 * Math.PI / 60;
+// [clave, etiqueta, unidad, valor inicial, mínimo, máximo,
+//  paso del slider, grupo]
+const SPECS = [
+  ['rpm0','RPM inicial','RPM',600,1,6000,1,'disc'],
+  ['m','Masa m','kg',0.5,0.001,10,0.001,'disc'],
+  ['R','Radio R','mm',150,10,1000,1,'disc'],
+  ['e','Espesor e','mm',2.6,0.01,30,0.01,'disc'],
+  ['sigma','Conductividad σ','MS/m',35,0.001,100,0.1,'disc'],
+  ['B0','Campo máximo B₀','T',0.35,0,2,0.01,'mag'],
+  ['d','Distancia d','mm',10,0,200,0.5,'mag'],
+  ['d0','Distancia d₀','mm',10,0.1,100,0.1,'mag'],
+  ['n','Exponente n','—',2.5,0.5,6,0.1,'mag'],
+  ['Ae','Área efectiva Aₑ','cm²',4,0.001,500,0.1,'mag'],
+  ['r','Radio efectivo r','mm',120,0.1,1000,0.5,'mag'],
+  ['kg','Factor geométrico k_g','—',0.08,0,1,0.001,'mag'],
+  ['T','Duración máxima T','s',20,0.1,300,0.1,'time'],
+  ['dt','Paso temporal Δt','s',0.02,0.0001,2,0.001,'time'],
+  ['cm','Coeficiente cₘ','N·m·s',0.00008,0,0.01,0.00001,'friction']
+];
+
+// Todo el estado queda encapsulado en esta función.
+const state = {
+  valid:false,
+  p:null,
+  M:null,
+  rows:[],
+  t:0,
+  running:false,
+  active:null,
+  runs:[],
+  nextId:1,
+  selected:null,
+  page:0,
+  tab:'lab',
+  exp:[],
+  last:0,
+  lastUI:0
+};
+
+let toastTimer;
+
+function fmt(x, digits=4) {
+  if (x === Infinity) return '∞';
+  if (x === null || !Number.isFinite(x)) return '—';
+  if (x === 0) return '0';
+
+  const a = Math.abs(x);
+
+  return a < 0.001 || a >= 100000
+    ? x.toExponential(3)
+    : Number(x.toPrecision(digits)).toLocaleString(
+        'es-PE',
+        {maximumFractionDigits:8}
+      );
+}
+
+function msg(s) {
+  $('toast').textContent = s;
+  $('toast').hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => $('toast').hidden = true, 5000);
+}
+
+function derive(p) {
+  const I = 0.5 * p.m * p.R * p.R;
+
+  // fixedB se utiliza únicamente en experimentos que fijan B.
+  const B = p.fixedB === undefined
+    ? p.B0 / (1 + Math.pow(p.d / p.d0, p.n))
+    : p.fixedB;
+
+  const ce = p.kg * p.sigma * B * B
+    * p.Ae * p.e * p.r * p.r;
+
+  const cm = p.friction ? p.cm : 0;
+  const c = ce + cm;
+  const lambda = c / I;
+  const w0 = p.rpm0 * TAU / 60;
+
+  return {
+    I, B, ce, cm, c, lambda, w0,
+    E0:0.5 * I * w0 * w0,
+    tau:c > 0 ? I / c : Infinity
+  };
+}
+
+function threshold(M, fraction) {
+  return M.c > 0
+    ? -Math.log(fraction) / M.lambda
+    : Infinity;
+}
+
+function values(M, w) {
+  return {
+    rpm:toRPM(w),
+    w,
+    te:M.ce * w,
+    tm:M.cm * w,
+    tt:M.c * w,
+    E:0.5 * M.I * w * w,
+    P:M.c * w * w,
+    Pe:M.ce * w * w,
+    alpha:-M.lambda * w
+  };
+}
+
+function relativeError(a, n, w0) {
+  // Evita porcentajes sin significado cuando la referencia
+  // analítica es prácticamente cero.
+  return a > w0 * 1e-10
+    ? 100 * Math.abs(n - a) / a
+    : null;
+}
+
+// Euler utiliza exactamente Δt.
+// Solo el último paso se acorta para terminar en T.
+// No se recortan velocidades negativas artificialmente.
+function simulate(p, M) {
+  if (Math.ceil(p.T / p.dt) > 50000) {
+    throw new Error(
+      'Excede 50 000 pasos por ensayo. Aumenta Δt o reduce T.'
+    );
   }
 
-  function omegaToRpm(omegaValue){
-    return omegaValue * 60 / (2 * Math.PI);
+  if (M.lambda * Math.min(p.dt, p.T) >= 1) {
+    throw new Error(
+      'Euler requiere λ·min(Δt,T) < 1. Reduce Δt; '
+      + 'para buena precisión usa Δt ≤ '
+      + fmt(0.02 / M.lambda) + ' s.'
+    );
   }
 
-  function getParams(){
-    const gapMM = Number(gap.value);
-    const B0 = Number(b0.value);
-    const radius = Number(radiusInput.value);
-    const mass = Number(massInput.value);
-    const K = Number(kBrake.value);
+  const rows = [{
+    t:0,
+    a:M.w0,
+    n:M.w0,
+    angle:0
+  }];
 
-    const B = B0 * Math.exp(-gapMM / 12);
-    const I = 0.5 * mass * radius * radius;
-    const torque = K * B * B * radius * radius * omega;
-    const mechanicalLoss = mechanicalB * omega;
-    const power = torque * omega;
+  const count = Math.ceil(p.T / p.dt);
 
-    return {gapMM,B0,radius,mass,K,B,I,torque,mechanicalLoss,power};
+  for (let i = 1; i <= count; i++) {
+    const old = rows[i - 1];
+    const t = Math.min(i * p.dt, p.T);
+    const h = t - old.t;
+
+    if (h <= 0) break;
+
+    const n = old.n + (-M.lambda * old.n) * h;
+
+    rows.push({
+      t,
+      a:M.w0 * Math.exp(-M.lambda * t),
+      n,
+      // Integra la interpolación lineal entre velocidades.
+      angle:old.angle + (old.n + n) * h / 2
+    });
   }
 
-  function updateLabels(){
-    document.getElementById("rpmInitLabel").textContent = `${rpmInit.value} rpm`;
-    document.getElementById("gapLabel").textContent = `${gap.value} mm`;
-    document.getElementById("bLabel").textContent = `${Number(b0.value).toFixed(2)} T`;
-    document.getElementById("radiusLabel").textContent = `${Number(radiusInput.value).toFixed(2)} m`;
-    document.getElementById("massLabel").textContent = `${Number(massInput.value).toFixed(2)} kg`;
-    document.getElementById("kLabel").textContent = Number(kBrake.value).toFixed(4);
+  return rows;
+}
+
+// Interpolación usada por la animación.
+// Los registros conservan las muestras originales de Euler.
+function atTime(t) {
+  const rows = state.rows;
+  const i = Math.min(
+    Math.floor(t / state.p.dt),
+    rows.length - 1
+  );
+
+  const a = rows[i];
+  const b = rows[Math.min(i + 1, rows.length - 1)];
+  const h = b.t - a.t;
+  const s = Math.max(0, t - a.t);
+  const u = h > 0 ? Math.min(1, s / h) : 0;
+
+  return {
+    t,
+    n:a.n + (b.n - a.n) * u,
+    a:state.M.w0 * Math.exp(-state.M.lambda * t),
+    angle:a.angle + a.n * s
+      + (h ? 0.5 * (b.n - a.n) * s * s / h : 0)
+  };
+}
+
+// ============================================================
+// 2. PARÁMETROS, INTERFAZ Y VALIDACIÓN
+// ============================================================
+
+function buildInputs() {
+  for (const [
+    k,label,unit,val,min,max,step,group
+  ] of SPECS) {
+    const wrap = document.createElement('div');
+    wrap.className = 'field';
+
+    wrap.innerHTML = `
+      <div class="field-head">
+        <label for="p-${k}">
+          ${label} <small>[${unit}]</small>
+        </label>
+        <input id="p-${k}" type="number"
+          value="${val}" min="${min}" max="${max}" step="any">
+      </div>
+      <input id="s-${k}" type="range"
+        aria-label="${label}"
+        min="${min}" max="${max}" step="${step}" value="${val}">
+    `;
+
+    $(group + 'Fields').append(wrap);
+
+    $('p-' + k).addEventListener('input', () => {
+      const v = $('p-' + k).valueAsNumber;
+
+      if (Number.isFinite(v)) $('s-' + k).value = v;
+      if (k === 'sigma') $('material').value = 'custom';
+
+      rebuild();
+    });
+
+    $('s-' + k).addEventListener('input', () => {
+      $('p-' + k).value = $('s-' + k).value;
+
+      if (k === 'sigma') $('material').value = 'custom';
+
+      rebuild();
+    });
+  }
+}
+
+function readParameters() {
+  const p = {};
+  const errors = [];
+  const warnings = [];
+
+  for (const [k,label,,val,min,max] of SPECS) {
+    const node = $('p-' + k);
+    const v = node.valueAsNumber;
+
+    const bad = !Number.isFinite(v) || v < min || v > max;
+
+    node.setAttribute('aria-invalid', String(bad));
+
+    if (bad) {
+      errors.push(
+        `${label}: ingresa un valor entre ${min} y ${max}.`
+      );
+    }
+
+    p[k] = v;
   }
 
-  function updateNumbers(){
-    rpm = omegaToRpm(omega);
-    const p = getParams();
+  p.material = $('material').value;
+  p.friction = $('friction').checked;
 
-    document.getElementById("rpmOut").textContent = `${rpm.toFixed(0)} rpm`;
-    document.getElementById("omegaOut").textContent = `${omega.toFixed(2)} rad/s`;
-    document.getElementById("torqueOut").textContent = `${p.torque.toFixed(5)} N·m`;
-    document.getElementById("powerOut").textContent = `${p.power.toFixed(3)} W`;
-    document.getElementById("energyOut").textContent = `${energy.toFixed(3)} J`;
-    document.getElementById("timeOut").textContent = `${time.toFixed(2)} s`;
+  // mm → m; cm² → m²; MS/m → S/m.
+  ['R','e','d','d0','r'].forEach(k => p[k] /= 1000);
+  p.Ae *= 1e-4;
+  p.sigma *= 1e6;
 
-    document.getElementById("calcOmega").innerHTML =
-      `ω = ${rpm.toFixed(1)} × 2π / 60 = <b>${omega.toFixed(3)} rad/s</b>`;
+  if (errors.length) return {p, errors, warnings};
 
-    document.getElementById("calcInertia").innerHTML =
-      `I = ½ × ${p.mass.toFixed(2)} × ${p.radius.toFixed(2)}² = <b>${p.I.toFixed(6)} kg·m²</b>`;
-
-    document.getElementById("calcB").innerHTML =
-      `B = ${p.B0.toFixed(2)} × e<sup>−${p.gapMM}/12</sup> = <b>${p.B.toFixed(4)} T</b>`;
-
-    document.getElementById("calcTorque").innerHTML =
-      `τf = ${p.K.toFixed(4)} × ${p.B.toFixed(4)}² × ${p.radius.toFixed(2)}² × ${omega.toFixed(2)}
-       = <b>${p.torque.toFixed(6)} N·m</b>`;
-
-    document.getElementById("calcPower").innerHTML =
-      `P = ${p.torque.toFixed(6)} × ${omega.toFixed(2)}
-       = <b>${p.power.toFixed(5)} W</b>`;
-
-    document.getElementById("tableRpm").textContent = `${rpm.toFixed(1)} rpm`;
-    document.getElementById("tableOmega").textContent = `${omega.toFixed(3)} rad/s`;
-    document.getElementById("tableInertia").textContent = `${p.I.toFixed(6)} kg·m²`;
-    document.getElementById("tableB").textContent = `${p.B.toFixed(4)} T`;
-    document.getElementById("tableTorque").textContent = `${p.torque.toFixed(6)} N·m`;
-    document.getElementById("tablePower").textContent = `${p.power.toFixed(5)} W`;
+  if (p.r > p.R) {
+    errors.push(
+      'El radio efectivo r no puede superar el radio R del disco.'
+    );
   }
 
-  function drawSystem(){
-    const w = simCanvas.width;
-    const h = simCanvas.height;
-    ctx.clearRect(0,0,w,h);
+  if (p.Ae > Math.PI * p.R * p.R) {
+    errors.push(
+      'Aₑ no puede superar el área de una cara del disco.'
+    );
+  }
 
-    const bg = ctx.createLinearGradient(0,0,w,h);
-    bg.addColorStop(0,"#07111f");
-    bg.addColorStop(1,"#101827");
-    ctx.fillStyle = bg;
-    ctx.fillRect(0,0,w,h);
+  if (Math.ceil(p.T / p.dt) > 50000) {
+    errors.push(
+      'T/Δt supera 50 000 pasos: aumenta Δt o reduce T.'
+    );
+  }
 
-    const cx = 355;
-    const cy = 220;
-    const visualR = 135;
+  const M = derive(p);
+  const q = M.lambda * Math.min(p.dt, p.T);
 
-    ctx.strokeStyle = "#64748b";
-    ctx.lineWidth = 14;
+  if (q >= 1) {
+    errors.push(
+      'Euler daría una velocidad nula o negativa en un paso. '
+      + 'Usa Δt < ' + fmt(1 / M.lambda)
+      + ' s; recomendado ≤ ' + fmt(0.02 / M.lambda) + ' s.'
+    );
+  } else if (q > 0.05) {
+    warnings.push(
+      'λΔt es grande (' + fmt(q)
+      + '). Euler puede tener un error apreciable; '
+      + 'prueba Δt ≤ ' + fmt(0.02 / M.lambda) + ' s.'
+    );
+  }
+
+  if (p.rpm0 > 1500) {
+    warnings.push(
+      'La velocidad es alta para extrapolar un modelo lineal: '
+      + 'pueden importar efectos electromagnéticos no incluidos.'
+    );
+  }
+
+  if (p.e / p.R > 0.15) {
+    warnings.push(
+      'El espesor es grande frente al radio; '
+      + 'revisa la aproximación de disco delgado.'
+    );
+  }
+
+  if (p.B0 > 1 || p.kg > 0.5) {
+    warnings.push(
+      'B₀ o k_g son elevados: estos parámetros requieren '
+      + 'calibración experimental.'
+    );
+  }
+
+  if (p.n < 2 || p.n > 3) {
+    warnings.push(
+      'n está fuera del intervalo orientativo 2–3. '
+      + 'La curva B(d) requiere ajuste experimental.'
+    );
+  }
+
+  if (p.r + Math.sqrt(p.Ae / Math.PI) > p.R) {
+    warnings.push(
+      'Una huella circular de área Aₑ centrada en r cruzaría '
+      + 'el borde. Aₑ debe representar solo el área efectiva '
+      + 'sobre el conductor.'
+    );
+  }
+
+  const rho = MATERIALS[p.material].rho;
+
+  if (
+    rho &&
+    Math.abs(
+      p.m / (Math.PI * p.R * p.R * p.e) / rho - 1
+    ) > 0.3
+  ) {
+    warnings.push(
+      'Masa y dimensiones no corresponden aproximadamente '
+      + 'a un disco macizo de este material. '
+      + 'Se utiliza la masa ingresada.'
+    );
+  }
+
+  if (!M.c) {
+    warnings.push(
+      'c = 0: no hay desaceleración; '
+      + 'los tiempos de reducción son infinitos.'
+    );
+  }
+
+  if (p.material === 'ss') {
+    warnings.push(
+      'Inoxidable 304: σ es orientativa. '
+      + 'Este modelo no incluye ferromagnetismo ni histéresis.'
+    );
+  }
+
+  return {p, M, errors, warnings};
+}
+
+function rebuild() {
+  state.running = false;
+  state.active = null;
+  state.t = 0;
+
+  const {p,M,errors,warnings} = readParameters();
+  state.valid = !errors.length;
+
+  const notices = errors.length ? errors : warnings;
+
+  $('validation').hidden = !notices.length;
+  $('validation').className =
+    'notice ' + (errors.length ? 'error' : 'warning');
+
+  $('validation').replaceChildren();
+
+  for (const s of notices) {
+    const line = document.createElement('p');
+    line.textContent = s;
+    $('validation').append(line);
+  }
+
+  if (state.valid) {
+    state.p = p;
+    state.M = M;
+    state.rows = simulate(p, M);
+    $('progress').max = p.T;
+    $('endTime').textContent = fmt(p.T) + ' s';
+  }
+
+  $('status').textContent =
+    state.valid ? 'Listo' : 'Revisar entradas';
+
+  if (!state.valid) {
+    [
+      'rpmRead','omegaRead','fractionRead','errorRead','qRead'
+    ].forEach(id => $(id).textContent = '—');
+
+    $('rpmMeter').style.width = '0%';
+    $('cards').innerHTML = '';
+    $('equations').textContent =
+      'Corrige las entradas para evaluar el modelo.';
+
+    document.querySelectorAll('#graphs canvas')
+      .forEach(canvas => canvasContext(canvas));
+  }
+
+  $('clock').textContent = '0.00 s';
+  $('progress').value = 0;
+
+  updateButtons();
+  renderAll();
+}
+
+function updateButtons() {
+  const v = state.valid;
+  const t = state.t;
+  const T = state.p?.T || 0;
+
+  $('start').disabled = !v || state.running;
+  $('pause').disabled = !state.running;
+  $('resume').disabled =
+    !v || state.running || t <= 0 || t >= T;
+  $('step').disabled =
+    !v || state.running || t >= T;
+  $('reset').disabled = !v;
+
+  ['compare','runExperiment','recordFull']
+    .forEach(id => $(id).disabled = !v);
+}
+
+function switchTab(name) {
+  state.tab = name;
+
+  document.querySelectorAll('[data-tab]').forEach(b => {
+    b.setAttribute(
+      'aria-selected',
+      String(b.dataset.tab === name)
+    );
+  });
+
+  document.querySelectorAll('.tab').forEach(p => {
+    p.hidden = p.id !== name;
+  });
+
+  renderAll();
+}
+
+// ============================================================
+// 3. GRÁFICAS CANVAS
+// Cada gráfica conserva su unidad y su propia escala vertical.
+// ============================================================
+
+function canvasContext(canvas) {
+  const box = canvas.getBoundingClientRect();
+  const w = Math.round(box.width);
+  const h = Math.round(box.height);
+
+  if (!w || !h) return null;
+
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  if (
+    canvas.width !== Math.round(w * dpr) ||
+    canvas.height !== Math.round(h * dpr)
+  ) {
+    canvas.width = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
+  }
+
+  const ctx = canvas.getContext('2d');
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+
+  return {ctx, w, h};
+}
+
+function plot(canvas, series, T, unit, limit=T) {
+  const c = canvasContext(canvas);
+  if (!c) return;
+
+  const {ctx,w,h} = c;
+  const L = 66, R = 17, U = 25, D = 40;
+  const pw = w - L - R;
+  const ph = h - U - D;
+
+  let ymax = 0;
+
+  series.forEach(s => {
+    ymax = Math.max(ymax, s.value(s.rows[0]));
+  });
+
+  ymax = ymax > 0 ? ymax * 1.08 : 1;
+
+  const x = t => L + pw * t / T;
+  const y = v => U + ph * (1 - v / ymax);
+
+  ctx.font = '11px system-ui';
+  ctx.lineWidth = 1;
+
+  for (let i = 0; i <= 4; i++) {
+    const yy = U + ph * i / 4;
+    const xx = L + pw * i / 4;
+
+    ctx.strokeStyle = '#26394e';
     ctx.beginPath();
-    ctx.moveTo(85,cy);
-    ctx.lineTo(cx,cy);
+    ctx.moveTo(L, yy);
+    ctx.lineTo(w - R, yy);
     ctx.stroke();
 
-    ctx.fillStyle = "#334155";
-    ctx.fillRect(40,170,115,100);
-    ctx.fillStyle = "#e2e8f0";
-    ctx.font = "bold 18px Arial";
-    ctx.fillText("MOTOR",67,225);
+    ctx.fillStyle = '#a4b8cd';
+    ctx.textAlign = 'right';
+    ctx.fillText(
+      fmt(ymax * (1 - i / 4), 3),
+      L - 8,
+      yy + 4
+    );
 
-    ctx.save();
-    ctx.translate(cx,cy);
-    ctx.rotate(angle);
+    ctx.textAlign = 'center';
+    ctx.fillText(fmt(T * i / 4, 3), xx, h - 20);
+  }
 
-    const discGradient = ctx.createRadialGradient(0,0,15,0,0,visualR);
-    discGradient.addColorStop(0,"#e5e7eb");
-    discGradient.addColorStop(.65,"#aeb8c5");
-    discGradient.addColorStop(1,"#64748b");
-    ctx.fillStyle = discGradient;
-    ctx.beginPath();
-    ctx.arc(0,0,visualR,0,Math.PI*2);
-    ctx.fill();
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#b9cbdc';
+  ctx.fillText(unit, L, 13);
+  ctx.textAlign = 'right';
+  ctx.fillText('tiempo [s]', w - R, h - 4);
 
-    ctx.strokeStyle = "rgba(15,23,42,.38)";
-    ctx.lineWidth = 4;
-    for(let a=0;a<Math.PI*2;a+=Math.PI/6){
-      ctx.beginPath();
-      ctx.moveTo(0,0);
-      ctx.lineTo(Math.cos(a)*visualR,Math.sin(a)*visualR);
-      ctx.stroke();
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(L, U, pw, ph + 1);
+  ctx.clip();
+
+  series.forEach(s => {
+    const data = s.rows;
+    let last = 0;
+
+    while (
+      last + 1 < data.length &&
+      data[last + 1].t <= limit + 1e-10
+    ) {
+      last++;
     }
 
-    ctx.fillStyle="#111827";
+    // Se reducen solo los puntos dibujados.
+    // El CSV conserva todas las muestras calculadas.
+    const stride = Math.max(
+      1,
+      Math.ceil((last + 1) / Math.max(200, pw * 2))
+    );
+
+    ctx.strokeStyle = s.color;
+    ctx.lineWidth = 2;
+    ctx.setLineDash(s.dashed ? [6,4] : []);
     ctx.beginPath();
-    ctx.arc(0,0,18,0,Math.PI*2);
-    ctx.fill();
-    ctx.restore();
+    ctx.moveTo(x(0), y(s.value(data[0])));
 
-    const gapMM = Number(gap.value);
-    const magnetOffset = 22 + gapMM*2.0;
-    const mx = cx + visualR + magnetOffset;
-
-    ctx.fillStyle="#ef4444";
-    ctx.fillRect(mx,120,60,82);
-    ctx.fillStyle="#3b82f6";
-    ctx.fillRect(mx,238,60,82);
-
-    ctx.fillStyle="#fff";
-    ctx.font="bold 22px Arial";
-    ctx.fillText("N",mx+20,168);
-    ctx.fillText("S",mx+20,286);
-
-    ctx.strokeStyle="rgba(56,189,248,.55)";
-    ctx.lineWidth=2;
-    for(let i=0;i<5;i++){
-      const spread=i*10;
-      ctx.beginPath();
-      ctx.bezierCurveTo(mx,190-spread, cx+visualR+35,185-spread,
-                        cx+visualR-20,205-spread/2, cx+visualR-35,220);
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.bezierCurveTo(mx,250+spread, cx+visualR+35,255+spread,
-                        cx+visualR-20,235+spread/2, cx+visualR-35,220);
-      ctx.stroke();
+    for (let i = 1; i < last; i += stride) {
+      ctx.lineTo(x(data[i].t), y(s.value(data[i])));
     }
 
-    ctx.fillStyle="#f8fafc";
-    ctx.font="16px Arial";
-    ctx.fillText(`Separación: ${gapMM} mm`,560,355);
-
-    ctx.fillStyle="#38bdf8";
-    ctx.beginPath();
-    ctx.arc(350,45,16,0,Math.PI*2);
-    ctx.fill();
-    ctx.fillStyle="#e5e7eb";
-    ctx.font="14px Arial";
-    ctx.fillText("Sensor Hall / Encoder",380,50);
-
-    ctx.strokeStyle="#38bdf8";
-    ctx.setLineDash([6,6]);
-    ctx.beginPath();
-    ctx.moveTo(350,62);
-    ctx.lineTo(350,85);
+    ctx.lineTo(x(data[last].t), y(s.value(data[last])));
     ctx.stroke();
     ctx.setLineDash([]);
 
-    drawRotationArrow(cx,cy,visualR+25);
-  }
-
-  function drawRotationArrow(cx,cy,r){
-    ctx.save();
-    ctx.strokeStyle="#34d399";
-    ctx.fillStyle="#34d399";
-    ctx.lineWidth=4;
-
     ctx.beginPath();
-    ctx.arc(cx,cy,r,-0.9,0.45);
-    ctx.stroke();
-
-    const ax=cx+Math.cos(.45)*r;
-    const ay=cy+Math.sin(.45)*r;
-
-    ctx.translate(ax,ay);
-    ctx.rotate(.45+Math.PI/2);
-    ctx.beginPath();
-    ctx.moveTo(0,0);
-    ctx.lineTo(-12,-7);
-    ctx.lineTo(-12,7);
-    ctx.closePath();
+    ctx.arc(
+      x(data[last].t),
+      y(s.value(data[last])),
+      3, 0, TAU
+    );
+    ctx.fillStyle = s.color;
     ctx.fill();
-    ctx.restore();
+  });
 
-    ctx.fillStyle="#34d399";
-    ctx.font="bold 16px Arial";
-    ctx.fillText(`${rpm.toFixed(0)} RPM`,cx-38,cy-visualR-33);
+  ctx.restore();
+}
+
+function legend(id, series) {
+  $(id).innerHTML = series.map(s => `
+    <span>
+      <i class="swatch" style="background:${s.color}"></i>
+      ${s.label}${s.dashed ? ' (discontinua)' : ''}
+    </span>
+  `).join('');
+}
+
+const GRAPH_DEFS = [
+  ['rpm','RPM vs tiempo','RPM'],
+  ['omega','Velocidad angular','rad/s'],
+  ['torque','Torques de frenado','N·m'],
+  ['energy','Energía cinética','J'],
+  ['power','Potencia disipada','W']
+];
+
+function buildGraphs() {
+  for (const [id,title] of GRAPH_DEFS) {
+    $('curveToggles').insertAdjacentHTML('beforeend', `
+      <label>
+        <input type="checkbox" data-graph="${id}" checked>
+        ${title}
+      </label>
+    `);
+
+    $('graphs').insertAdjacentHTML('beforeend', `
+      <div class="plot" id="box-${id}">
+        <h3>${title}</h3>
+        <canvas id="chart-${id}" role="img"
+          aria-label="${title}"></canvas>
+        <div id="legend-${id}" class="legend"></div>
+      </div>
+    `);
   }
 
-  function drawGraph(){
-    const w=graphCanvas.width;
-    const h=graphCanvas.height;
-    gctx.clearRect(0,0,w,h);
-    gctx.fillStyle="#07111f";
-    gctx.fillRect(0,0,w,h);
+  $('graphs').insertAdjacentHTML('beforeend', `
+    <div class="plot wide">
+      <div class="row spread">
+        <h3>Validación · Euler frente a solución analítica</h3>
+        <div>
+          <label>
+            <input id="showNumeric" type="checkbox" checked>
+            Euler
+          </label>
+          <label>
+            <input id="showAnalytic" type="checkbox" checked>
+            Analítica
+          </label>
+        </div>
+      </div>
+      <canvas id="chart-validation" role="img"
+        aria-label="Soluciones numérica y analítica superpuestas">
+      </canvas>
+      <div id="legend-validation" class="legend"></div>
+      <p id="errorDetail" class="foot"></p>
+    </div>
+  `);
 
-    const padL=58,padR=20,padT=20,padB=38;
-    const gw=w-padL-padR;
-    const gh=h-padT-padB;
-
-    gctx.strokeStyle="#475569";
-    gctx.lineWidth=1;
-    gctx.beginPath();
-    gctx.moveTo(padL,padT);
-    gctx.lineTo(padL,h-padB);
-    gctx.lineTo(w-padR,h-padB);
-    gctx.stroke();
-
-    const maxT=Math.max(10,time, history.length ? history[history.length-1].t : 10);
-    const maxRpm=Math.max(Number(rpmInit.value),200);
-
-    gctx.fillStyle="#94a3b8";
-    gctx.font="13px Arial";
-    gctx.fillText("RPM",12,24);
-    gctx.fillText("Tiempo (s)",w-86,h-10);
-
-    for(let i=0;i<=5;i++){
-      const y=padT+gh*i/5;
-      const val=maxRpm*(1-i/5);
-      gctx.strokeStyle="rgba(71,85,105,.30)";
-      gctx.beginPath();
-      gctx.moveTo(padL,y);
-      gctx.lineTo(w-padR,y);
-      gctx.stroke();
-      gctx.fillStyle="#94a3b8";
-      gctx.fillText(val.toFixed(0),8,y+4);
-    }
-
-    for(let i=0;i<=5;i++){
-      const x=padL+gw*i/5;
-      const val=maxT*i/5;
-      gctx.strokeStyle="rgba(71,85,105,.20)";
-      gctx.beginPath();
-      gctx.moveTo(x,padT);
-      gctx.lineTo(x,h-padB);
-      gctx.stroke();
-      gctx.fillStyle="#94a3b8";
-      gctx.fillText(val.toFixed(1),x-8,h-18);
-    }
-
-    if(history.length>1){
-      gctx.strokeStyle="#38bdf8";
-      gctx.lineWidth=3;
-      gctx.beginPath();
-      history.forEach((p,i)=>{
-        const x=padL+(p.t/maxT)*gw;
-        const y=padT+(1-p.rpm/maxRpm)*gh;
-        if(i===0) gctx.moveTo(x,y);
-        else gctx.lineTo(x,y);
-      });
-      gctx.stroke();
-    }
-  }
-
-  function physicsStep(dt){
-    const p=getParams();
-    const alpha=-(p.torque+p.mechanicalLoss)/p.I;
-
-    omega += alpha*dt;
-    if(omega<0.05) omega=0;
-
-    angle += omega*dt;
-    time += dt;
-    energy += Math.max(0,p.power)*dt;
-
-    if(history.length===0 || time-history[history.length-1].t>=0.05){
-      history.push({t:time,rpm:omegaToRpm(omega)});
-    }
-
-    if(omega===0){
-      running=false;
-    }
-  }
-
-  function animate(timestamp){
-    if(lastTimestamp===null) lastTimestamp=timestamp;
-    let dt=(timestamp-lastTimestamp)/1000;
-    lastTimestamp=timestamp;
-
-    if(dt>0.05) dt=0.05;
-
-    if(running){
-      physicsStep(dt);
-    }
-
-    updateNumbers();
-    drawSystem();
-    drawGraph();
-    requestAnimationFrame(animate);
-  }
-
-  function resetSimulation(){
-    running=false;
-    rpm=Number(rpmInit.value);
-    omega=rpmToOmega(rpm);
-    angle=0;
-    time=0;
-    energy=0;
-    history=[{t:0,rpm:rpm}];
-    lastTimestamp=null;
-    updateLabels();
-    updateNumbers();
-    drawSystem();
-    drawGraph();
-  }
-
-  document.getElementById("startBtn").addEventListener("click",()=>running=true);
-  document.getElementById("pauseBtn").addEventListener("click",()=>running=false);
-  document.getElementById("resetBtn").addEventListener("click",resetSimulation);
-
-  [rpmInit,gap,b0,radiusInput,massInput,kBrake].forEach(input=>{
-    input.addEventListener("input",()=>{
-      updateLabels();
-      if(!running && input===rpmInit){
-        rpm=Number(rpmInit.value);
-        omega=rpmToOmega(rpm);
-      }
-      updateNumbers();
-      drawSystem();
-      drawGraph();
+  document.querySelectorAll('[data-graph]').forEach(input => {
+    input.addEventListener('change', () => {
+      $('box-' + input.dataset.graph).hidden = !input.checked;
+      drawGraphs();
     });
   });
 
-  updateLabels();
-  resetSimulation();
-  requestAnimationFrame(animate);
+  ['showNumeric','showAnalytic'].forEach(id => {
+    $(id).addEventListener('change', drawGraphs);
+  });
+}
+
+function drawGraphs() {
+  if (state.tab !== 'lab' || !state.valid) return;
+
+  const rows = state.rows;
+  const M = state.M;
+
+  const s = (label,color,value,dashed=false) => ({
+    rows,label,color,value,dashed
+  });
+
+  const series = {
+    rpm:[
+      s('Euler', COLORS[0], r => toRPM(r.n))
+    ],
+    omega:[
+      s('Euler', COLORS[2], r => r.n)
+    ],
+    torque:[
+      s('Electromagnético', COLORS[0], r => M.ce * r.n),
+      s('Mecánico', COLORS[1], r => M.cm * r.n),
+      s('Total', COLORS[2], r => M.c * r.n, true)
+    ],
+    energy:[
+      s('Energía rotacional', COLORS[3],
+        r => M.I * r.n * r.n / 2)
+    ],
+    power:[
+      s('Total', COLORS[1], r => M.c * r.n * r.n),
+      s('Electromagnética', COLORS[0],
+        r => M.ce * r.n * r.n, true)
+    ]
+  };
+
+  GRAPH_DEFS.forEach(([id,,unit]) => {
+    if (!$('box-' + id).hidden) {
+      plot(
+        $('chart-' + id),
+        series[id],
+        state.p.T,
+        unit,
+        state.t
+      );
+      legend('legend-' + id, series[id]);
+    }
+  });
+
+  const both = [];
+
+  if ($('showNumeric').checked) {
+    both.push(s('Euler', COLORS[1], r => toRPM(r.n)));
+  }
+
+  if ($('showAnalytic').checked) {
+    both.push(
+      s('Analítica', COLORS[0], r => toRPM(r.a), true)
+    );
+  }
+
+  plot(
+    $('chart-validation'),
+    both,
+    state.p.T,
+    'RPM',
+    state.t
+  );
+
+  legend('legend-validation', both);
+
+  const point = atTime(state.t);
+  const err = relativeError(point.a, point.n, M.w0);
+
+  $('errorDetail').textContent =
+    'Error relativo actual = ' + fmt(err)
+    + ' %. Error absoluto = '
+    + fmt(Math.abs(point.a - point.n))
+    + ' rad/s. Error normalizado a ω₀ = '
+    + fmt(100 * Math.abs(point.a - point.n) / M.w0)
+    + ' %. Si ω analítica ≤ 10⁻¹⁰ ω₀, el error relativo '
+    + 'se muestra como — para evitar dividir por valores '
+    + 'casi nulos.';
+}
+
+// ============================================================
+// 4. ANIMACIÓN DEL DISCO Y VECTORES
+// El ángulo procede de la velocidad numérica interpolada.
+// ============================================================
+
+function arrow(ctx,x1,y1,x2,y2,color,label='') {
+  const a = Math.atan2(y2 - y1, x2 - x1);
+
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+  ctx.lineWidth = 2.4;
+
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(
+    x2 - 9 * Math.cos(a - .4),
+    y2 - 9 * Math.sin(a - .4)
+  );
+  ctx.lineTo(
+    x2 - 9 * Math.cos(a + .4),
+    y2 - 9 * Math.sin(a + .4)
+  );
+  ctx.closePath();
+  ctx.fill();
+
+  if (label) {
+    ctx.font = 'bold 14px system-ui';
+    ctx.textAlign = 'left';
+    ctx.fillText(label, x2 + 6, y2 - 5);
+  }
+}
+
+function arcArrow(ctx,cx,cy,r,a,b,color) {
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, a, b, b < a);
+  ctx.stroke();
+
+  const sign = b > a ? 1 : -1;
+  const x = cx + r * Math.cos(b);
+  const y = cy + r * Math.sin(b);
+  const tx = -Math.sin(b) * sign;
+  const ty = Math.cos(b) * sign;
+
+  arrow(ctx, x - tx * 10, y - ty * 10, x, y, color);
+}
+
+function drawScene() {
+  if (state.tab !== 'lab') return;
+
+  const c = canvasContext($('scene'));
+  if (!c) return;
+
+  const {ctx,w,h} = c;
+
+  if (!state.valid) {
+    ctx.fillStyle = COLORS[4];
+    ctx.font = '14px system-ui';
+    ctx.fillText('Corrige las entradas para simular.', 20, 40);
+    return;
+  }
+
+  const p = state.p;
+  const M = state.M;
+  const s = atTime(state.t);
+  const v = values(M, s.n);
+  const ratio = s.n / M.w0;
+
+  const cx = w * .43;
+  const cy = h * .43;
+  const R = Math.min(w * .31, h * .31);
+  const px = cx + R * p.r / p.R;
+
+  // Retícula del laboratorio.
+  ctx.strokeStyle = '#17293b';
+  ctx.lineWidth = 1;
+
+  for (let x = 20; x < w; x += 28) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, h);
+    ctx.stroke();
+  }
+
+  for (let y = 16; y < h; y += 28) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(w, y);
+    ctx.stroke();
+  }
+
+  // Disco conductor.
+  const grad = ctx.createRadialGradient(
+    cx - R * .3,
+    cy - R * .4,
+    4,
+    cx, cy, R
+  );
+
+  grad.addColorStop(0, '#a0b4c7');
+  grad.addColorStop(.55, '#667f95');
+  grad.addColorStop(1, '#2c435b');
+
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.arc(cx, cy, R, 0, TAU);
+  ctx.fill();
+  ctx.strokeStyle = '#a8c0d3';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(-s.angle * Number($('angleScale').value));
+
+  for (let i = 0; i < 12; i++) {
+    const a = i * TAU / 12;
+
+    ctx.strokeStyle = i === 0 ? '#edfaff' : '#b5cad04d';
+    ctx.lineWidth = i === 0 ? 4 : 1;
+    ctx.beginPath();
+    ctx.moveTo(
+      R * .2 * Math.cos(a),
+      R * .2 * Math.sin(a)
+    );
+    ctx.lineTo(
+      R * .86 * Math.cos(a),
+      R * .86 * Math.sin(a)
+    );
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = COLORS[0];
+  ctx.beginPath();
+  ctx.arc(R * .85, 0, 5, 0, TAU);
+  ctx.fill();
+  ctx.restore();
+
+  ctx.fillStyle = '#101e2d';
+  ctx.beginPath();
+  ctx.arc(cx, cy, R * .13, 0, TAU);
+  ctx.fill();
+  ctx.strokeStyle = '#aec5d4';
+  ctx.stroke();
+
+  ctx.fillStyle = '#c5d8e8';
+  ctx.font = '11px system-ui';
+  ctx.textAlign = 'center';
+  ctx.fillText('disco conductor', cx, cy + R + 20);
+
+  arcArrow(ctx, cx, cy, R + 12, -2.8, -4.1, COLORS[0]);
+  ctx.fillStyle = COLORS[0];
+  ctx.fillText('ω ↺', cx - R - 5, cy - 27);
+
+  // Huella magnética esquemática, recortada al área del disco.
+  const patch = Math.max(
+    18,
+    Math.min(R * .7, Math.sqrt(p.Ae) * R / p.R)
+  );
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx, cy, R, 0, TAU);
+  ctx.clip();
+
+  if (M.B > 0) {
+    ctx.fillStyle =
+      'rgba(123,186,255,'
+      + (.1 + .25 * Math.min(1, M.B / .35))
+      + ')';
+
+    ctx.fillRect(
+      px - patch / 2,
+      cy - patch,
+      patch,
+      patch * 2
+    );
+
+    ctx.fillStyle = COLORS[2];
+    ctx.font = '18px system-ui';
+
+    for (let j = -1; j <= 1; j++) {
+      ctx.fillText('⊙', px, cy + j * patch * .68 + 6);
+    }
+
+    // Bucles cualitativos. Su actividad disminuye con ω.
+    if (M.ce > 0 && ratio > 1e-8) {
+      ctx.globalAlpha = Math.min(1, .2 + ratio);
+
+      for (const side of [-1,1]) {
+        const ey = cy + side * patch * .7;
+
+        ctx.strokeStyle = COLORS[1];
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.ellipse(
+          px, ey,
+          patch * .43,
+          patch * .3,
+          0, 0, TAU
+        );
+        ctx.stroke();
+
+        const a = side * s.angle * .25;
+
+        ctx.fillStyle = COLORS[1];
+        ctx.beginPath();
+        ctx.arc(
+          px + patch * .43 * Math.cos(a),
+          ey + patch * .3 * Math.sin(a),
+          3, 0, TAU
+        );
+        ctx.fill();
+      }
+    }
+  }
+
+  ctx.restore();
+
+  if (M.B > 0) {
+    ctx.strokeStyle = COLORS[2];
+    ctx.setLineDash([4,3]);
+    ctx.strokeRect(
+      px - patch / 2,
+      cy - patch,
+      patch,
+      patch * 2
+    );
+    ctx.setLineDash([]);
+    ctx.fillStyle = COLORS[2];
+    ctx.font = '11px system-ui';
+    ctx.textAlign = 'left';
+    ctx.fillText(
+      'S · imán delante',
+      Math.min(px + patch / 2 + 6, w - 110),
+      cy - patch - 8
+    );
+  }
+
+  // En el punto derecho del disco:
+  // v hacia arriba; B hacia el observador;
+  // J ≈ σ(v×B) hacia la derecha; f = J×B hacia abajo.
+  if ($('vectors').checked) {
+    const len = 22 + 36 * Math.sqrt(ratio);
+
+    if (s.n > 1e-8) {
+      arrow(
+        ctx, px, cy, px, cy - len,
+        COLORS[0], 'v'
+      );
+    }
+
+    if (M.B > 0 && s.n > 1e-8) {
+      arrow(
+        ctx, px, cy, px + len * .75, cy,
+        COLORS[1], 'J'
+      );
+      arrow(
+        ctx, px, cy + 4, px, cy + len,
+        COLORS[4], 'f'
+      );
+    }
+
+    if (M.c > 0 && s.n > 1e-8) {
+      arcArrow(
+        ctx, cx, cy, R + 29,
+        -1.6, -.25, COLORS[4]
+      );
+      ctx.fillStyle = COLORS[4];
+      ctx.fillText('τ', cx + R + 37, cy - 22);
+    }
+  }
+
+  // Vista lateral:
+  // B entra al polo S delantero;
+  // en la vista frontal sale del plano del disco.
+  const iy = h - 48;
+  const ix = 24;
+  const gap = 16 + Math.min(p.d * 1000, 60) * .55;
+
+  ctx.fillStyle = '#9bb0c2';
+  ctx.fillRect(ix, iy - 25, 7, 43);
+
+  ctx.fillStyle = '#91b9ee';
+  ctx.fillRect(ix + 7 + gap, iy - 22, 30, 35);
+
+  ctx.fillStyle = '#da6d79';
+  ctx.fillRect(ix + 37 + gap, iy - 22, 30, 35);
+
+  ctx.fillStyle = '#091423';
+  ctx.font = 'bold 14px system-ui';
+  ctx.fillText('S', ix + 22 + gap, iy);
+  ctx.fillText('N', ix + 52 + gap, iy);
+
+  if (M.B > 0) {
+    arrow(
+      ctx,
+      ix - 14, iy - 4,
+      ix + gap + 2, iy - 4,
+      COLORS[2]
+    );
+  }
+
+  ctx.font = '10px system-ui';
+  ctx.fillStyle = '#bacddd';
+  ctx.textAlign = 'left';
+  ctx.fillText(
+    'Lateral · d = ' + fmt(p.d * 1000) + ' mm',
+    ix,
+    iy + 33
+  );
+
+  ctx.textAlign = 'right';
+  ctx.fillStyle = COLORS[2];
+  ctx.fillText('B = ' + fmt(M.B) + ' T', w - 15, h - 43);
+
+  ctx.fillStyle = COLORS[1];
+  ctx.fillText('Pₑ = ' + fmt(v.Pe) + ' W', w - 15, h - 25);
+
+  $('scene').setAttribute(
+    'aria-label',
+    `Disco a ${fmt(v.rpm)} RPM. Campo ${fmt(M.B)} T. `
+    + 'Giro antihorario y torque opuesto.'
+  );
+}
+
+function renderCards() {
+  if (!state.valid) return;
+
+  const M = state.M;
+  const s = atTime(state.t);
+  const v = values(M, s.n);
+  const i = values(M, M.w0);
+
+  $('rpmRead').textContent = v.rpm.toLocaleString(
+    'es-PE',
+    {minimumFractionDigits:1, maximumFractionDigits:1}
+  );
+
+  $('omegaRead').textContent = fmt(s.n);
+  $('fractionRead').textContent = fmt(100 * s.n / M.w0) + ' %';
+  $('rpmMeter').style.width = (100 * s.n / M.w0) + '%';
+
+  $('errorRead').textContent =
+    fmt(relativeError(s.a, s.n, M.w0)) + ' %';
+
+  $('qRead').textContent = fmt(M.lambda * state.p.dt);
+
+  const cards = [
+    ['Momento de inercia I', M.I, 'kg·m²'],
+    ['Campo B(d)', M.B, 'T'],
+    ['Coeficiente magnético cₑ', M.ce, 'N·m·s'],
+    ['Coeficiente total c', M.c, 'N·m·s'],
+    ['Torque inicial total', i.tt, 'N·m'],
+    ['Aceleración inicial α₀', i.alpha, 'rad/s²'],
+    ['RPM actual', v.rpm, 'RPM'],
+    ['Energía inicial', M.E0, 'J'],
+    ['Energía actual', v.E, 'J'],
+    ['Potencia instantánea total', v.P, 'W'],
+    ['Torque electromagnético', v.te, 'N·m'],
+    ['Torque mecánico', v.tm, 'N·m'],
+    ['Torque total', v.tt, 'N·m'],
+    ['Tiempo al 50 %', threshold(M,.5), 's'],
+    ['Tiempo al 10 %', threshold(M,.1), 's'],
+    ['Constante de tiempo τc', M.tau, 's']
+  ];
+
+  $('cards').innerHTML = cards.map(([label,value,unit]) => `
+    <div class="card">
+      <small>${label}</small>
+      <strong>${fmt(value)}</strong>
+      <span class="unit">${unit}</span>
+    </div>
+  `).join('');
+
+  $('clock').textContent = state.t.toFixed(2) + ' s';
+  $('progress').value = state.t;
+}
+
+function renderEquations() {
+  if (!state.valid) return;
+
+  const p = state.p;
+  const M = state.M;
+  const s = atTime(state.t);
+  const v = values(M, s.n);
+  const F = fmt;
+
+  const J = p.sigma * p.r * s.n * M.B;
+  const f = J * M.B;
+  const flux = M.B * p.Ae;
+
+  // Escala ilustrativa de FEM de movimiento al cruzar
+  // un borde del campo. No se usa para calcular el torque.
+  const emf = M.B * Math.sqrt(p.Ae) * p.r * s.n;
+
+  const eq = [
+    [
+      'Unidades y geometría',
+      `R = ${F(p.R*1000)} mm = ${F(p.R)} m
+e = ${F(p.e*1000)} mm = ${F(p.e)} m
+r = ${F(p.r*1000)} mm = ${F(p.r)} m
+Aₑ = ${F(p.Ae*1e4)} cm² = ${F(p.Ae)} m²
+σ = ${F(p.sigma/1e6)} MS/m = ${F(p.sigma)} S/m`,
+      'Se usa la masa ingresada; m, R y e son parámetros independientes.'
+    ],
+    [
+      'Campo y flujo',
+      `B(d) = B₀ / [1 + (d/d₀)ⁿ]
+B = ${F(p.B0)} / [1 + (${F(p.d)}/${F(p.d0)})^${F(p.n)}] = ${F(M.B)} T
+Φ = BAₑ cos(0) = ${F(M.B)}·${F(p.Ae)} = ${F(flux)} Wb`,
+      'B(d) es empírico. Este Φ representa una región uniformemente cubierta por el campo, no el flujo variable de cada lazo material.'
+    ],
+    [
+      'Faraday–Lenz y velocidad',
+      `ε = ∮(E + v × B)·dl = −dΦ_material/dt
+ω₀ = 2π·${F(p.rpm0)}/60 = ${F(M.w0)} rad/s
+v = rω = ${F(p.r)}·${F(s.n)} = ${F(p.r*s.n)} m/s
+|ε_car| ≈ Bℓv = ${F(emf)} V; ℓ = √Aₑ = ${F(Math.sqrt(p.Ae))} m`,
+      'ε_car es solo una escala de FEM al atravesar un borde de campo con longitud ℓ. No es la FEM exacta de un bucle ni alimenta el modelo de torque.'
+    ],
+    [
+      'Corriente y fuerza',
+      `J = σ(E + v × B) ≈ σ(v × B)
+|J| ≈ σrωB = ${F(J)} A/m²
+f = J × B; |f| ≈ JB = ${F(f)} N/m³
+Fᵦ ≈ k_gσB²Aₑerω = ${F(M.ce*s.n/p.r)} N`,
+      'f es fuerza por unidad de volumen. Fᵦ integra una fuerza equivalente y utiliza k_g para el efecto geométrico.'
+    ],
+    [
+      'Coeficiente y torque',
+      `cₑ = k_gσB²Aₑer²
+= ${F(p.kg)}·${F(p.sigma)}·${F(M.B)}²·${F(p.Ae)}·${F(p.e)}·${F(p.r)}²
+= ${F(M.ce)} N·m·s
+τₑ = Fᵦr = cₑω = ${F(v.te)} N·m
+τₘ = cₘω = ${F(v.tm)} N·m
+τ_total = ${F(v.tt)} N·m`,
+      'Los torques mostrados son magnitudes positivas; el torque firmado sobre el disco es −τ_total.'
+    ],
+    [
+      'Inercia y dinámica',
+      `I = ½mR² = ½·${F(p.m)}·${F(p.R)}²
+I = ${F(M.I)} kg·m²
+c = cₑ + cₘ = ${F(M.ce)} + ${F(M.cm)} = ${F(M.c)} N·m·s
+Στ = Iα = −cω
+α = −τ_total/I = ${F(v.alpha)} rad/s²`,
+      'La fricción mecánica activada es viscosa y lineal; no incluye fricción seca ni torque de arranque.'
+    ],
+    [
+      'Solución analítica',
+      `λ = c/I = ${F(M.lambda)} s⁻¹
+τc = I/c = ${F(M.tau)} s
+ω(t) = ω₀ exp(−t/τc)
+ω(${F(state.t)}) = ${F(M.w0)} exp(−${F(M.lambda)}·${F(state.t)})
+= ${F(s.a)} rad/s
+t₅₀ = τc ln(2) = ${F(threshold(M,.5))} s
+t₁₀ = τc ln(10) = ${F(threshold(M,.1))} s`,
+      'Si c = 0, ω permanece constante y τc es infinita.'
+    ],
+    [
+      'Euler explícito y error',
+      `αₖ = −(c/I)ωₖ
+ωₖ₊₁ = ωₖ + αₖh = ωₖ(1−λh)
+h = Δt = ${F(p.dt)} s (último paso ≤ Δt)
+ω numérica actual = ${F(s.n)} rad/s
+error = 100|ω_num−ω_ana|/|ω_ana|
+= ${F(relativeError(s.a,s.n,M.w0))} %`,
+      'Euler es estable para 0 < λh < 2, pero se exige λh < 1 para un decaimiento positivo. Un paso menor reduce el error. Entre muestras se interpola solo para visualizar.'
+    ],
+    [
+      'Energía y potencia',
+      `Eₖ = ½Iω² = ½·${F(M.I)}·${F(s.n)}² = ${F(v.E)} J
+Pₑ = τₑω = cₑω² = ${F(v.Pe)} W
+Pₘ = cₘω² = ${F(M.cm*s.n*s.n)} W
+P_total = cω² = ${F(v.P)} W
+E₀ − Eₖ = ${F(M.E0-v.E)} J`,
+      'En la solución continua dEₖ/dt = −P_total. Euler introduce un error numérico; la pérdida calculada no es una medición térmica.'
+    ],
+    [
+      'Tiempo de frenado práctico',
+      `Umbral: ω = 0.01ω₀
+t₁% = τc ln(100) = ${F(threshold(M,.01))} s
+Tiempo hasta ω = 0: ∞ (si c > 0)
+cₑ experimental = I(λ_con − λ_sin)`,
+      'El 1 % es una definición operativa. Los tiempos teóricos pueden superar la duración T elegida. El ajuste experimental requiere mediciones reales.'
+    ]
+  ];
+
+  $('equations').innerHTML = eq.map(([title,formula,note]) => `
+    <article class="equation">
+      <b>${title}</b>
+      <div class="formula">${formula}</div>
+      <small>${note}</small>
+    </article>
+  `).join('');
+}
+
+// ============================================================
+// 5. REGISTROS Y EXPORTACIÓN CSV
+// Los parámetros se capturan por ensayo: no se modifican
+// al cambiar posteriormente los controles.
+// ============================================================
+
+function addRun(label,p,M,rows,end=0) {
+  const total = state.runs.reduce(
+    (n,r) => n + r.rows.length,
+    0
+  );
+
+  if (total + rows.length > 1000000) {
+    msg(
+      'Límite de registros: exporta y vacía el historial '
+      + 'para continuar guardando.'
+    );
+    return null;
+  }
+
+  const run = {
+    id:state.nextId++,
+    label,
+    p:{...p},
+    M:{...M},
+    rows,
+    end,
+    date:new Date().toISOString()
+  };
+
+  state.runs.push(run);
+  state.selected = run.id;
+  state.page = 0;
+
+  return run;
+}
+
+function ensureRun() {
+  if (!state.active) {
+    state.active = addRun(
+      'Ensayo manual',
+      state.p,
+      state.M,
+      state.rows,
+      0
+    );
+    refreshRunSelect();
+  }
+}
+
+function recordProgress() {
+  if (state.active) state.active.end = state.t;
+}
+
+function sampleCount(run) {
+  // Búsqueda binaria del último paso alcanzado.
+  let lo = 0;
+  let hi = run.rows.length;
+
+  while (lo < hi) {
+    const m = (lo + hi) >> 1;
+
+    if (run.rows[m].t <= run.end + 1e-9) {
+      lo = m + 1;
+    } else {
+      hi = m;
+    }
+  }
+
+  return lo;
+}
+
+function refreshRunSelect() {
+  const select = $('runSelect');
+  select.replaceChildren();
+
+  for (const r of state.runs) {
+    const o = document.createElement('option');
+    o.value = r.id;
+    o.textContent = `#${r.id} · ${r.label}`;
+    select.append(o);
+  }
+
+  if (state.selected !== null) {
+    select.value = state.selected;
+  }
+
+  $('runCount').textContent =
+    state.runs.length + ' registros';
+
+  ['exportCsv','exportAll','clearRuns'].forEach(id => {
+    $(id).disabled = !state.runs.length;
+  });
+}
+
+function selectedRun() {
+  return state.runs.find(r => r.id === state.selected);
+}
+
+function table(headers, rows) {
+  return '<table><thead><tr>'
+    + headers.map(x => '<th>' + x + '</th>').join('')
+    + '</tr></thead><tbody>'
+    + rows.map(r =>
+      '<tr>'
+      + r.map(x => '<td>' + x + '</td>').join('')
+      + '</tr>'
+    ).join('')
+    + '</tbody></table>';
+}
+
+function renderData() {
+  refreshRunSelect();
+
+  const run = selectedRun();
+
+  if (!run) {
+    [
+      'dataSummary','statistics','dataTable','runMeta','pageLabel'
+    ].forEach(id => $(id).textContent = '');
+
+    $('dataTable').textContent =
+      'Aún no hay ensayos registrados.';
+    $('prevPage').disabled = true;
+    $('nextPage').disabled = true;
+    return;
+  }
+
+  const {M,p} = run;
+  const n = sampleCount(run);
+  const last = run.rows[n - 1];
+  const pages = Math.max(1, Math.ceil(n / 100));
+
+  state.page = Math.min(state.page, pages - 1);
+
+  $('runMeta').textContent =
+    `#${run.id} · ${run.date} · ${MATERIALS[p.material].name}`
+    + ` · Δt = ${fmt(p.dt)} s`
+    + ` · B = ${fmt(M.B)} T`
+    + ` · cₑ = ${fmt(M.ce)} N·m·s`
+    + ` · cₘ = ${fmt(M.cm)} N·m·s`
+    + ` · ${n} muestras`
+    + ` · ${p.fixedB === undefined ? 'B(d)' : 'B fijado directamente'}.`;
+
+  const stop = threshold(M, .01);
+
+  const hit = run.rows.slice(0,n).find(
+    r => r.n <= M.w0 * .01
+  );
+
+  const summary = [
+    ['Tiempo registrado', fmt(last.t) + ' s'],
+    ['Constante τc = I/c', fmt(M.tau) + ' s'],
+    ['Frenado al 1 % · analítico', fmt(stop) + ' s'],
+    [
+      'Umbral al 1 % · Euler',
+      hit ? fmt(hit.t) + ' s' : 'No alcanzado'
+    ]
+  ];
+
+  $('dataSummary').innerHTML =
+    summary.map(([a,b]) => `
+      <div class="card">
+        <small>${a}</small>
+        <strong>${b}</strong>
+      </div>
+    `).join('');
+
+  const defs = [
+    ['RPM','RPM',v => v.rpm],
+    ['ω','rad/s',v => v.w],
+    ['B','T',() => M.B],
+    ['Torque total','N·m',v => v.tt],
+    ['Energía','J',v => v.E],
+    ['Potencia total','W',v => v.P]
+  ];
+
+  const stats = defs.map(([name,unit,get]) => {
+    let min = Infinity;
+    let max = -Infinity;
+    let sum = 0;
+
+    for (let i = 0; i < n; i++) {
+      const x = get(values(M, run.rows[i].n));
+      min = Math.min(min, x);
+      max = Math.max(max, x);
+      sum += x;
+    }
+
+    return [
+      name,
+      unit,
+      fmt(sum / n),
+      fmt(max),
+      fmt(min)
+    ];
+  });
+
+  $('statistics').innerHTML = table(
+    ['Magnitud','Unidad','Promedio','Máximo','Mínimo'],
+    stats
+  );
+
+  const data = run.rows.slice(
+    state.page * 100,
+    Math.min(n, (state.page + 1) * 100)
+  ).map(r => {
+    const v = values(M, r.n);
+
+    return [
+      fmt(r.t,6),
+      fmt(v.rpm,6),
+      fmt(toRPM(r.a),6),
+      fmt(r.n,6),
+      fmt(M.B),
+      fmt(v.te),
+      fmt(v.tm),
+      fmt(v.tt),
+      fmt(v.E),
+      fmt(v.P),
+      fmt(relativeError(r.a,r.n,M.w0))
+    ];
+  });
+
+  $('dataTable').innerHTML = table(
+    [
+      't [s]','RPM Euler','RPM analítica','ω [rad/s]',
+      'B [T]','τₑ [N·m]','τₘ [N·m]','τ total [N·m]',
+      'E [J]','P [W]','Error [%]'
+    ],
+    data
+  );
+
+  $('pageLabel').textContent =
+    (state.page + 1) + ' / ' + pages;
+
+  $('prevPage').disabled = state.page === 0;
+  $('nextPage').disabled = state.page >= pages - 1;
+}
+
+function exportCSV(all) {
+  const runs = all
+    ? state.runs
+    : [selectedRun()].filter(Boolean);
+
+  if (!runs.length) return;
+
+  const headers = [
+    'registro','ensayo','fecha_UTC','origen','metodo','material',
+    't_s','RPM_Euler','RPM_analitica',
+    'omega_Euler_rad_s','omega_analitica_rad_s','B_T',
+    'torque_EM_Nm','torque_mecanico_Nm','torque_total_Nm',
+    'energia_J','potencia_total_W','potencia_EM_W',
+    'error_relativo_pct','I_kg_m2','ce_Nm_s','cm_Nm_s',
+    'c_total_Nm_s','tau_c_s','t_50_s','t_10_s','t_1pct_s',
+    'rpm0','masa_kg','radio_m','espesor_m','sigma_S_m',
+    'B0_T','d_m','d0_m','exponente_n','Ae_m2','r_efectivo_m',
+    'kg','duracion_configurada_s','dt_s',
+    'friccion_activa','modo_B'
+  ];
+
+  // CSV estándar: decimal con punto, coma como separador,
+  // campos entre comillas y BOM UTF-8 para Excel.
+  const escape = x => '"' + String(
+    x === null ? ''
+    : x === Infinity ? 'Infinity'
+    : typeof x === 'number'
+      ? Number(x.toPrecision(12))
+      : x
+  ).replace(/"/g, '""') + '"';
+
+  const lines = [headers.join(',')];
+
+  for (const run of runs) {
+    const {p,M} = run;
+    const n = sampleCount(run);
+
+    for (let i = 0; i < n; i++) {
+      const r = run.rows[i];
+      const v = values(M, r.n);
+
+      const row = [
+        run.id,
+        run.label,
+        run.date,
+        'SIMULACION',
+        'Euler explicito',
+        MATERIALS[p.material].name,
+        r.t,
+        v.rpm,
+        toRPM(r.a),
+        r.n,
+        r.a,
+        M.B,
+        v.te,
+        v.tm,
+        v.tt,
+        v.E,
+        v.P,
+        v.Pe,
+        relativeError(r.a,r.n,M.w0),
+        M.I,
+        M.ce,
+        M.cm,
+        M.c,
+        M.tau,
+        threshold(M,.5),
+        threshold(M,.1),
+        threshold(M,.01),
+        p.rpm0,
+        p.m,
+        p.R,
+        p.e,
+        p.sigma,
+        p.B0,
+        p.d,
+        p.d0,
+        p.n,
+        p.Ae,
+        p.r,
+        p.kg,
+        p.T,
+        p.dt,
+        p.friction,
+        p.fixedB === undefined ? 'B(d)' : 'B directo'
+      ];
+
+      lines.push(row.map(escape).join(','));
+    }
+  }
+
+  const blob = new Blob(
+    ['\uFEFF' + lines.join('\r\n')],
+    {type:'text/csv;charset=utf-8'}
+  );
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+
+  a.href = url;
+  a.download = all
+    ? 'foucault_todos_los_ensayos.csv'
+    : `foucault_ensayo_${runs[0].id}.csv`;
+
+  document.body.append(a);
+  a.click();
+  a.remove();
+
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+
+  msg('CSV generado con ' + (lines.length - 1) + ' muestras.');
+}
+
+// ============================================================
+// 6. EXPERIMENTOS CONTROLADOS
+// Cada variante se integra de forma independiente.
+// ============================================================
+
+function updateExperimentInputs() {
+  const type = $('expType').value;
+
+  ['Distance','Material','Rpm','Field','Magnet'].forEach(k => {
+    $('exp' + k).hidden = k.toLowerCase() !== type;
+  });
+}
+
+function parseList(text,min,max) {
+  const tokens = text.split(/[,;]+/).map(x => x.trim());
+
+  if (tokens.some(x => !x)) {
+    throw new Error('La lista contiene un valor vacío.');
+  }
+
+  const list = [...new Set(tokens.map(Number))];
+
+  if (
+    list.length < 2 ||
+    list.length > 6 ||
+    list.some(x => !Number.isFinite(x) || x < min || x > max)
+  ) {
+    throw new Error(
+      `Ingresa de 2 a 6 valores distintos entre ${min} y ${max}.`
+    );
+  }
+
+  return list;
+}
+
+function runExperiment(forced) {
+  if (!state.valid) return;
+
+  state.running = false;
+  updateButtons();
+  $('status').textContent = 'Pausado';
+
+  if (forced) {
+    $('expType').value = forced;
+    updateExperimentInputs();
+    switchTab('experiments');
+  }
+
+  const p = state.p;
+  const type = $('expType').value;
+  const variants = [];
+
+  try {
+    if (type === 'distance') {
+      [5,10,15,20,25].forEach(d => {
+        variants.push({
+          label:d + ' mm',
+          p:{...p,d:d / 1000}
+        });
+      });
+    }
+
+    if (type === 'material') {
+      const custom = $('customSigma').valueAsNumber;
+
+      document.querySelectorAll(
+        '[name=matCompare]:checked'
+      ).forEach(el => {
+        const mat = MATERIALS[el.value];
+        const sigma = el.value === 'custom'
+          ? custom
+          : mat.sigma;
+
+        if (!(sigma > 0 && sigma <= 100)) {
+          throw new Error(
+            'σ personalizado debe estar entre 0 y 100 MS/m, '
+            + 'excluyendo cero.'
+          );
+        }
+
+        variants.push({
+          label:mat.name + ' · ' + sigma + ' MS/m',
+          p:{
+            ...p,
+            sigma:sigma * 1e6,
+            material:el.value
+          }
+        });
+      });
+
+      if (variants.length < 2) {
+        throw new Error('Selecciona al menos dos materiales.');
+      }
+    }
+
+    if (type === 'rpm') {
+      parseList($('rpmValues').value,1,6000).forEach(rpm0 => {
+        variants.push({
+          label:rpm0 + ' RPM',
+          p:{...p,rpm0}
+        });
+      });
+    }
+
+    if (type === 'field') {
+      parseList($('fieldValues').value,0,2).forEach(fixedB => {
+        variants.push({
+          label:'B = ' + fixedB + ' T',
+          p:{...p,fixedB}
+        });
+      });
+    }
+
+    if (type === 'magnet') {
+      variants.push(
+        {
+          label:'Sin imán',
+          p:{...p,fixedB:0}
+        },
+        {
+          label:'Con imán',
+          p:{...p,fixedB:state.M.B}
+        }
+      );
+    }
+
+    // Primero se validan y calculan todas las variantes.
+    // Solo después se registran los resultados.
+    const results = variants.map((v,i) => {
+      const M = derive(v.p);
+
+      return {
+        ...v,
+        M,
+        rows:simulate(v.p,M),
+        color:COLORS[i]
+      };
+    });
+
+    const capacity =
+      state.runs.reduce((n,r) => n + r.rows.length, 0)
+      + results.reduce((n,r) => n + r.rows.length, 0);
+
+    if (capacity > 1000000) {
+      throw new Error(
+        'Exporta y vacía los registros antes de ejecutar '
+        + 'otro experimento (límite: un millón de muestras).'
+      );
+    }
+
+    state.exp = results;
+
+    const title = $('expType').selectedOptions[0].textContent;
+
+    results.forEach(v => {
+      addRun(
+        title + ' / ' + v.label,
+        v.p,
+        v.M,
+        v.rows,
+        v.p.T
+      );
+    });
+
+    refreshRunSelect();
+
+    $('expTitle').textContent = title;
+    $('expOutput').hidden = false;
+
+    const qmax = Math.max(...results.map(v =>
+      v.M.lambda * Math.min(v.p.dt,v.p.T)
+    ));
+
+    $('expMessage').className =
+      'notice' + (qmax > .05 ? ' warning' : '');
+
+    $('expMessage').textContent =
+      results.length + ' ensayos registrados. '
+      + 'Masa, geometría y fricción constantes. '
+      + 'Δt = ' + fmt(p.dt) + ' s. '
+      + 'Máximo λh = ' + fmt(qmax)
+      + (qmax > .05
+        ? '; reduce Δt para mejorar la precisión.'
+        : '.');
+
+    $('expTable').innerHTML = table(
+      [
+        'Variante',
+        'B [T]',
+        'cₑ [N·m·s]',
+        'c total [N·m·s]',
+        't al 50 % [s]',
+        't al 10 % [s]'
+      ],
+      results.map(v => [
+        v.label,
+        fmt(v.M.B),
+        fmt(v.M.ce),
+        fmt(v.M.c),
+        fmt(threshold(v.M,.5)),
+        fmt(threshold(v.M,.1))
+      ])
+    );
+
+    drawExperiment();
+    msg('Experimento calculado y registrado.');
+
+  } catch (error) {
+    $('expMessage').className = 'notice error';
+    $('expMessage').textContent = error.message;
+  }
+}
+
+function drawExperiment() {
+  if (
+    state.tab !== 'experiments' ||
+    !state.exp.length
+  ) return;
+
+  const series = state.exp.map(v => ({
+    label:v.label,
+    color:v.color,
+    rows:v.rows,
+    value:r => toRPM(r.n)
+  }));
+
+  plot(
+    $('expChart'),
+    series,
+    state.exp[0].p.T,
+    'RPM'
+  );
+
+  legend('expLegend', series);
+}
+
+// ============================================================
+// 7. REPRODUCCIÓN Y ACTUALIZACIÓN
+// requestAnimationFrame modifica el tiempo de reproducción,
+// pero nunca cambia el Δt del integrador.
+// ============================================================
+
+function start() {
+  if (!state.valid) return;
+
+  state.t = 0;
+  state.active = null;
+  ensureRun();
+
+  state.running = true;
+  state.last = 0;
+
+  $('status').textContent = 'En ejecución';
+
+  updateButtons();
+  renderAll();
+}
+
+function pause() {
+  state.running = false;
+  recordProgress();
+  $('status').textContent = 'Pausado';
+
+  updateButtons();
+  renderAll();
+}
+
+function reset() {
+  state.running = false;
+  recordProgress();
+  state.active = null;
+  state.t = 0;
+
+  $('status').textContent = 'Listo';
+
+  updateButtons();
+  renderAll();
+}
+
+function step() {
+  if (
+    !state.valid ||
+    state.running ||
+    state.t >= state.p.T
+  ) return;
+
+  ensureRun();
+
+  state.t = Math.min(
+    state.p.T,
+    (
+      Math.floor((state.t + 1e-10) / state.p.dt) + 1
+    ) * state.p.dt
+  );
+
+  recordProgress();
+
+  $('status').textContent =
+    state.t >= state.p.T
+      ? 'Finalizado'
+      : 'Paso calculado';
+
+  updateButtons();
+  renderAll();
+}
+
+function renderAll() {
+  if (state.valid) {
+    renderCards();
+
+    if (state.tab === 'model') renderEquations();
+  }
+
+  drawScene();
+  drawGraphs();
+  drawExperiment();
+
+  if (state.tab === 'data') renderData();
+}
+
+function frame(now) {
+  const elapsed = state.last
+    ? (now - state.last) / 1000
+    : 0;
+
+  state.last = now;
+
+  if (state.running && state.valid) {
+    state.t = Math.min(
+      state.p.T,
+      state.t + elapsed * Number($('speed').value)
+    );
+
+    recordProgress();
+
+    if (state.t >= state.p.T) {
+      state.running = false;
+      $('status').textContent = 'Finalizado';
+      updateButtons();
+    }
+
+    drawScene();
+
+    // Las curvas, tablas y tarjetas se actualizan a menor
+    // frecuencia que el giro para evitar trabajo innecesario.
+    if (now - state.lastUI > 120 || !state.running) {
+      renderAll();
+      state.lastUI = now;
+    }
+  }
+
+  requestAnimationFrame(frame);
+}
+
+// ============================================================
+// 8. INICIALIZACIÓN Y EVENTOS
+// Se conectan una sola vez, después de construir el DOM.
+// ============================================================
+
+buildInputs();
+buildGraphs();
+
+document.querySelectorAll('[data-tab]').forEach(b => {
+  b.addEventListener('click', () => {
+    switchTab(b.dataset.tab);
+  });
+});
+
+document.querySelector('.tabs').addEventListener('keydown', e => {
+  if (!['ArrowLeft','ArrowRight'].includes(e.key)) return;
+
+  const buttons = [
+    ...document.querySelectorAll('[data-tab]')
+  ];
+
+  const i = buttons.indexOf(document.activeElement);
+  if (i < 0) return;
+
+  e.preventDefault();
+
+  const b = buttons[
+    (
+      i + (e.key === 'ArrowRight' ? 1 : -1)
+      + buttons.length
+    ) % buttons.length
+  ];
+
+  b.focus();
+  switchTab(b.dataset.tab);
+});
+
+$('material').addEventListener('change', () => {
+  const m = MATERIALS[$('material').value];
+
+  if (m.sigma) {
+    $('p-sigma').value = m.sigma;
+    $('s-sigma').value = m.sigma;
+  }
+
+  rebuild();
+});
+
+$('friction').addEventListener('change', rebuild);
+
+$('defaults').addEventListener('click', () => {
+  SPECS.forEach(([k,,,v]) => {
+    $('p-' + k).value = v;
+    $('s-' + k).value = v;
+  });
+
+  $('material').value = 'al';
+  $('friction').checked = false;
+
+  rebuild();
+});
+
+$('start').addEventListener('click', start);
+$('pause').addEventListener('click', pause);
+$('reset').addEventListener('click', reset);
+$('step').addEventListener('click', step);
+
+$('resume').addEventListener('click', () => {
+  if (!state.valid || state.t >= state.p.T) return;
+
+  ensureRun();
+  state.running = true;
+  state.last = 0;
+
+  $('status').textContent = 'En ejecución';
+
+  updateButtons();
+});
+
+['vectors','angleScale'].forEach(id => {
+  $(id).addEventListener('change', drawScene);
+});
+
+$('compare').addEventListener('click', () => {
+  runExperiment('magnet');
+});
+
+$('runExperiment').addEventListener('click', () => {
+  runExperiment();
+});
+
+$('expType').addEventListener('change', updateExperimentInputs);
+
+$('recordFull').addEventListener('click', () => {
+  if (!state.valid) return;
+
+  const run = addRun(
+    'Intervalo completo',
+    state.p,
+    state.M,
+    state.rows,
+    state.p.T
+  );
+
+  renderData();
+
+  if (run) msg('Intervalo completo registrado.');
+});
+
+$('runSelect').addEventListener('change', () => {
+  state.selected = Number($('runSelect').value);
+  state.page = 0;
+  renderData();
+});
+
+$('prevPage').addEventListener('click', () => {
+  state.page--;
+  renderData();
+});
+
+$('nextPage').addEventListener('click', () => {
+  state.page++;
+  renderData();
+});
+
+$('exportCsv').addEventListener('click', () => {
+  exportCSV(false);
+});
+
+$('exportAll').addEventListener('click', () => {
+  exportCSV(true);
+});
+
+$('clearRuns').addEventListener('click', () => {
+  state.running = false;
+  state.runs = [];
+  state.selected = null;
+  state.active = null;
+  state.page = 0;
+
+  $('status').textContent = 'Pausado';
+
+  updateButtons();
+  renderData();
+  msg('Registros de esta sesión eliminados.');
+});
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && state.running) {
+    pause();
+    msg('Simulación pausada al ocultar la página.');
+  }
+
+  state.last = 0;
+});
+
+window.addEventListener('resize', renderAll);
+
+rebuild();
+refreshRunSelect();
+requestAnimationFrame(frame);
+
+})();
 </script>
 </body>
 </html>
