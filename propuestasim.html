@@ -1,0 +1,2005 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Sensor Inductivo de Proximidad - Simulador RLC</title>
+
+<style>
+    *{
+        box-sizing:border-box;
+        margin:0;
+        padding:0;
+    }
+
+    body{
+        font-family:Arial, Helvetica, sans-serif;
+        background:#0d1117;
+        color:#e6edf3;
+        line-height:1.5;
+    }
+
+    header{
+        padding:24px;
+        text-align:center;
+        background:#161b22;
+        border-bottom:1px solid #30363d;
+    }
+
+    header h1{
+        font-size:2rem;
+        margin-bottom:8px;
+    }
+
+    header p{
+        color:#9da7b3;
+    }
+
+    .container{
+        width:min(1500px, 96%);
+        margin:20px auto;
+    }
+
+    .grid{
+        display:grid;
+        grid-template-columns:360px 1fr;
+        gap:20px;
+    }
+
+    .panel{
+        background:#161b22;
+        border:1px solid #30363d;
+        border-radius:14px;
+        padding:18px;
+        margin-bottom:20px;
+    }
+
+    .panel h2{
+        font-size:1.15rem;
+        margin-bottom:14px;
+    }
+
+    .control{
+        margin-bottom:17px;
+    }
+
+    .control label{
+        display:flex;
+        justify-content:space-between;
+        margin-bottom:6px;
+        font-size:.92rem;
+    }
+
+    input[type="range"]{
+        width:100%;
+    }
+
+    input[type="number"],
+    select{
+        width:100%;
+        padding:8px;
+        border-radius:7px;
+        border:1px solid #30363d;
+        background:#0d1117;
+        color:#e6edf3;
+        margin-top:5px;
+    }
+
+    button{
+        padding:10px 14px;
+        border:none;
+        border-radius:8px;
+        cursor:pointer;
+        font-weight:bold;
+        margin:4px;
+    }
+
+    .btn-main{
+        background:#238636;
+        color:white;
+    }
+
+    .btn-secondary{
+        background:#1f6feb;
+        color:white;
+    }
+
+    .btn-danger{
+        background:#da3633;
+        color:white;
+    }
+
+    .buttons{
+        display:flex;
+        flex-wrap:wrap;
+        gap:6px;
+    }
+
+    .cards{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+        gap:12px;
+        margin-bottom:20px;
+    }
+
+    .card{
+        padding:14px;
+        background:#161b22;
+        border:1px solid #30363d;
+        border-radius:12px;
+    }
+
+    .card .title{
+        color:#8b949e;
+        font-size:.82rem;
+    }
+
+    .card .value{
+        margin-top:5px;
+        font-size:1.25rem;
+        font-weight:bold;
+    }
+
+    canvas{
+        width:100%;
+        background:#0d1117;
+        border-radius:10px;
+        border:1px solid #30363d;
+    }
+
+    #animationCanvas{
+        height:340px;
+    }
+
+    #responseCanvas,
+    #distanceCanvas,
+    #waveCanvas{
+        height:320px;
+    }
+
+    .formula{
+        padding:12px;
+        margin:8px 0;
+        background:#0d1117;
+        border-left:4px solid #1f6feb;
+        font-family:monospace;
+        overflow:auto;
+    }
+
+    .status{
+        text-align:center;
+        padding:16px;
+        border-radius:12px;
+        font-weight:bold;
+        font-size:1.15rem;
+        margin-top:12px;
+    }
+
+    .detected{
+        background:rgba(218,54,51,.18);
+        border:1px solid #da3633;
+    }
+
+    .notdetected{
+        background:rgba(35,134,54,.18);
+        border:1px solid #238636;
+    }
+
+    table{
+        width:100%;
+        border-collapse:collapse;
+        margin-top:10px;
+        font-size:.9rem;
+    }
+
+    th,td{
+        padding:8px;
+        border-bottom:1px solid #30363d;
+        text-align:center;
+    }
+
+    th{
+        background:#21262d;
+    }
+
+    .warning{
+        padding:14px;
+        border:1px solid #d29922;
+        background:rgba(210,153,34,.08);
+        border-radius:9px;
+        margin-top:14px;
+        color:#e3b341;
+    }
+
+    .diagram{
+        font-family:monospace;
+        white-space:pre;
+        overflow-x:auto;
+        background:#0d1117;
+        border-radius:10px;
+        padding:15px;
+        color:#79c0ff;
+    }
+
+    .legend{
+        display:flex;
+        gap:18px;
+        flex-wrap:wrap;
+        font-size:.85rem;
+        margin:8px 0;
+    }
+
+    .legend span::before{
+        content:"";
+        display:inline-block;
+        width:12px;
+        height:3px;
+        margin-right:5px;
+        vertical-align:middle;
+        background:currentColor;
+    }
+
+    @media(max-width:900px){
+        .grid{
+            grid-template-columns:1fr;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Sensor Inductivo de Proximidad</h1>
+    <p>
+        Simulación de detección de objetos metálicos mediante
+        variación de impedancia y resonancia de un circuito RLC.
+    </p>
+</header>
+
+<div class="container">
+
+<div class="grid">
+
+<!-- ===================================================== -->
+<!-- PANEL IZQUIERDO -->
+<!-- ===================================================== -->
+
+<div>
+
+<div class="panel">
+<h2>1. Parámetros del objeto</h2>
+
+<div class="control">
+<label>
+    Distancia metal-bobina
+    <span id="distanceText">10 mm</span>
+</label>
+<input id="distance" type="range"
+       min="0" max="20" step="0.1" value="10">
+</div>
+
+<div class="control">
+<label>
+    Escala de acoplamiento dc
+    <span id="dcText">5 mm</span>
+</label>
+<input id="dc" type="range"
+       min="1" max="15" step="0.1" value="5">
+</div>
+
+<div class="control">
+<label>
+    Reducción máxima de L
+    <span id="deltaLText">14 %</span>
+</label>
+<input id="deltaL" type="range"
+       min="0" max="30" step="1" value="14">
+</div>
+
+<div class="control">
+<label>
+    Incremento máximo de pérdidas R
+    <span id="deltaRText">150 %</span>
+</label>
+<input id="deltaR" type="range"
+       min="0" max="400" step="5" value="150">
+</div>
+
+</div>
+
+
+<div class="panel">
+
+<h2>2. Circuito RLC</h2>
+
+<div class="control">
+<label>Inductancia nominal L₀</label>
+<input id="L0" type="number" value="220" step="1">
+<small>µH</small>
+</div>
+
+<div class="control">
+<label>Resistencia de bobina R₀</label>
+<input id="R0" type="number" value="20" step="1">
+<small>Ω</small>
+</div>
+
+<div class="control">
+<label>Capacitor C</label>
+<input id="C" type="number" value="10" step="0.1">
+<small>nF</small>
+</div>
+
+<div class="control">
+<label>Resistencia de excitación</label>
+<input id="Rdrive" type="number" value="1000" step="10">
+<small>Ω</small>
+</div>
+
+<div class="control">
+<label>Amplitud de fuente</label>
+<input id="Vs" type="number" value="5" step="0.1">
+<small>V pico</small>
+</div>
+
+<div class="control">
+<label>
+    Frecuencia de excitación
+    <span id="freqText">107.3 kHz</span>
+</label>
+
+<input id="frequency" type="range"
+       min="40" max="200"
+       step="0.1"
+       value="107.3">
+
+</div>
+
+</div>
+
+
+<div class="panel">
+
+<h2>3. Detector</h2>
+
+<div class="control">
+<label>Voltaje de referencia Vref</label>
+<input id="Vref" type="number"
+       value="2"
+       min="0" max="5"
+       step="0.05">
+</div>
+
+<div class="control">
+<label>Caída estimada del diodo</label>
+<input id="Vd" type="number"
+       value="0.2"
+       min="0" max="1"
+       step="0.05">
+</div>
+
+<div class="buttons">
+
+<button class="btn-main"
+        onclick="setResonance()">
+    Usar resonancia
+</button>
+
+<button class="btn-secondary"
+        onclick="exportCSV()">
+    Exportar CSV
+</button>
+
+<button class="btn-danger"
+        onclick="resetValues()">
+    Reiniciar
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- COLUMNA DERECHA -->
+<!-- ===================================================== -->
+
+<div>
+
+<div class="cards">
+
+<div class="card">
+<div class="title">Inductancia efectiva</div>
+<div class="value" id="cardL">---</div>
+</div>
+
+<div class="card">
+<div class="title">Resistencia efectiva</div>
+<div class="value" id="cardR">---</div>
+</div>
+
+<div class="card">
+<div class="title">Resonancia ideal</div>
+<div class="value" id="cardF0">---</div>
+</div>
+
+<div class="card">
+<div class="title">Factor Q</div>
+<div class="value" id="cardQ">---</div>
+</div>
+
+<div class="card">
+<div class="title">Vtank</div>
+<div class="value" id="cardV">---</div>
+</div>
+
+<div class="card">
+<div class="title">Venv</div>
+<div class="value" id="cardEnv">---</div>
+</div>
+
+</div>
+
+
+<div class="panel">
+
+<h2>Visualización física</h2>
+
+<canvas id="animationCanvas"></canvas>
+
+<div id="statusBox" class="status notdetected">
+SIN DETECCIÓN
+</div>
+
+</div>
+
+
+<div class="panel">
+
+<h2>Respuesta en frecuencia</h2>
+
+<div class="legend">
+<span style="color:#58a6ff">Sin metal</span>
+<span style="color:#f85149">Distancia actual</span>
+</div>
+
+<canvas id="responseCanvas"></canvas>
+
+</div>
+
+
+<div class="panel">
+
+<h2>Voltaje de salida vs distancia</h2>
+
+<canvas id="distanceCanvas"></canvas>
+
+</div>
+
+
+<div class="panel">
+
+<h2>Señal temporal en el tanque resonante</h2>
+
+<canvas id="waveCanvas"></canvas>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- MODELO MATEMÁTICO -->
+<!-- ===================================================== -->
+
+<div class="panel">
+
+<h2>Modelo matemático</h2>
+
+<p>
+El sensor utiliza una bobina como elemento sensible.
+El objeto metálico próximo modifica las pérdidas y la inductancia
+equivalente de la bobina.
+</p>
+
+<div class="formula">
+p(d) = exp(-d / dc)
+</div>
+
+<p>
+El parámetro <b>p(d)</b> representa de manera simplificada
+la intensidad del acoplamiento electromagnético.
+</p>
+
+<div class="formula">
+Lef = L0 · [1 - kL · p(d)]
+</div>
+
+<div class="formula">
+Ref = R0 · [1 + kR · p(d)]
+</div>
+
+<p>
+La frecuencia de resonancia ideal del circuito es:
+</p>
+
+<div class="formula">
+f0 = 1 / [2π√(Lef · C)]
+</div>
+
+<p>
+La reactancia inductiva:
+</p>
+
+<div class="formula">
+XL = 2πfL
+</div>
+
+<p>
+La reactancia capacitiva:
+</p>
+
+<div class="formula">
+XC = 1 / (2πfC)
+</div>
+
+<p>
+La impedancia de la bobina es:
+</p>
+
+<div class="formula">
+ZL = Ref + jωLef
+</div>
+
+<p>
+La impedancia del capacitor:
+</p>
+
+<div class="formula">
+ZC = 1 / (jωC)
+</div>
+
+<p>
+Para el tanque paralelo:
+</p>
+
+<div class="formula">
+Ztank = (ZL · ZC) / (ZL + ZC)
+</div>
+
+<p>
+Finalmente:
+</p>
+
+<div class="formula">
+Vtank =
+Vs · Ztank / (Rdrive + Ztank)
+</div>
+
+<p>
+El factor de calidad aproximado de la bobina:
+</p>
+
+<div class="formula">
+Q ≈ ω0Lef / Ref
+</div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- CIRCUITLAB -->
+<!-- ===================================================== -->
+
+<div class="panel">
+
+<h2>Implementación equivalente en CircuitLab</h2>
+
+<div class="diagram">
+                 VSINE
+                   │
+                   │
+             Rdrive = 1 kΩ
+                   │
+                   ├──────── Vtank
+                   │
+            ┌──────┴─────────┐
+            │                │
+          Ctank            Rcoil
+            │                │
+            │               Lsensor
+            │                │
+            └──────┬─────────┘
+                   │
+                  GND
+
+
+Vtank ──>|─── Venv
+          D1    │
+              ┌─┴─┐
+             Cenv Renv
+              │    │
+              └─┬──┘
+                │
+               GND
+
+Venv ──────> Comparador
+Vref ──────> Comparador
+                 │
+                 ▼
+                LED
+</div>
+
+<p style="margin-top:15px;">
+Valores iniciales recomendados para CircuitLab:
+</p>
+
+<table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Valor inicial</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>VSINE</td>
+<td>5 V</td>
+</tr>
+
+<tr>
+<td>Rdrive</td>
+<td>1 kΩ</td>
+</tr>
+
+<tr>
+<td>Lsensor</td>
+<td>220 µH</td>
+</tr>
+
+<tr>
+<td>Rcoil</td>
+<td>20 Ω</td>
+</tr>
+
+<tr>
+<td>Ctank</td>
+<td>10 nF</td>
+</tr>
+
+<tr>
+<td>Cenv</td>
+<td>100 nF</td>
+</tr>
+
+<tr>
+<td>Renv</td>
+<td>100 kΩ</td>
+</tr>
+
+<tr>
+<td>Vref</td>
+<td>2 V</td>
+</tr>
+
+</tbody>
+</table>
+
+<div class="warning">
+
+<b>Importante:</b>
+CircuitLab no calcula directamente la distribución tridimensional
+de las corrientes de Foucault en el objeto metálico.
+
+En CircuitLab se representa el fenómeno mediante un
+<b>modelo eléctrico equivalente</b>, modificando la inductancia
+efectiva y las pérdidas de la bobina.
+
+Los parámetros L(d) y R(d) utilizados aquí son un modelo
+pedagógico y deben calibrarse con datos experimentales.
+
+</div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- TABLA EXPERIMENTAL -->
+<!-- ===================================================== -->
+
+<div class="panel">
+
+<h2>Simulación automática por distancia</h2>
+
+<table id="dataTable">
+
+<thead>
+<tr>
+<th>d (mm)</th>
+<th>Lef (µH)</th>
+<th>Ref (Ω)</th>
+<th>f0 (kHz)</th>
+<th>Q</th>
+<th>Vtank (V)</th>
+<th>Venv (V)</th>
+<th>Detección</th>
+</tr>
+</thead>
+
+<tbody></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* ==========================================================
+   UTILIDADES COMPLEJAS
+   ========================================================== */
+
+function complex(re, im){
+    return {re, im};
+}
+
+function cAdd(a,b){
+    return {
+        re:a.re+b.re,
+        im:a.im+b.im
+    };
+}
+
+function cMul(a,b){
+    return {
+        re:a.re*b.re-a.im*b.im,
+        im:a.re*b.im+a.im*b.re
+    };
+}
+
+function cDiv(a,b){
+
+    const den =
+        b.re*b.re +
+        b.im*b.im;
+
+    return {
+        re:(a.re*b.re+a.im*b.im)/den,
+        im:(a.im*b.re-a.re*b.im)/den
+    };
+}
+
+function cAbs(z){
+    return Math.sqrt(
+        z.re*z.re +
+        z.im*z.im
+    );
+}
+
+
+/* ==========================================================
+   LECTURA DE PARÁMETROS
+   ========================================================== */
+
+function parameters(){
+
+    return {
+
+        d:
+        parseFloat(
+            document.getElementById("distance").value
+        ) / 1000,
+
+        dc:
+        parseFloat(
+            document.getElementById("dc").value
+        ) / 1000,
+
+        kL:
+        parseFloat(
+            document.getElementById("deltaL").value
+        ) / 100,
+
+        kR:
+        parseFloat(
+            document.getElementById("deltaR").value
+        ) / 100,
+
+        L0:
+        parseFloat(
+            document.getElementById("L0").value
+        ) * 1e-6,
+
+        R0:
+        parseFloat(
+            document.getElementById("R0").value
+        ),
+
+        C:
+        parseFloat(
+            document.getElementById("C").value
+        ) * 1e-9,
+
+        Rdrive:
+        parseFloat(
+            document.getElementById("Rdrive").value
+        ),
+
+        Vs:
+        parseFloat(
+            document.getElementById("Vs").value
+        ),
+
+        f:
+        parseFloat(
+            document.getElementById("frequency").value
+        ) * 1000,
+
+        Vref:
+        parseFloat(
+            document.getElementById("Vref").value
+        ),
+
+        Vd:
+        parseFloat(
+            document.getElementById("Vd").value
+        )
+
+    };
+
+}
+
+
+/* ==========================================================
+   MODELO DEL SENSOR
+   ========================================================== */
+
+function sensorModel(p, distanceOverride=null){
+
+    const d =
+        distanceOverride === null ?
+        p.d :
+        distanceOverride;
+
+    /*
+    Modelo aproximado de acoplamiento.
+
+    p = 1    -> metal prácticamente sobre la bobina
+    p -> 0   -> metal lejos
+    */
+
+    const coupling =
+        Math.exp(-d/p.dc);
+
+    const L =
+        p.L0 *
+        (1-p.kL*coupling);
+
+    const R =
+        p.R0 *
+        (1+p.kR*coupling);
+
+    return {
+        coupling,
+        L,
+        R
+    };
+
+}
+
+
+/* ==========================================================
+   ANÁLISIS RLC
+   ========================================================== */
+
+function analyzeAtFrequency(p, f, distance=null){
+
+    const sensor =
+        sensorModel(
+            p,
+            distance === null ? p.d : distance
+        );
+
+    const L = sensor.L;
+    const R = sensor.R;
+    const C = p.C;
+
+    const w =
+        2*Math.PI*f;
+
+    const ZL =
+        complex(
+            R,
+            w*L
+        );
+
+    const ZC =
+        complex(
+            0,
+            -1/(w*C)
+        );
+
+    const Ztank =
+        cDiv(
+            cMul(ZL,ZC),
+            cAdd(ZL,ZC)
+        );
+
+    const denominator =
+        cAdd(
+            complex(p.Rdrive,0),
+            Ztank
+        );
+
+    const ratio =
+        cDiv(
+            Ztank,
+            denominator
+        );
+
+    const Vtank =
+        p.Vs *
+        cAbs(ratio);
+
+    const f0 =
+        1 /
+        (
+            2*Math.PI*
+            Math.sqrt(L*C)
+        );
+
+    const w0 =
+        2*Math.PI*f0;
+
+    const Q =
+        w0*L/R;
+
+    const XL =
+        w*L;
+
+    const XC =
+        1/(w*C);
+
+    const Venv =
+        Math.max(
+            0,
+            Vtank-p.Vd
+        );
+
+    return {
+
+        coupling:
+        sensor.coupling,
+
+        L,
+        R,
+        Vtank,
+        Venv,
+        f0,
+        Q,
+        XL,
+        XC,
+        Ztank
+
+    };
+
+}
+
+
+/* ==========================================================
+   ACTUALIZACIÓN GENERAL
+   ========================================================== */
+
+function update(){
+
+    const p =
+        parameters();
+
+    const a =
+        analyzeAtFrequency(
+            p,
+            p.f
+        );
+
+    document.getElementById(
+        "distanceText"
+    ).textContent =
+        (p.d*1000).toFixed(1)+" mm";
+
+    document.getElementById(
+        "dcText"
+    ).textContent =
+        (p.dc*1000).toFixed(1)+" mm";
+
+    document.getElementById(
+        "deltaLText"
+    ).textContent =
+        (p.kL*100).toFixed(0)+" %";
+
+    document.getElementById(
+        "deltaRText"
+    ).textContent =
+        (p.kR*100).toFixed(0)+" %";
+
+    document.getElementById(
+        "freqText"
+    ).textContent =
+        (p.f/1000).toFixed(1)+" kHz";
+
+
+    document.getElementById(
+        "cardL"
+    ).textContent =
+        (a.L*1e6).toFixed(1)+" µH";
+
+    document.getElementById(
+        "cardR"
+    ).textContent =
+        a.R.toFixed(1)+" Ω";
+
+    document.getElementById(
+        "cardF0"
+    ).textContent =
+        (a.f0/1000).toFixed(2)+" kHz";
+
+    document.getElementById(
+        "cardQ"
+    ).textContent =
+        a.Q.toFixed(2);
+
+    document.getElementById(
+        "cardV"
+    ).textContent =
+        a.Vtank.toFixed(3)+" V";
+
+    document.getElementById(
+        "cardEnv"
+    ).textContent =
+        a.Venv.toFixed(3)+" V";
+
+
+    const detected =
+        a.Venv < p.Vref;
+
+    const status =
+        document.getElementById(
+            "statusBox"
+        );
+
+    if(detected){
+
+        status.textContent =
+            "OBJETO METÁLICO DETECTADO";
+
+        status.className =
+            "status detected";
+
+    }else{
+
+        status.textContent =
+            "SIN DETECCIÓN";
+
+        status.className =
+            "status notdetected";
+
+    }
+
+    drawSystem(
+        p,
+        a,
+        detected
+    );
+
+    drawFrequencyResponse(p);
+
+    drawDistanceResponse(p);
+
+    drawWaveform(
+        p,
+        a
+    );
+
+    buildTable(p);
+
+}
+
+
+/* ==========================================================
+   CANVAS RESPONSIVO
+   ========================================================== */
+
+function prepCanvas(canvas){
+
+    const rect =
+        canvas.getBoundingClientRect();
+
+    const dpr =
+        window.devicePixelRatio || 1;
+
+    canvas.width =
+        rect.width*dpr;
+
+    canvas.height =
+        rect.height*dpr;
+
+    const ctx =
+        canvas.getContext("2d");
+
+    ctx.setTransform(
+        dpr,0,0,dpr,0,0
+    );
+
+    return {
+        ctx,
+        w:rect.width,
+        h:rect.height
+    };
+
+}
+
+
+/* ==========================================================
+   ANIMACIÓN FÍSICA
+   ========================================================== */
+
+let animationTime = 0;
+
+function drawSystem(p,a,detected){
+
+    const canvas =
+        document.getElementById(
+            "animationCanvas"
+        );
+
+    const {ctx,w,h} =
+        prepCanvas(canvas);
+
+    ctx.clearRect(
+        0,0,w,h
+    );
+
+    const coilX =
+        w*0.30;
+
+    const coilY =
+        h*0.55;
+
+    const metalX =
+        coilX+
+        110+
+        (p.d*1000)*8;
+
+    /*
+    Campo magnético cualitativo
+    */
+
+    const strength =
+        Math.max(
+            0.15,
+            a.coupling
+        );
+
+    for(let i=0;i<5;i++){
+
+        ctx.beginPath();
+
+        ctx.strokeStyle =
+            `rgba(88,166,255,${
+                0.15+
+                strength*0.35
+            })`;
+
+        ctx.lineWidth=2;
+
+        ctx.ellipse(
+            coilX+20,
+            coilY,
+            55+i*16,
+            35+i*11,
+            0,
+            -Math.PI/2,
+            Math.PI/2
+        );
+
+        ctx.stroke();
+
+    }
+
+    /*
+    Bobina
+    */
+
+    ctx.lineWidth=6;
+    ctx.strokeStyle="#f2cc60";
+
+    for(let i=0;i<8;i++){
+
+        ctx.beginPath();
+
+        ctx.arc(
+            coilX+i*6,
+            coilY,
+            40,
+            Math.PI/2,
+            Math.PI*1.5
+        );
+
+        ctx.stroke();
+
+    }
+
+    ctx.fillStyle="#e6edf3";
+    ctx.font="16px Arial";
+    ctx.fillText(
+        "Bobina sensora",
+        coilX-60,
+        coilY+75
+    );
+
+
+    /*
+    Objeto metálico
+    */
+
+    ctx.fillStyle =
+        detected ?
+        "#f85149" :
+        "#8b949e";
+
+    ctx.fillRect(
+        metalX,
+        coilY-60,
+        70,
+        120
+    );
+
+    ctx.fillStyle="#e6edf3";
+
+    ctx.fillText(
+        "Metal",
+        metalX+15,
+        coilY+5
+    );
+
+
+    /*
+    Distancia
+    */
+
+    ctx.strokeStyle="#ffffff";
+    ctx.lineWidth=1;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        coilX+60,
+        coilY-100
+    );
+
+    ctx.lineTo(
+        metalX,
+        coilY-100
+    );
+
+    ctx.stroke();
+
+    ctx.fillText(
+        `d = ${(p.d*1000).toFixed(1)} mm`,
+        (coilX+metalX)/2-30,
+        coilY-110
+    );
+
+
+    /*
+    Corrientes de Foucault
+    */
+
+    if(a.coupling>0.05){
+
+        const alpha =
+            Math.min(
+                1,
+                a.coupling*1.4
+            );
+
+        ctx.strokeStyle =
+            `rgba(255,123,114,${alpha})`;
+
+        ctx.lineWidth=3;
+
+        for(let i=0;i<3;i++){
+
+            ctx.beginPath();
+
+            ctx.ellipse(
+                metalX+35,
+                coilY-30+i*30,
+                18,
+                9,
+                0,
+                0,
+                Math.PI*2
+            );
+
+            ctx.stroke();
+
+        }
+
+        ctx.fillStyle="#ff7b72";
+
+        ctx.fillText(
+            "Corrientes inducidas",
+            metalX-10,
+            coilY+90
+        );
+
+    }
+
+
+    /*
+    Datos
+    */
+
+    ctx.fillStyle="#79c0ff";
+
+    ctx.fillText(
+        `Lef = ${(a.L*1e6).toFixed(1)} µH`,
+        20,
+        30
+    );
+
+    ctx.fillText(
+        `Ref = ${a.R.toFixed(1)} Ω`,
+        20,
+        52
+    );
+
+    ctx.fillText(
+        `Vtank = ${a.Vtank.toFixed(2)} V`,
+        20,
+        74
+    );
+
+}
+
+
+/* ==========================================================
+   GRÁFICA GENÉRICA
+   ========================================================== */
+
+function axes(
+    ctx,w,h,
+    xMin,xMax,
+    yMin,yMax,
+    xLabel,yLabel
+){
+
+    const margin={
+        l:60,
+        r:20,
+        t:20,
+        b:50
+    };
+
+    const pw =
+        w-margin.l-margin.r;
+
+    const ph =
+        h-margin.t-margin.b;
+
+    ctx.strokeStyle="#8b949e";
+    ctx.lineWidth=1;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        margin.l,
+        margin.t
+    );
+
+    ctx.lineTo(
+        margin.l,
+        h-margin.b
+    );
+
+    ctx.lineTo(
+        w-margin.r,
+        h-margin.b
+    );
+
+    ctx.stroke();
+
+    ctx.fillStyle="#8b949e";
+    ctx.font="12px Arial";
+
+    for(let i=0;i<=5;i++){
+
+        const x =
+            margin.l+
+            pw*i/5;
+
+        const xv =
+            xMin+
+            (xMax-xMin)*i/5;
+
+        ctx.fillText(
+            xv.toFixed(0),
+            x-10,
+            h-margin.b+20
+        );
+
+        const y =
+            margin.t+
+            ph*i/5;
+
+        const yv =
+            yMax-
+            (yMax-yMin)*i/5;
+
+        ctx.fillText(
+            yv.toFixed(1),
+            8,
+            y+4
+        );
+
+    }
+
+    ctx.fillText(
+        xLabel,
+        w/2-30,
+        h-10
+    );
+
+    ctx.save();
+
+    ctx.translate(
+        15,
+        h/2+25
+    );
+
+    ctx.rotate(
+        -Math.PI/2
+    );
+
+    ctx.fillText(
+        yLabel,
+        0,0
+    );
+
+    ctx.restore();
+
+    return {
+
+        X:x=>
+            margin.l+
+            (x-xMin)/
+            (xMax-xMin)*pw,
+
+        Y:y=>
+            margin.t+
+            (yMax-y)/
+            (yMax-yMin)*ph
+
+    };
+
+}
+
+
+/* ==========================================================
+   RESPUESTA EN FRECUENCIA
+   ========================================================== */
+
+function drawFrequencyResponse(p){
+
+    const canvas =
+        document.getElementById(
+            "responseCanvas"
+        );
+
+    const {ctx,w,h} =
+        prepCanvas(canvas);
+
+    const fMin=40;
+    const fMax=200;
+
+    const map =
+        axes(
+            ctx,w,h,
+            fMin,fMax,
+            0,p.Vs,
+            "Frecuencia (kHz)",
+            "|Vtank| (V)"
+        );
+
+
+    function plot(distance,color){
+
+        ctx.beginPath();
+
+        for(let i=0;i<=400;i++){
+
+            const fkHz =
+                fMin+
+                (fMax-fMin)*i/400;
+
+            const a =
+                analyzeAtFrequency(
+                    p,
+                    fkHz*1000,
+                    distance
+                );
+
+            const x =
+                map.X(fkHz);
+
+            const y =
+                map.Y(a.Vtank);
+
+            if(i===0)
+                ctx.moveTo(x,y);
+            else
+                ctx.lineTo(x,y);
+
+        }
+
+        ctx.strokeStyle=color;
+        ctx.lineWidth=2.5;
+        ctx.stroke();
+
+    }
+
+    plot(
+        0.1,
+        "#58a6ff"
+    );
+
+    plot(
+        p.d,
+        "#f85149"
+    );
+
+
+    /*
+    Frecuencia actual
+    */
+
+    ctx.strokeStyle="#d2a8ff";
+    ctx.setLineDash([6,4]);
+
+    const x =
+        map.X(
+            p.f/1000
+        );
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        x,20
+    );
+
+    ctx.lineTo(
+        x,h-50
+    );
+
+    ctx.stroke();
+
+    ctx.setLineDash([]);
+
+}
+
+
+/* ==========================================================
+   DISTANCIA VS VOLTAJE
+   ========================================================== */
+
+function drawDistanceResponse(p){
+
+    const canvas =
+        document.getElementById(
+            "distanceCanvas"
+        );
+
+    const {ctx,w,h} =
+        prepCanvas(canvas);
+
+    const map =
+        axes(
+            ctx,w,h,
+            0,20,
+            0,p.Vs,
+            "Distancia (mm)",
+            "Venv (V)"
+        );
+
+    ctx.beginPath();
+
+    for(let i=0;i<=200;i++){
+
+        const dmm =
+            i/10;
+
+        const a =
+            analyzeAtFrequency(
+                p,
+                p.f,
+                dmm/1000
+            );
+
+        const x =
+            map.X(dmm);
+
+        const y =
+            map.Y(a.Venv);
+
+        if(i===0)
+            ctx.moveTo(x,y);
+        else
+            ctx.lineTo(x,y);
+
+    }
+
+    ctx.strokeStyle="#3fb950";
+    ctx.lineWidth=2.5;
+    ctx.stroke();
+
+
+    /*
+    Vref
+    */
+
+    ctx.strokeStyle="#f85149";
+    ctx.setLineDash([6,5]);
+
+    const yr =
+        map.Y(p.Vref);
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        60,yr
+    );
+
+    ctx.lineTo(
+        w-20,yr
+    );
+
+    ctx.stroke();
+
+    ctx.setLineDash([]);
+
+}
+
+
+/* ==========================================================
+   SEÑAL EN EL TIEMPO
+   ========================================================== */
+
+function drawWaveform(p,a){
+
+    const canvas =
+        document.getElementById(
+            "waveCanvas"
+        );
+
+    const {ctx,w,h} =
+        prepCanvas(canvas);
+
+    const cycles=4;
+
+    const map =
+        axes(
+            ctx,w,h,
+            0,cycles,
+            -p.Vs,p.Vs,
+            "Ciclos",
+            "Vtank (V)"
+        );
+
+    ctx.beginPath();
+
+    const points=600;
+
+    for(let i=0;i<=points;i++){
+
+        const cycle =
+            cycles*i/points;
+
+        const yv =
+            a.Vtank*
+            Math.sin(
+                2*Math.PI*cycle
+            );
+
+        const x =
+            map.X(cycle);
+
+        const y =
+            map.Y(yv);
+
+        if(i===0)
+            ctx.moveTo(x,y);
+        else
+            ctx.lineTo(x,y);
+
+    }
+
+    ctx.strokeStyle="#d2a8ff";
+    ctx.lineWidth=2;
+    ctx.stroke();
+
+}
+
+
+/* ==========================================================
+   TABLA DE DISTANCIAS
+   ========================================================== */
+
+function buildTable(p){
+
+    const tbody =
+        document.querySelector(
+            "#dataTable tbody"
+        );
+
+    tbody.innerHTML="";
+
+    const distances=[
+        0,
+        2,
+        4,
+        6,
+        8,
+        10,
+        15,
+        20
+    ];
+
+    distances.forEach(dmm=>{
+
+        const a =
+            analyzeAtFrequency(
+                p,
+                p.f,
+                dmm/1000
+            );
+
+        const detected =
+            a.Venv<p.Vref;
+
+        const tr =
+            document.createElement(
+                "tr"
+            );
+
+        tr.innerHTML=`
+        <td>${dmm.toFixed(1)}</td>
+
+        <td>
+        ${(a.L*1e6).toFixed(1)}
+        </td>
+
+        <td>
+        ${a.R.toFixed(1)}
+        </td>
+
+        <td>
+        ${(a.f0/1000).toFixed(2)}
+        </td>
+
+        <td>
+        ${a.Q.toFixed(2)}
+        </td>
+
+        <td>
+        ${a.Vtank.toFixed(3)}
+        </td>
+
+        <td>
+        ${a.Venv.toFixed(3)}
+        </td>
+
+        <td>
+        ${
+            detected ?
+            "Sí" :
+            "No"
+        }
+        </td>
+        `;
+
+        tbody.appendChild(tr);
+
+    });
+
+}
+
+
+/* ==========================================================
+   FIJAR FRECUENCIA EN RESONANCIA
+   ========================================================== */
+
+function setResonance(){
+
+    const p =
+        parameters();
+
+    const a =
+        analyzeAtFrequency(
+            p,
+            p.f
+        );
+
+    document.getElementById(
+        "frequency"
+    ).value =
+        a.f0/1000;
+
+    update();
+
+}
+
+
+/* ==========================================================
+   EXPORTAR CSV
+   ========================================================== */
+
+function exportCSV(){
+
+    const p =
+        parameters();
+
+    let csv=
+        "Distancia_mm,L_uH,R_ohm,f0_kHz,Q,Vtank_V,Venv_V,Detectado\n";
+
+    for(let dmm=0;
+        dmm<=20;
+        dmm+=0.5){
+
+        const a =
+            analyzeAtFrequency(
+                p,
+                p.f,
+                dmm/1000
+            );
+
+        const detected =
+            a.Venv<p.Vref;
+
+        csv+=
+        `${dmm.toFixed(1)},`+
+        `${(a.L*1e6).toFixed(3)},`+
+        `${a.R.toFixed(3)},`+
+        `${(a.f0/1000).toFixed(3)},`+
+        `${a.Q.toFixed(3)},`+
+        `${a.Vtank.toFixed(4)},`+
+        `${a.Venv.toFixed(4)},`+
+        `${detected}\n`;
+
+    }
+
+    const blob =
+        new Blob(
+            [csv],
+            {type:"text/csv"}
+        );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const a =
+        document.createElement("a");
+
+    a.href=url;
+
+    a.download=
+        "sensor_inductivo_simulacion.csv";
+
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+}
+
+
+/* ==========================================================
+   REINICIO
+   ========================================================== */
+
+function resetValues(){
+
+    document.getElementById(
+        "distance"
+    ).value=10;
+
+    document.getElementById(
+        "dc"
+    ).value=5;
+
+    document.getElementById(
+        "deltaL"
+    ).value=14;
+
+    document.getElementById(
+        "deltaR"
+    ).value=150;
+
+    document.getElementById(
+        "L0"
+    ).value=220;
+
+    document.getElementById(
+        "R0"
+    ).value=20;
+
+    document.getElementById(
+        "C"
+    ).value=10;
+
+    document.getElementById(
+        "Rdrive"
+    ).value=1000;
+
+    document.getElementById(
+        "Vs"
+    ).value=5;
+
+    document.getElementById(
+        "frequency"
+    ).value=107.3;
+
+    document.getElementById(
+        "Vref"
+    ).value=2;
+
+    document.getElementById(
+        "Vd"
+    ).value=0.2;
+
+    update();
+
+}
+
+
+/* ==========================================================
+   EVENTOS
+   ========================================================== */
+
+document
+.querySelectorAll(
+    "input,select"
+)
+.forEach(element=>{
+
+    element.addEventListener(
+        "input",
+        update
+    );
+
+});
+
+
+window.addEventListener(
+    "resize",
+    update
+);
+
+
+/* ==========================================================
+   INICIALIZACIÓN
+   ========================================================== */
+
+update();
+
+</script>
+
+</body>
+</html>
