@@ -3,602 +3,678 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ingeniería Electrónica - Cursos</title>
+  <meta name="theme-color" content="#0b1020" />
+  <title>Mis proyectos 2026</title>
+
   <style>
     :root{
-      --bg:#f3f6fb;
-      --bg-2:#e9eef7;
-      --surface:#ffffff;
-      --surface-strong:#ffffff;
-      --text:#142033;
-      --muted:#617086;
-      --line:rgba(151, 169, 196, 0.28);
-      --shadow:0 18px 40px rgba(31, 41, 55, 0.10);
-      --shadow-soft:0 10px 24px rgba(31, 41, 55, 0.08);
-      --accent:#2563eb;
-      --accent-soft:#dbeafe;
-      --pill:#eef4ff;
-
-      --c1a:#f5d49a; --c1b:#f7e7c5;
-      --c2a:#c7bef8; --c2b:#e5e0ff;
-      --c3a:#9ad5f4; --c3b:#dff3fc;
-      --c4a:#ebb3cb; --c4b:#f9dfe9;
-      --c5a:#cfd7df; --c5b:#eef2f6;
-      --c6a:#d5b8f4; --c6b:#efe4fb;
-
-      --dark-bg:#08101c;
-      --dark-bg-2:#0d1726;
-      --dark-surface:rgba(14,23,38,0.8);
-      --dark-surface-strong:rgba(17,28,46,0.92);
-      --dark-text:#e8eef8;
-      --dark-muted:#95a3ba;
-      --dark-line:rgba(86, 103, 132, 0.28);
-      --dark-shadow:0 22px 60px rgba(0,0,0,0.38);
-      --dark-pill:rgba(255,255,255,0.07);
+      --bg:#070b14;
+      --bg2:#0b1220;
+      --panel:rgba(17,24,39,.72);
+      --panel-2:rgba(24,34,54,.82);
+      --text:#f4f7fb;
+      --muted:#9caac0;
+      --line:rgba(255,255,255,.09);
+      --accent:#7c9cff;
+      --accent-2:#60e6d0;
+      --shadow:0 22px 70px rgba(0,0,0,.35);
+      --radius:24px;
     }
 
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
+
     body{
       margin:0;
-      font-family:Inter, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      min-height:100vh;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
       color:var(--text);
       background:
-        radial-gradient(circle at top left, rgba(255,255,255,0.9), transparent 32%),
-        linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
-      min-height:100vh;
-      transition:background .25s ease, color .25s ease;
+        radial-gradient(circle at 10% 0%, rgba(124,156,255,.17), transparent 29%),
+        radial-gradient(circle at 92% 16%, rgba(96,230,208,.11), transparent 27%),
+        linear-gradient(180deg,var(--bg),var(--bg2));
     }
 
-    body.dark{
-      color:var(--dark-text);
-      background:
-        radial-gradient(circle at top left, rgba(37,99,235,0.1), transparent 24%),
-        linear-gradient(180deg, var(--dark-bg) 0%, var(--dark-bg-2) 100%);
-    }
+    button,input{font:inherit}
 
-    .container{
-      width:min(1220px, calc(100% - 34px));
+    .wrap{
+      width:min(1280px,calc(100% - 30px));
       margin:auto;
-      padding:34px 0 46px;
+      padding:34px 0 56px;
     }
 
-    .header{
+    .topbar{
       display:flex;
-      align-items:flex-end;
       justify-content:space-between;
-      gap:18px;
-      margin-bottom:26px;
-      flex-wrap:wrap;
-    }
-
-    .title-wrap h1{
-      margin:0;
-      font-size:clamp(2.15rem, 3.6vw, 3.7rem);
-      line-height:1;
-      letter-spacing:-0.05em;
-      font-weight:900;
-    }
-
-    .title-wrap p{
-      margin:10px 0 0;
-      font-size:1.02rem;
-      color:var(--muted);
-    }
-
-    body.dark .title-wrap p{color:var(--dark-muted)}
-
-    .tools{
-      display:flex;
-      gap:12px;
       align-items:center;
+      gap:18px;
+      margin-bottom:28px;
       flex-wrap:wrap;
     }
 
-    .search{
-      width:320px;
-      max-width:100%;
-      background:var(--surface-strong);
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .logo{
+      width:48px;
+      height:48px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      font-weight:900;
+      color:#08101d;
+      background:linear-gradient(135deg,var(--accent-2),#8fb2ff);
+      box-shadow:0 12px 30px rgba(96,230,208,.18);
+    }
+
+    .brand h1{
+      margin:0;
+      font-size:clamp(1.5rem,3vw,2.25rem);
+      letter-spacing:-.04em;
+    }
+
+    .brand p{
+      margin:4px 0 0;
+      color:var(--muted);
+      font-size:.93rem;
+    }
+
+    .github-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 14px;
       border:1px solid var(--line);
-      box-shadow:var(--shadow-soft);
-      backdrop-filter:blur(14px);
-      border-radius:18px;
-      padding:13px 16px;
-    }
-
-    .search input{
-      width:100%;
-      border:none;
-      outline:none;
-      background:transparent;
-      color:inherit;
-      font-size:1rem;
-    }
-
-    .theme-toggle{
-      border:none;
-      border-radius:18px;
-      padding:13px 17px;
-      background:var(--surface-strong);
-      border:1px solid var(--line);
-      box-shadow:var(--shadow-soft);
-      backdrop-filter:blur(14px);
-      font-weight:800;
-      color:inherit;
-      cursor:pointer;
-    }
-
-    body.dark .search,
-    body.dark .theme-toggle{
-      background:var(--dark-surface-strong);
-      border-color:var(--dark-line);
-      box-shadow:var(--dark-shadow);
+      border-radius:999px;
+      color:var(--muted);
+      background:rgba(255,255,255,.035);
+      backdrop-filter:blur(12px);
     }
 
     .hero{
-      display:grid;
-      grid-template-columns:1.15fr .85fr;
-      gap:20px;
-      margin-bottom:26px;
-    }
-
-    .hero-card,
-    .hero-side{
-      background:var(--surface);
-      border:1px solid var(--line);
-      box-shadow:var(--shadow);
-      border-radius:30px;
-      padding:28px;
       position:relative;
       overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:32px;
+      background:linear-gradient(135deg,rgba(124,156,255,.12),rgba(96,230,208,.05));
+      box-shadow:var(--shadow);
+      padding:34px;
+      margin-bottom:24px;
     }
 
-    body.dark .hero-card,
-    body.dark .hero-side{
-      background:var(--dark-surface-strong);
-      border-color:var(--dark-line);
-      box-shadow:var(--dark-shadow);
-    }
-
-    .hero-card::before,
-    .hero-side::before{
+    .hero::after{
       content:"";
       position:absolute;
-      inset:0;
-      background:linear-gradient(135deg, rgba(37,99,235,0.04), rgba(99,102,241,0.02));
+      width:300px;
+      height:300px;
+      border-radius:50%;
+      right:-100px;
+      top:-140px;
+      background:radial-gradient(circle,rgba(124,156,255,.30),transparent 70%);
       pointer-events:none;
     }
 
-    .hero-card h2,
-    .hero-side h3{
+    .hero h2{
       position:relative;
       z-index:1;
       margin:0 0 10px;
-      letter-spacing:-0.03em;
+      font-size:clamp(2rem,5vw,4rem);
+      line-height:.98;
+      letter-spacing:-.065em;
+      max-width:760px;
     }
 
-    .hero-card h2{font-size:1.8rem;}
-    .hero-card p,
-    .hero-side p{
+    .hero p{
       position:relative;
       z-index:1;
       margin:0;
+      max-width:760px;
       color:var(--muted);
       line-height:1.65;
     }
 
-    body.dark .hero-card p,
-    body.dark .hero-side p{color:var(--dark-muted)}
-
-    .stats{
+    .hero-stats{
       position:relative;
       z-index:1;
-      display:grid;
-      grid-template-columns:repeat(3, 1fr);
+      display:flex;
       gap:12px;
-      margin-top:18px;
+      flex-wrap:wrap;
+      margin-top:24px;
     }
 
     .stat{
-      background:var(--surface-strong);
-      border:1px solid rgba(148,163,184,0.2);
+      min-width:130px;
+      padding:13px 16px;
+      border:1px solid var(--line);
       border-radius:18px;
-      padding:14px;
+      background:rgba(8,14,26,.38);
+      backdrop-filter:blur(10px);
     }
 
-    body.dark .stat{
-      background:rgba(255,255,255,0.05);
-      border-color:rgba(148,163,184,0.12);
+    .stat strong{display:block;font-size:1.15rem}
+    .stat span{font-size:.84rem;color:var(--muted)}
+
+    .toolbar{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:14px;
+      align-items:center;
+      margin-bottom:18px;
     }
 
-    .stat strong{
-      display:block;
-      font-size:1.2rem;
-      margin-bottom:3px;
+    .searchbox{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:0 15px;
+      background:rgba(255,255,255,.04);
+      backdrop-filter:blur(12px);
     }
 
-    .stat span{
+    .searchbox input{
+      width:100%;
+      border:0;
+      outline:0;
+      color:var(--text);
+      background:transparent;
+      padding:14px 0;
+    }
+
+    .searchbox input::placeholder{color:#7f8ca2}
+
+    .filters{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .filter-btn{
+      border:1px solid var(--line);
       color:var(--muted);
-      font-size:.92rem;
+      background:rgba(255,255,255,.04);
+      padding:10px 13px;
+      border-radius:14px;
+      cursor:pointer;
+      transition:.18s ease;
     }
 
-    body.dark .stat span{color:var(--dark-muted)}
+    .filter-btn:hover,
+    .filter-btn.active{
+      color:#fff;
+      border-color:rgba(124,156,255,.45);
+      background:rgba(124,156,255,.14);
+      transform:translateY(-1px);
+    }
+
+    .section-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      gap:12px;
+      margin:26px 2px 14px;
+    }
+
+    .section-head h3{
+      margin:0;
+      font-size:1.2rem;
+      letter-spacing:-.02em;
+    }
+
+    .section-head span{
+      color:var(--muted);
+      font-size:.9rem;
+    }
 
     .grid{
       display:grid;
-      grid-template-columns:repeat(3, minmax(0, 1fr));
-      gap:20px;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:16px;
     }
 
-    .course-card{
+    .card{
       position:relative;
-      overflow:hidden;
+      min-height:220px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      gap:24px;
+      padding:21px;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.028));
+      box-shadow:0 14px 36px rgba(0,0,0,.16);
       text-decoration:none;
       color:inherit;
-      min-height:290px;
-      border-radius:30px;
-      padding:22px;
-      border:1px solid var(--line);
-      background:var(--surface);
-      box-shadow:var(--shadow);
-      transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      isolation:isolate;
-      box-shadow:var(--shadow);
-      transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      isolation:isolate;
+      overflow:hidden;
+      transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
     }
 
-    .course-card:hover{
-      transform:translateY(-6px);
-      box-shadow:0 26px 56px rgba(31,41,55,0.16);
-      border-color:rgba(37,99,235,0.26);
+    .card:hover{
+      transform:translateY(-5px);
+      border-color:rgba(124,156,255,.36);
+      box-shadow:0 24px 55px rgba(0,0,0,.28);
     }
 
-    body.dark .course-card{
-      background:var(--dark-surface-strong);
-      border-color:var(--dark-line);
-      box-shadow:var(--dark-shadow);
-    }
-
-    body.dark .course-card:hover{
-      box-shadow:0 24px 52px rgba(0,0,0,0.42);
-      border-color:rgba(96,165,250,0.2);
-    }
-
-    .course-card::before{
+    .card::before{
       content:"";
       position:absolute;
-      inset:0;
-      opacity:1;
-      z-index:-1;
+      width:150px;
+      height:150px;
+      right:-70px;
+      top:-70px;
+      border-radius:50%;
+      background:radial-gradient(circle,var(--glow,rgba(124,156,255,.18)),transparent 70%);
     }
 
-    .course-card::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.02));
-      z-index:-2;
-    }
-
-    body.dark .course-card::after{
-      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0));
-    }
-
-    .c1::before{background:linear-gradient(135deg, #f4d08e 0%, #dba12d 100%);}
-    .c2::before{background:linear-gradient(135deg, #8b83ef 0%, #4f46e5 100%);}
-    .c3::before{background:linear-gradient(135deg, #6fc7f0 0%, #0f76bc 100%);}
-    .c4::before{background:linear-gradient(135deg, #e7a4c3 0%, #ba4d85 100%);}
-    .c5::before{background:linear-gradient(135deg, #cfd6de 0%, #7d8b99 100%);}
-    .c6::before{background:linear-gradient(135deg, #ccb1f1 0%, #8a56d8 100%);}
-
-    .course-top{
+    .card-top,
+    .card-bottom{
+      position:relative;
+      z-index:1;
       display:flex;
       justify-content:space-between;
-      align-items:flex-start;
-      gap:12px;
-    }
-
-    .mini-code{
-      display:inline-flex;
       align-items:center;
-      padding:8px 12px;
-      border-radius:999px;
-      background:rgba(255,255,255,0.22);
-      color:#ffffff;
-      font-weight:800;
-      font-size:.78rem;
-      letter-spacing:.04em;
-      text-transform:uppercase;
-      border:1px solid rgba(255,255,255,0.18);
+      gap:10px;
     }
 
-    body.dark .mini-code{
-      background:rgba(255,255,255,0.08);
-      color:var(--dark-text);
-    }
-
-    .mini-num{
+    .icon{
       width:46px;
       height:46px;
+      border-radius:15px;
       display:grid;
       place-items:center;
-      border-radius:16px;
-      background:rgba(255,255,255,0.18);
-      color:#ffffff;
-      font-weight:900;
-      font-size:1rem;
-      border:1px solid rgba(255,255,255,0.18);
+      font-size:1.32rem;
+      background:rgba(255,255,255,.07);
+      border:1px solid var(--line);
     }
 
-    body.dark .mini-num{
-      background:rgba(255,255,255,0.07);
-      box-shadow:none;
+    .tag{
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:.75rem;
+      font-weight:800;
+      color:#bdc8da;
+      background:rgba(255,255,255,.055);
+      border:1px solid var(--line);
     }
 
-    .course-main h2{
-      margin:18px 0 10px;
-      font-size:2rem;
-      line-height:1.02;
-      letter-spacing:-0.045em;
-      max-width:90%;
-      color:#ffffff;
+    .card-main{
+      position:relative;
+      z-index:1;
     }
 
-    .course-main p{
+    .card-main h4{
+      margin:0 0 9px;
+      font-size:1.35rem;
+      line-height:1.1;
+      letter-spacing:-.035em;
+    }
+
+    .card-main p{
       margin:0;
-      color:rgba(255,255,255,0.88);
-      line-height:1.6;
-      max-width:88%;
-      font-size:1rem;
-    }
-
-    body.dark .course-main p{color:rgba(255,255,255,0.82)}
-
-    .course-bottom{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      margin-top:18px;
-    }
-
-    .file-tag{
-      display:inline-flex;
-      align-items:center;
-      padding:9px 12px;
-      border-radius:14px;
-      background:rgba(255,255,255,0.18);
-      color:rgba(255,255,255,0.92);
-      font-size:.9rem;
-      font-weight:700;
-      border:1px solid rgba(255,255,255,0.14);
-    }
-
-    body.dark .file-tag{
-      background:rgba(255,255,255,0.08);
-      color:rgba(255,255,255,0.88);
-    }
-
-    .go-btn{
-      display:inline-flex;
-      align-items:center;
-      gap:9px;
-      padding:11px 15px;
-      border-radius:16px;
-      background:#ffffff;
-      color:#0f172a;
-      font-weight:900;
-      box-shadow:0 12px 24px rgba(15,23,42,.12);
-    }
-
-    body.dark .go-btn{
-      background:rgba(255,255,255,0.08);
-      color:var(--dark-text);
-      box-shadow:none;
-    }
-
-    .footer-note{
-      text-align:center;
-      margin-top:28px;
       color:var(--muted);
-      font-size:.95rem;
+      line-height:1.5;
+      font-size:.93rem;
     }
 
-    body.dark .footer-note{color:var(--dark-muted)}
-
-    @media (max-width:1100px){
-      .grid{grid-template-columns:repeat(2,minmax(0,1fr));}
-      .hero{grid-template-columns:1fr;}
+    .filename{
+      max-width:70%;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      color:#8d9bb0;
+      font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+      font-size:.8rem;
     }
 
-    @media (max-width:680px){
-      .container{width:min(100% - 18px, 1220px)}
+    .open{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-size:.88rem;
+      font-weight:900;
+      color:#dce5ff;
+    }
+
+    .empty{
+      display:none;
+      text-align:center;
+      padding:50px 20px;
+      color:var(--muted);
+      border:1px dashed var(--line);
+      border-radius:24px;
+    }
+
+    footer{
+      margin-top:28px;
+      text-align:center;
+      color:#78869a;
+      font-size:.88rem;
+    }
+
+    @media (max-width:1000px){
+      .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .toolbar{grid-template-columns:1fr}
+      .filters{justify-content:flex-start}
+    }
+
+    @media (max-width:650px){
+      .wrap{width:min(100% - 18px,1280px);padding-top:18px}
+      .hero{padding:25px 20px;border-radius:25px}
       .grid{grid-template-columns:1fr}
-      .header{align-items:stretch}
-      .tools{width:100%}
-      .search{flex:1; width:auto}
-      .stats{grid-template-columns:1fr}
-      .course-main h2{font-size:1.7rem; max-width:100%}
-      .course-main p{max-width:100%}
-      .course-bottom{align-items:flex-start; flex-direction:column}
+      .topbar{align-items:flex-start}
+      .github-pill{width:100%;justify-content:center}
+      .filters{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}
+      .filter-btn{white-space:nowrap}
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header class="header">
-      <div class="title-wrap">
-        <h1>Ingeniería Electrónica - Cursos</h1>
-        <p>Ingeniería Electrónica</p>
+  <main class="wrap">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">GB</div>
+        <div>
+          <h1>Mis proyectos 2026</h1>
+          <p>Panel principal de navegación</p>
+        </div>
       </div>
-
-      <div class="tools">
-        <label class="search">
-          <input type="text" id="searchInput" placeholder="Buscar curso" oninput="filterCourses()" />
-        </label>
-        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">Modo oscuro</button>
-      </div>
+      <div class="github-pill">⚡ HTML · GitHub Pages</div>
     </header>
 
     <section class="hero">
-      <div class="hero-card">
-        <h2>Índice principal</h2>
-        <p>
-          Acceso rápido a los cursos del ciclo. Selecciona uno para entrar a su página y organizar contenidos,
-          materiales, prácticas, tareas y recursos por tema.
-        </p>
-        <div class="stats">
-          <div class="stat">
-            <strong>6</strong>
-            <span>Cursos</span>
-          </div>
-          <div class="stat">
-            <strong>A</strong>
-            <span>Sección</span>
-          </div>
-          <div class="stat">
-            <strong>2026</strong>
-            <span>Ciclo actual</span>
-          </div>
+      <h2>Todo el año en un solo lugar.</h2>
+      <p>
+        Acceso directo a mis cursos, unidades, simuladores y proyectos web de 2026.
+        Usa el buscador o los filtros para encontrar rápidamente cualquier página.
+      </p>
+
+      <div class="hero-stats">
+        <div class="stat">
+          <strong id="totalProjects">0</strong>
+          <span>páginas</span>
+        </div>
+        <div class="stat">
+          <strong>2026</strong>
+          <span>año académico</span>
+        </div>
+        <div class="stat">
+          <strong>HTML</strong>
+          <span>acceso directo</span>
         </div>
       </div>
-
-      <aside class="hero-side">
-        <h3>Panel académico</h3>
-        <p>
-          Estructura base para navegar entre asignaturas y mantener una organización clara del material de estudio.
-        </p>
-      </aside>
     </section>
 
-    <section class="grid" id="courseGrid">
-      <a class="course-card c1" data-name="control avanzado ii contava" href="ContAva.html">
-        <div class="course-top">
-          <span class="mini-code">Control</span>
-          <span class="mini-num">01</span>
-        </div>
-        <div class="course-main">
-          <h2>Control Avanzado II</h2>
-          <p>Modelado, estabilidad, controladores y análisis de sistemas dinámicos.</p>
-        </div>
-        <div class="course-bottom">
-          <span class="file-tag">Asignatura</span>
-          <span class="go-btn">Abrir →</span>
-        </div>
-      </a>
+    <section class="toolbar">
+      <label class="searchbox">
+        <span>⌕</span>
+        <input id="search" type="search" placeholder="Buscar proyecto, curso o archivo..." autocomplete="off" />
+      </label>
 
-      <a class="course-card c2" data-name="electrónica industrial ei" href="EI.html">
-        <div class="course-top">
-          <span class="mini-code">Industrial</span>
-          <span class="mini-num">02</span>
-        </div>
-        <div class="course-main">
-          <h2>Electrónica Industrial</h2>
-          <p>Dispositivos de potencia, convertidores, rectificadores e inversores.</p>
-        </div>
-        <div class="course-bottom">
-          <span class="file-tag">Asignatura</span>
-          <span class="go-btn">Abrir →</span>
-        </div>
-      </a>
-
-      <a class="course-card c3" data-name="procesamiento digital de señales pds" href="PDS.html">
-        <div class="course-top">
-          <span class="mini-code">Señales</span>
-          <span class="mini-num">03</span>
-        </div>
-        <div class="course-main">
-          <h2>Procesamiento Digital de Señales</h2>
-          <p>Muestreo, transformadas, convolución, análisis espectral y filtros digitales.</p>
-        </div>
-        <div class="course-bottom">
-          <span class="file-tag">Asignatura</span>
-          <span class="go-btn">Abrir →</span>
-        </div>
-      </a>
-
-      <a class="course-card c4" data-name="proyecto electrónico i pe" href="PE.html">
-        <div class="course-top">
-          <span class="mini-code">Proyecto</span>
-          <span class="mini-num">04</span>
-        </div>
-        <div class="course-main">
-          <h2>Proyecto Electrónico I</h2>
-          <p>Formulación, planificación, documentación y desarrollo de proyectos.</p>
-        </div>
-        <div class="course-bottom">
-          <span class="file-tag">Asignatura</span>
-          <span class="go-btn">Abrir →</span>
-        </div>
-      </a>
-
-      <a class="course-card c5" data-name="sistemas de telefonía sdt" href="SDT.html">
-        <div class="course-top">
-          <span class="mini-code">Telefonía</span>
-          <span class="mini-num">05</span>
-        </div>
-        <div class="course-main">
-          <h2>Sistemas de Telefonía</h2>
-          <p>Redes de abonado, conmutación, transmisión e interconexión telefónica.</p>
-        </div>
-        <div class="course-bottom">
-          <span class="file-tag">Asignatura</span>
-          <span class="go-btn">Abrir →</span>
-        </div>
-      </a>
-
-      <a class="course-card c6" data-name="sistemas programables de control spdc" href="SPDC.html">
-        <div class="course-top">
-          <span class="mini-code">Control</span>
-          <span class="mini-num">06</span>
-        </div>
-        <div class="course-main">
-          <h2>Sistemas Programables de Control</h2>
-          <p>PLC, automatización, lógica ladder, sensores, actuadores e integración.</p>
-        </div>
-        <div class="course-bottom">
-          <span class="file-tag">Asignatura</span>
-          <span class="go-btn">Abrir →</span>
-        </div>
-      </a>
+      <div class="filters" id="filters">
+        <button class="filter-btn active" data-filter="todos">Todos</button>
+        <button class="filter-btn" data-filter="curso">Cursos</button>
+        <button class="filter-btn" data-filter="unidad">Unidades</button>
+        <button class="filter-btn" data-filter="simulador">Simuladores</button>
+        <button class="filter-btn" data-filter="otro">Otros</button>
+      </div>
     </section>
 
-    <div class="footer-note">Portal académico</div>
-  </div>
+    <div class="section-head">
+      <h3>Proyectos disponibles</h3>
+      <span id="resultCount"></span>
+    </div>
+
+    <section class="grid" id="projectGrid"></section>
+    <div class="empty" id="emptyState">No encontré proyectos con ese nombre.</div>
+
+    <footer>
+      Portal personal 2026 · Los enlaces funcionan si este archivo está en la misma carpeta del repositorio.
+    </footer>
+  </main>
 
   <script>
-    function filterCourses(){
-      const value = document.getElementById('searchInput').value.toLowerCase().trim();
-      const cards = document.querySelectorAll('.course-card');
-      cards.forEach(card => {
-        const content = (card.dataset.name + ' ' + card.textContent).toLowerCase();
-        card.style.display = content.includes(value) ? 'flex' : 'none';
-      });
-    }
+    /*
+      IMPORTANTE:
+      - Este archivo debe estar en la MISMA carpeta que tus demás .html.
+      - Puedes subirlo como index.html para que sea la portada de GitHub Pages.
+      - AngH.html y SimulacionNicol.html están excluidos intencionalmente.
+    */
 
-    function toggleTheme(){
-      document.body.classList.toggle('dark');
-      const dark = document.body.classList.contains('dark');
-      document.getElementById('themeToggle').textContent = dark ? 'Modo claro' : 'Modo oscuro';
-      localStorage.setItem('themeCursosElectronica', dark ? 'dark' : 'light');
-    }
-
-    (function initTheme(){
-      const saved = localStorage.getItem('themeCursosElectronica');
-      if(saved === 'dark'){
-        document.body.classList.add('dark');
-        const btn = document.getElementById('themeToggle');
-        if(btn) btn.textContent = 'Modo claro';
+    const projects = [
+      {
+        file: "Clash.html",
+        title: "Clash",
+        category: "otro",
+        icon: "⚔️",
+        desc: "Proyecto web independiente.",
+        glow: "rgba(255,125,125,.22)"
+      },
+      {
+        file: "ContAva.html",
+        title: "Control Avanzado",
+        category: "curso",
+        icon: "🎛️",
+        desc: "Página principal del curso de Control Avanzado.",
+        glow: "rgba(124,156,255,.25)"
+      },
+      {
+        file: "EI.html",
+        title: "Electrónica Industrial",
+        category: "curso",
+        icon: "⚡",
+        desc: "Material y navegación de Electrónica Industrial.",
+        glow: "rgba(255,201,92,.24)"
+      },
+      {
+        file: "Morcito_horario.html",
+        title: "Horario Morcito",
+        category: "otro",
+        icon: "🗓️",
+        desc: "Página de horario y organización.",
+        glow: "rgba(96,230,208,.23)"
+      },
+      {
+        file: "PDS.html",
+        title: "Procesamiento Digital de Señales",
+        category: "curso",
+        icon: "〰️",
+        desc: "Página principal de PDS.",
+        glow: "rgba(82,183,255,.24)"
+      },
+      {
+        file: "PE.html",
+        title: "Proyecto Electrónico",
+        category: "curso",
+        icon: "🧩",
+        desc: "Página principal de Proyecto Electrónico.",
+        glow: "rgba(200,126,255,.23)"
+      },
+      {
+        file: "Psicope.html",
+        title: "Psicope",
+        category: "otro",
+        icon: "🧠",
+        desc: "Proyecto de práctica y evaluación psicotécnica.",
+        glow: "rgba(255,129,181,.22)"
+      },
+      {
+        file: "Reflexion.html",
+        title: "Simulador de Reflexión",
+        category: "simulador",
+        icon: "🔬",
+        desc: "Simulación interactiva relacionada con reflexión.",
+        glow: "rgba(96,230,208,.25)"
+      },
+      {
+        file: "SDT.html",
+        title: "Sistemas de Telefonía",
+        category: "curso",
+        icon: "📡",
+        desc: "Página principal de Sistemas de Telefonía.",
+        glow: "rgba(107,173,255,.25)"
+      },
+      {
+        file: "SPDC.html",
+        title: "Sistemas Programables de Control",
+        category: "curso",
+        icon: "🤖",
+        desc: "Página principal de Sistemas Programables de Control.",
+        glow: "rgba(128,245,175,.21)"
+      },
+      {
+        file: "Sim_PE.html",
+        title: "Simulador PE",
+        category: "simulador",
+        icon: "🧪",
+        desc: "Simulador correspondiente a Proyecto Electrónico.",
+        glow: "rgba(196,128,255,.24)"
+      },
+      {
+        file: "Sim_neo.html",
+        title: "Simulador NEO",
+        category: "simulador",
+        icon: "🧬",
+        desc: "Simulador web NEO.",
+        glow: "rgba(255,143,92,.24)"
+      },
+      {
+        file: "U1CAII.html",
+        title: "Unidad 1 · Control Avanzado II",
+        category: "unidad",
+        icon: "01",
+        desc: "Contenido de la Unidad 1 de Control Avanzado II.",
+        glow: "rgba(124,156,255,.23)"
+      },
+      {
+        file: "U1EI.html",
+        title: "Unidad 1 · Electrónica Industrial",
+        category: "unidad",
+        icon: "01",
+        desc: "Contenido de la Unidad 1 de Electrónica Industrial.",
+        glow: "rgba(255,201,92,.23)"
+      },
+      {
+        file: "U1PDS.html",
+        title: "Unidad 1 · PDS",
+        category: "unidad",
+        icon: "01",
+        desc: "Contenido de la Unidad 1 de Procesamiento Digital de Señales.",
+        glow: "rgba(82,183,255,.23)"
+      },
+      {
+        file: "U1PE.html",
+        title: "Unidad 1 · Proyecto Electrónico",
+        category: "unidad",
+        icon: "01",
+        desc: "Contenido de la Unidad 1 de Proyecto Electrónico.",
+        glow: "rgba(200,126,255,.23)"
+      },
+      {
+        file: "U1PE_1st.html",
+        title: "Unidad 1 · PE · 1st",
+        category: "unidad",
+        icon: "1st",
+        desc: "Versión complementaria de la Unidad 1 de PE.",
+        glow: "rgba(200,126,255,.20)"
+      },
+      {
+        file: "U1SPDC.html",
+        title: "Unidad 1 · SPDC",
+        category: "unidad",
+        icon: "01",
+        desc: "Contenido de la Unidad 1 de Sistemas Programables de Control.",
+        glow: "rgba(128,245,175,.20)"
+      },
+      {
+        file: "U2CAII.html",
+        title: "Unidad 2 · Control Avanzado II",
+        category: "unidad",
+        icon: "02",
+        desc: "Contenido de la Unidad 2 de Control Avanzado II.",
+        glow: "rgba(124,156,255,.20)"
       }
-    })();
+    ];
+
+    const grid = document.getElementById("projectGrid");
+    const search = document.getElementById("search");
+    const resultCount = document.getElementById("resultCount");
+    const totalProjects = document.getElementById("totalProjects");
+    const emptyState = document.getElementById("emptyState");
+    const filterButtons = [...document.querySelectorAll(".filter-btn")];
+
+    let activeFilter = "todos";
+
+    const categoryName = {
+      curso: "Curso",
+      unidad: "Unidad",
+      simulador: "Simulador",
+      otro: "Otro"
+    };
+
+    function normalizeText(text){
+      return text
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function render(){
+      const q = normalizeText(search.value.trim());
+
+      const filtered = projects.filter(project => {
+        const matchesFilter = activeFilter === "todos" || project.category === activeFilter;
+        const haystack = normalizeText(`${project.title} ${project.file} ${project.desc} ${project.category}`);
+        const matchesSearch = !q || haystack.includes(q);
+        return matchesFilter && matchesSearch;
+      });
+
+      grid.innerHTML = filtered.map(project => `
+        <a
+          class="card"
+          href="${project.file}"
+          style="--glow:${project.glow}"
+          aria-label="Abrir ${project.title}"
+        >
+          <div class="card-top">
+            <div class="icon">${project.icon}</div>
+            <span class="tag">${categoryName[project.category]}</span>
+          </div>
+
+          <div class="card-main">
+            <h4>${project.title}</h4>
+            <p>${project.desc}</p>
+          </div>
+
+          <div class="card-bottom">
+            <span class="filename">${project.file}</span>
+            <span class="open">Abrir ↗</span>
+          </div>
+        </a>
+      `).join("");
+
+      resultCount.textContent = `${filtered.length} de ${projects.length}`;
+      totalProjects.textContent = projects.length;
+      emptyState.style.display = filtered.length ? "none" : "block";
+    }
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        filterButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        activeFilter = btn.dataset.filter;
+        render();
+      });
+    });
+
+    search.addEventListener("input", render);
+    render();
   </script>
 </body>
 </html>
-
