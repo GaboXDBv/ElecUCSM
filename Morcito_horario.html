@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Horario de Internado Xiao</title>
+  <title>Horario de Internado - Danna Fiorella | Octubre 2026</title>
   <style>
     :root {
       --bg: #04070d;
@@ -29,13 +29,14 @@
       --danger: #ff8e9e;
       --shadow: 0 18px 40px rgba(0, 0, 0, 0.38);
       --radius: 26px;
-      --sala: linear-gradient(135deg, #ffd86a, #ffb144);
-      --ppff: linear-gradient(135deg, #72f3ff, #2e9bff);
-      --materno: linear-gradient(135deg, #bd7cff, #7e59ff);
-      --apoyo: linear-gradient(135deg, #7bf1da, #3bc8b2);
+      --emergencia: linear-gradient(135deg, #72f3ff, #2e9bff);
+      --centro: linear-gradient(135deg, #f5ff55, #d9ea00);
+      --hospitalizacion: linear-gradient(135deg, #ff6f7a, #ff2020);
+      --capacitacion: linear-gradient(135deg, #c9dcf2, #9fb9d7);
       --turno-manana: linear-gradient(135deg, #ffe68d, #f0c46b);
       --turno-tarde: linear-gradient(135deg, #7cf6ff, #37bcff);
-      --turno-noche: linear-gradient(135deg, #9f84ff, #5a4bde);
+      --turno-noche: linear-gradient(135deg, #ff8c95, #ef3b4e);
+      --turno-mt: linear-gradient(135deg, #c9dcf2, #8daacb);
     }
 
     * { box-sizing: border-box; }
@@ -612,8 +613,8 @@
   <main class="shell">
     <section class="hero">
       <div class="title-wrap">
-        <h1>Horario de internado</h1>
-        <p>Versión más digerible, con más colores inspirados en Xiao: aqua, jade, azul profundo, violeta y dorado. También resalta clarito si te toca <strong>mañana</strong>, <strong>tarde</strong> o <strong>noche</strong>.</p>
+        <h1>Horario de internado · Danna Fiorella</h1>
+        <p><strong>Danna Fiorella Gonzales Caceres</strong> · II Rotación de Obstetricia · Hospital Central de Majes · Octubre 2026. El panel identifica área, turno, descanso y el siguiente movimiento del rol.</p>
       </div>
       <div class="glow-badge">
         <span class="glow-dot"></span>
@@ -674,6 +675,14 @@
                   </div>
                   <div class="shift-status" style="background: var(--turno-noche)">Disponible</div>
                 </div>
+                <div class="shift-box" data-shift-box="MT">
+                  <div class="shift-icon" style="background: var(--turno-mt)">☀️🌤️</div>
+                  <div>
+                    <strong>Mañana + Tarde</strong><br>
+                    <small>07:30 a. m. - 07:30 p. m.</small>
+                  </div>
+                  <div class="shift-status" style="background: var(--turno-mt)">Disponible</div>
+                </div>
               </div>
             </div>
           </div>
@@ -689,7 +698,7 @@
 
           <div class="mini-stats">
             <div class="stat-box">
-              <strong id="monthLabel">Abril</strong>
+              <strong id="monthLabel">Octubre</strong>
               <span>Mes configurado</span>
             </div>
             <div class="stat-box">
@@ -739,121 +748,124 @@
       <article class="card">
         <h2 class="section-title">Calendario del mes</h2>
         <div class="legend">
-          <span><i style="background: var(--sala)"></i>Sala</span>
-          <span><i style="background: var(--ppff)"></i>PPFF</span>
-          <span><i style="background: var(--materno)"></i>Materno</span>
-          <span><i style="background: var(--apoyo)"></i>Apoyo nocturno</span>
-          <span><i style="background: var(--turno-manana)"></i>Mañana</span>
-          <span><i style="background: var(--turno-tarde)"></i>Tarde</span>
-          <span><i style="background: var(--turno-noche)"></i>Noche</span>
+          <span><i style="background: var(--emergencia)"></i>Emergencia (E.O)</span>
+          <span><i style="background: var(--centro)"></i>Centro Obstétrico (C.O)</span>
+          <span><i style="background: var(--hospitalizacion)"></i>Hospitalización y Alto Riesgo (H.O)</span>
+          <span><i style="background: var(--capacitacion)"></i>Capacitación (C)</span>
+          <span><i style="background: var(--turno-manana)"></i>Mañana (M)</span>
+          <span><i style="background: var(--turno-tarde)"></i>Tarde (T)</span>
+          <span><i style="background: var(--turno-noche)"></i>Noche (N)</span>
+          <span><i style="background: var(--turno-mt)"></i>Mañana + Tarde (MT)</span>
         </div>
-        <p class="small-note">Nota: como el color verde de tu cuadro no tenía nombre visible, lo dejé como <strong>Apoyo nocturno</strong>. Si me das el nombre exacto, te lo cambio en una.</p>
+        <p class="small-note">Datos cargados del rol de octubre 2026. En esta versión, <strong>MT</strong> se muestra como turno combinado de mañana y tarde (07:30 a. m. - 07:30 p. m.).</p>
         <div class="month-grid" id="monthGrid" style="margin-top:16px;"></div>
       </article>
     </section>
 
     <section class="tips-grid">
       <article class="tip-card">
-        <h3>💛 Sala</h3>
-        <p>Prioriza monitoreo fetal, deja material listo y vigila signos maternos con registro claro y ordenado.</p>
+        <h3>💙 Emergencia</h3>
+        <p>Área identificada en el rol como <strong>E.O</strong>. El panel la mostrará junto con el turno correspondiente de ese día.</p>
       </article>
       <article class="tip-card">
-        <h3>💙 PPFF</h3>
-        <p>Haz consejería simple, confirma criterios del método y recalca signos de alarma y seguimiento.</p>
+        <h3>💛 Centro Obstétrico</h3>
+        <p>Área identificada como <strong>C.O</strong>. Aparece en amarillo para diferenciarla rápidamente en el calendario.</p>
       </article>
       <article class="tip-card">
-        <h3>💜 Materno</h3>
-        <p>Controla signos vitales, detecta riesgos temprano y acompaña con calma a la gestante y su familia.</p>
+        <h3>❤️ Hospitalización y Alto Riesgo</h3>
+        <p>Área identificada como <strong>H.O</strong>. Se muestra en rojo, siguiendo la referencia visual del rol original.</p>
       </article>
       <article class="tip-card">
-        <h3>💚 Apoyo nocturno</h3>
-        <p>Durante la noche hidrátate, prioriza urgencias, mantén registros al día y reporta cambios sin demora.</p>
+        <h3>🩶 Capacitación</h3>
+        <p>Actividad identificada como <strong>C</strong>. En el rol de Danna aparece el sábado 3 de octubre.</p>
       </article>
     </section>
 
-    <p class="footer-note">Este horario está configurado para <strong>abril 2026</strong> y se actualiza en tiempo real usando la hora del dispositivo.</p>
+    <p class="footer-note">Horario personalizado para <strong>Danna Fiorella Gonzales Caceres</strong>, configurado para <strong>octubre 2026</strong> y actualizado en tiempo real con la hora del dispositivo.</p>
   </main>
 
   <script>
     const scheduleYear = 2026;
-    const scheduleMonth = 3; // Abril
+    const scheduleMonth = 9; // Octubre
 
     const SHIFT_INFO = {
-      M: { name: 'Mañana', start: '07:30', end: '13:30', overnight: false, color: 'var(--turno-manana)', emoji: '☀️' },
-      T: { name: 'Tarde', start: '13:30', end: '19:30', overnight: false, color: 'var(--turno-tarde)', emoji: '🌤️' },
-      N: { name: 'Noche', start: '19:30', end: '07:30', overnight: true, color: 'var(--turno-noche)', emoji: '🌙' }
+      M:  { name: 'Mañana', start: '07:30', end: '13:30', overnight: false, color: 'var(--turno-manana)', emoji: '☀️' },
+      T:  { name: 'Tarde', start: '13:30', end: '19:30', overnight: false, color: 'var(--turno-tarde)', emoji: '🌤️' },
+      N:  { name: 'Noche', start: '19:30', end: '07:30', overnight: true, color: 'var(--turno-noche)', emoji: '🌙' },
+      MT: { name: 'Mañana + Tarde', start: '07:30', end: '19:30', overnight: false, color: 'var(--turno-mt)', emoji: '☀️🌤️' }
     };
 
     const AREAS = {
-      sala: {
-        name: 'Sala',
-        color: 'var(--sala)',
+      emergencia: {
+        name: 'Emergencia',
+        color: 'var(--emergencia)',
         advice: [
-          'Deja listo el material antes de empezar y verifica insumos.',
-          'Controla signos maternos y bienestar fetal con orden.',
-          'Reporta a tiempo cualquier cambio durante el trabajo de parto.'
+          'Servicio del rol: E.O · Emergencia.',
+          'Revisa con anticipación el turno y la hora de ingreso.',
+          'Mantén a mano lo necesario para tu jornada antes de salir.'
         ]
       },
-      ppff: {
-        name: 'PPFF',
-        color: 'var(--ppff)',
+      centro: {
+        name: 'Centro Obstétrico',
+        color: 'var(--centro)',
         advice: [
-          'Escucha primero y adapta la consejería a la necesidad real.',
-          'Explica método, efectos esperados y signos de alarma claro.',
-          'Deja indicaciones simples y confirma seguimiento.'
+          'Servicio del rol: C.O · Centro Obstétrico.',
+          'Confirma el turno asignado antes de iniciar el día.',
+          'Usa la pestaña “Mes completo” para revisar los próximos cambios de área.'
         ]
       },
-      materno: {
-        name: 'Materno',
-        color: 'var(--materno)',
+      hospitalizacion: {
+        name: 'Hospitalización y Alto Riesgo',
+        color: 'var(--hospitalizacion)',
         advice: [
-          'Haz revisión clínica completa y detecta factores de riesgo.',
-          'Ordena notas y signos vitales sin saltarte pasos.',
-          'Acompaña con calma: el apoyo emocional también cuenta.'
+          'Servicio del rol: H.O · Hospitalización y Alto Riesgo.',
+          'Verifica si el turno es M, T, N o MT antes de organizar tu descanso.',
+          'El panel calcula automáticamente cuánto falta para el siguiente turno.'
         ]
       },
-      apoyo: {
-        name: 'Apoyo nocturno',
-        color: 'var(--apoyo)',
+      capacitacion: {
+        name: 'Capacitación',
+        color: 'var(--capacitacion)',
         advice: [
-          'Mantén vigilancia continua y prioriza urgencias reales.',
-          'Ten agua, snack ligero y registros clínicos al día.',
-          'Si algo se complica, avisa temprano y no esperes demasiado.'
+          'Actividad del rol: C · Capacitación.',
+          'Para Danna aparece programada el 3 de octubre.',
+          'El horario se visualiza usando el turno M indicado en la fila de turnos.'
         ]
       }
     };
 
     const MONTH_SCHEDULE = {
-      1:  { area: 'sala',    shift: 'M' },
-      2:  { area: 'ppff',    shift: 'T' },
-      3:  { area: 'apoyo',   shift: 'N' },
+      1:  { rest: true },
+      2:  { area: 'centro',          shift: 'M' },
+      3:  { area: 'capacitacion',    shift: 'M' },
       4:  { rest: true },
-      5:  { area: 'materno', shift: 'M' },
-      6:  { area: 'sala',    shift: 'M' },
-      7:  { area: 'ppff',    shift: 'T' },
-      8:  { area: 'apoyo',   shift: 'N' },
-      9:  { rest: true },
-      10: { area: 'materno', shift: 'T' },
-      11: { area: 'sala',    shift: 'T' },
-      12: { area: 'ppff',    shift: 'M' },
-      13: { area: 'apoyo',   shift: 'N' },
+      5:  { area: 'hospitalizacion', shift: 'T' },
+      6:  { area: 'emergencia',      shift: 'MT' },
+      7:  { rest: true },
+      8:  { area: 'emergencia',      shift: 'T' },
+      9:  { area: 'centro',          shift: 'N' },
+      10: { rest: true },
+      11: { area: 'emergencia',      shift: 'T' },
+      12: { area: 'centro',          shift: 'M' },
+      13: { area: 'hospitalizacion', shift: 'T' },
       14: { rest: true },
-      15: { area: 'materno', shift: 'T' },
-      16: { area: 'sala',    shift: 'M' },
-      17: { area: 'ppff',    shift: 'T' },
-      18: { area: 'apoyo',   shift: 'N' },
+      15: { area: 'emergencia',      shift: 'M' },
+      16: { area: 'emergencia',      shift: 'MT' },
+      17: { rest: true },
+      18: { area: 'centro',          shift: 'N' },
       19: { rest: true },
-      20: { area: 'materno', shift: 'M' },
-      21: { area: 'sala',    shift: 'M' },
-      22: { area: 'ppff',    shift: 'T' },
-      23: { area: 'apoyo',   shift: 'N' },
-      24: { rest: true },
-      25: { area: 'materno', shift: 'T' },
-      26: { area: 'sala',    shift: 'T' },
-      27: { area: 'ppff',    shift: 'M' },
-      28: { area: 'apoyo',   shift: 'N' },
-      29: { rest: true },
-      30: { area: 'materno', shift: 'M' }
+      20: { area: 'emergencia',      shift: 'T' },
+      21: { rest: true },
+      22: { area: 'emergencia',      shift: 'M' },
+      23: { rest: true },
+      24: { area: 'emergencia',      shift: 'MT' },
+      25: { rest: true },
+      26: { area: 'hospitalizacion', shift: 'M' },
+      27: { area: 'centro',          shift: 'N' },
+      28: { rest: true },
+      29: { area: 'centro',          shift: 'T' },
+      30: { area: 'hospitalizacion', shift: 'M' },
+      31: { rest: true }
     };
 
     const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
